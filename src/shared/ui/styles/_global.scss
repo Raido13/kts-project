@@ -1,0 +1,94 @@
+@import './fonts';
+
+:root {
+  --brand: #518581;
+  --brand-hover: #86aaa7;
+  --brand-active: #487773;
+
+  --button-primary-bg: var(--brand);
+  --button-primary-bg-hover: var(--brand-hover);
+  --button-primary-bg-active: var(var(--brand-active));
+  --button-primary-bg-disabled: #d9d9d9;
+  --button-primary-text: #fff;
+  --button-primary-text-hover: #fff;
+  --button-primary-text-disabled: #fff;
+
+  --text-primary: #000;
+  --text-secondary: #afadb5;
+  --text-accent: var(--brand);
+
+  --input-text: var(--text-primary);
+  --input-text-focus: var(--text-primary);
+  --input-text-disabled: rgba(0, 0, 0, 0.2);
+  --input-placeholder: var(--text-secondary);
+  --input-border: #fff;
+  --input-border-disabled: #fff;
+  --input-bg: #fff;
+  --input-bg-focus: var(--input-border);
+  --input-bg-disabled: #fff;
+  --input-border-focus: var(--brand);
+
+  --checkbox-bg: #fff;
+  --checkbox-border: #fff;
+  --checkbox-bg-hover: #fff;
+  --checkbox-border-hover: var(--brand);
+  --checkbox-bg-disabled: rgba(255, 255, 255, 0.5);
+  --checkbox-border-disabled: #fff;
+  --checkbox-checked: var(--brand);
+  --checkbox-checked-hover: var(--brand);
+  --checkbox-check-disabled: rgba(0, 0, 0, 0.2);
+
+  --card-image-bg: #d9d9d9;
+  --card-bg: #fff;
+
+  --dropdown-options-bg: #fff;
+
+  --space-xl: 24px;
+  --space-l: 20px;
+  --space-m: 16px;
+  --space-s: 14px;
+  --space-xs: 12px;
+  --space-xxs: 8px;
+
+  --text-button-size: 18px;
+  --text-button-lh: 18px;
+
+  --text-title-size: 44px;
+  --text-title-lh: 48px;
+
+  --text-p-20-size: 20px;
+  --text-p-20-lh: 24px;
+
+  --text-p-18-size: 18px;
+  --text-p-18-lh: 22px;
+
+  --text-p-16-size: 16px;
+  --text-p-16-lh: 20px;
+
+  --text-p-14-size: 14px;
+  --text-p-14-lh: 18px;
+}
+
+html,
+body {
+  font-family: 'Roboto';
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+pre {
+  margin: 0;
+}

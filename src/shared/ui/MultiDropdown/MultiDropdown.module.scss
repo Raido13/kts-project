@@ -1,0 +1,27 @@
+.dropdown {
+  position: relative;
+
+  &__list {
+    position: absolute;
+    margin: 0;
+    margin-top: 8px;
+    display: none;
+    flex-direction: column;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: hidden;
+    background-color: var(--dropdown-options-bg);
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.25);
+    &_opened {
+      display: flex;
+    }
+  }
+
+  &__item {
+    padding: 14px 12px;
+    width: 100%;
+    cursor: pointer;
+  }
+}
