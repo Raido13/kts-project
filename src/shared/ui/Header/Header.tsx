@@ -1,0 +1,40 @@
+import { HTMLAttributes } from 'react';
+import { CustomLink } from '../CustomLink';
+import s from './Header.module.scss';
+
+export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
+  /** Логотип */
+  logo: React.ReactNode;
+  /** Ссылки навигации */
+  links: {
+    label: string;
+    path: string;
+  }[];
+  /** Ссылки навигации */
+  menuItems: {
+    icon: React.ReactNode;
+    path: string;
+  }[];
+}
+
+export const Header: React.FC<HeaderProps> = ({ logo, links, menuItems }) => (
+  <header className={s.header}>
+    {logo}
+    <nav className={s.header__navigation} role="navigation">
+      <ul className={s.header__links}>
+        {links.map((link) => (
+          <li className={s.header__link}>
+            <CustomLink {...link} key={link.path} />
+          </li>
+        ))}
+      </ul>
+      <ul className={s.header__menu}>
+        {menuItems.map((item) => (
+          <li className={s.header__item}>
+            <CustomLink {...item} key={item.path} />
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </header>
+);
