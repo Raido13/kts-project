@@ -4,7 +4,9 @@ import s from './Header.module.scss';
 
 export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   /** Логотип */
-  logo: React.ReactNode;
+  logoIcon: React.ReactNode;
+  /** Ссылка на логотипе */
+  homePath: string;
   /** Ссылки навигации */
   links: {
     label: string;
@@ -17,9 +19,11 @@ export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   }[];
 }
 
-export const Header: React.FC<HeaderProps> = ({ logo, links, menuItems }) => (
+export const Header: React.FC<HeaderProps> = ({ logoIcon, homePath, links, menuItems }) => (
   <header className={s.header}>
-    {logo}
+    <div className={s.header__logo}>
+      <CustomLink icon={logoIcon} path={homePath} />
+    </div>
     <nav className={s.header__navigation} role="navigation">
       <ul className={s.header__links}>
         {links.map((link) => (

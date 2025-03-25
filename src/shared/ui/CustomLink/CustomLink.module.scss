@@ -1,0 +1,23 @@
+.link {
+  display: flex;
+  text-decoration: none;
+  
+  &__container {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -35px;
+      height: 2px;
+      width: 100%;
+      background-color: transparent;
+      
+    }
+    
+    &_active::after {
+      background-color: var(--brand);
+    }
+  }
+}

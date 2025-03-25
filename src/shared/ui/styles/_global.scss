@@ -1,4 +1,4 @@
-@import './fonts';
+@use './fonts';
 
 :root {
   --brand: #518581;
@@ -42,6 +42,9 @@
   --card-bg: #fff;
 
   --dropdown-options-bg: #fff;
+
+  --header-bg: #fff;
+  --header-border: rgba(243, 243, 243, 1);
 
   --space-xl: 24px;
   --space-l: 20px;
