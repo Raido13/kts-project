@@ -3,9 +3,13 @@ import cn from 'classnames';
 import s from './Icon.module.scss';
 
 export type IconProps = React.SVGAttributes<SVGElement> & {
+  /** Дополнительный classname */
   className?: string;
+  /** Цвет иконки */
   color?: 'primary' | 'secondary' | 'accent';
+  /** Ширина иконки */
   width?: number;
+  /** Высота иконки */
   height?: number;
 };
 

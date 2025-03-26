@@ -1,0 +1,8 @@
+.search {
+  display: flex;
+  column-gap: 24px;
+
+  &__input {
+    flex: 1;
+  }
+}

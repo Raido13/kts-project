@@ -4,15 +4,20 @@ import s from './CustomLink.module.scss';
 import cn from 'classnames';
 
 export interface LinkProps {
+  /* Путь ссылки **/
   path: string;
+  /* Текст ссылки **/
   label?: string;
+  /* Иконка ссылки **/
   icon?: React.ReactNode;
+  /** Дополнительный classname */
+  className?: string;
 }
 
-export const CustomLink: React.FC<LinkProps> = ({ path, label, icon }) => (
+export const CustomLink: React.FC<LinkProps> = ({ path, label, icon, className }) => (
   <NavLink to={path} end className={s.link}>
     {({ isActive }) => (
-      <div className={cn(s.link__container, label && isActive && s.link__container_active)}>
+      <div className={cn(s.link__container, label && isActive && s.link__container_active, className)}>
         {icon}
         {label && (
           <Text tag={'p'} view={'p-18'} color={isActive ? 'accent' : 'primary'}>

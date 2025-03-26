@@ -4,13 +4,7 @@ import Text from '../Text';
 import ArrowDownIcon from '../Icon/ArrowDownIcon';
 import s from './MultiDropdown.module.scss';
 import cn from 'classnames';
-
-export type Option = {
-  /** Ключ варианта, используется для отправки на бек/использования в коде */
-  key: string;
-  /** Значение варианта, отображается пользователю */
-  value: string;
-};
+import { Option } from '@shared/lib/types/options';
 
 /** Пропсы, которые принимает компонент Dropdown */
 export type MultiDropdownProps = {
