@@ -1,12 +1,8 @@
-import { Layout } from '@shared/ui/Layout/Layout';
-import { CitiesPage } from '../pages/Cities';
+import { CitiesContextProvider } from '@shared/lib/contexts/';
+import { AppRouter } from './appRouter';
 
-function App() {
-  return (
-    <Layout header>
-      <CitiesPage />
-    </Layout>
-  );
-}
-
-export default App;
+export const App = () => (
+  <CitiesContextProvider>
+    <AppRouter />
+  </CitiesContextProvider>
+);

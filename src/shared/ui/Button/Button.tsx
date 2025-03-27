@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({ loading, disabled, children, className,
     {...props}
   >
     {loading && <Loader className={s.button__loader} size={'s'} />}
-    <Text className={s.button__text} view={'button'} tag={'div'}>
+    <Text className={s.button__text} view={'button'} tag={'p'}>
       {children}
     </Text>
   </button>

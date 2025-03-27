@@ -31,7 +31,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({ options, value, onChange,
     new Map(
       options
         .filter((option) => option.value.toLowerCase().includes(searchQuery.toLowerCase()))
-        .map((option) => [option.key.toLowerCase(), option])
+        .map((option) => [option.value.toLowerCase(), option])
     ).values()
   );
 
@@ -89,6 +89,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({ options, value, onChange,
                 onClick={() => (isSelected ? handleRemove(option) : handleSelect(option))}
                 onMouseEnter={() => setHoveredKey(option.key)}
                 onMouseLeave={() => setHoveredKey(null)}
+                key={option.key}
               >
                 <Text view={'p-16'} tag={'p'} color={color}>
                   {option.value}

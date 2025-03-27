@@ -31,14 +31,14 @@ export const Header: React.FC<HeaderProps> = ({ logoIcon, homePath, links, menuI
       <ul className={s.header__links}>
         {links.map((link) => (
           <li className={s.header__link} key={link.label}>
-            <CustomLink {...link} key={link.path} />
+            <CustomLink {...link} />
           </li>
         ))}
       </ul>
       <ul className={s.header__menu}>
         {menuItems.map((item) => (
-          <li className={s.header__item}>
-            <CustomLink {...item} key={item.path} />
+          <li className={s.header__item} key={item.path}>
+            <CustomLink {...item} />
           </li>
         ))}
       </ul>

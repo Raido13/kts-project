@@ -1,0 +1,40 @@
+.city {
+  padding: 60px 39px 146px 100px;
+  display: grid;
+  grid-template-rows: auto 32px auto 48px auto;
+  background-color: var(--page-bg);
+
+  &__back {
+    grid-row: 1;
+    width: fit-content;
+  }
+
+  &__card {
+    grid-row: 3;
+  }
+
+  &__related {
+    grid-row: 5;
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  &__gallery {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 360px);
+    justify-content: center;
+    column-gap: 80px;
+    list-style-type: none;
+
+    &-item {
+      padding: 0;
+    }
+  }
+
+  &__link {
+    text-decoration: none;
+  }
+}

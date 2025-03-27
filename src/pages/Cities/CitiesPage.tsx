@@ -8,15 +8,20 @@ import { City } from '@shared/lib/types/city';
 import { Option } from '@shared/lib/types/options';
 import Button from '@shared/ui/Button';
 import s from './CitiesPage.module.scss';
-import { citiesMock, imageMock } from '@shared/lib/mock/cities';
+import { useWindowWidth } from '@shared/lib/hooks/useWindowWidth';
+import cn from 'classnames';
+import { Link } from 'react-router-dom';
+import { CITIES } from '@shared/lib/constants/links';
+import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 
 export const CitiesPage: FC = () => {
-  const [initialCities, setInitialCities] = useState<City[]>([]);
+  const { cities, isLoading } = useCitiesContext();
   const [filteredCities, setFilteredCities] = useState<City[]>([]);
   const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
   const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const windowWidth = useWindowWidth();
 
   const perPage = 6;
   const startIdx = (currentPage - 1) * perPage;
@@ -25,31 +30,35 @@ export const CitiesPage: FC = () => {
   const getDropdownTitle = (values: Option[]) =>
     values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ');
 
-  const onSearchFilter = useCallback(() => {
+  const getFilteredCities = (cities: City[], searchQuery: string, dropdownValue: Option[]) => {
     const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
 
-    const filtered = initialCities.filter(({ name }) => {
+    return cities.filter(({ name }) => {
       const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
 
       return matchesSearch && matchesDropdown;
     });
+  };
 
+  const onSearchFilter = useCallback(() => {
+    const filtered = getFilteredCities(cities, '', dropdownValue);
     setFilteredCities(filtered);
     setCurrentPage(1);
-  }, [dropdownValue, searchQuery, initialCities]);
+  }, [dropdownValue, cities]);
 
   useEffect(() => {
-    setInitialCities(citiesMock);
-    setFilteredCities(citiesMock);
-    const currentOptions = citiesMock.map((city) => ({ value: city.name, key: `${city.id}` }));
+    setFilteredCities(cities);
+    const currentOptions = cities.map((city) => ({ value: city.name, key: `${city.id}` }));
 
     setDropdownOptions(currentOptions);
-  }, []);
+  }, [cities]);
 
   useEffect(() => {
-    onSearchFilter();
-  }, [dropdownValue, initialCities, onSearchFilter]);
+    const filtered = getFilteredCities(cities, searchQuery, dropdownValue);
+    setFilteredCities(filtered);
+    setCurrentPage(1);
+  }, [dropdownValue, cities, searchQuery]);
 
   return (
     <div className={s.page}>
@@ -71,7 +80,7 @@ export const CitiesPage: FC = () => {
             actionName={'Find now'}
             placeholder={'Search City'}
           />
-          {dropdownOptions && dropdownValue && (
+          {!isLoading && dropdownOptions && dropdownValue && (
             <MultiDropdown
               options={dropdownOptions}
               onChange={setDropdownValue}
@@ -92,18 +101,21 @@ export const CitiesPage: FC = () => {
           )}
         </div>
       </div>
-      <ul className={s.page__gallery}>
-        {paginatedCities &&
-          paginatedCities.map(({ id, country, name, is_capital, population }) => (
+      <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
+        {!isLoading &&
+          paginatedCities &&
+          paginatedCities.map(({ id, country, name, is_capital, population, image }) => (
             <li key={id} className={s.page__city}>
-              <Card
-                image={imageMock}
-                title={name}
-                subtitle={`Population: ${population}`}
-                captionSlot={`Country ${country}`}
-                contentSlot={is_capital && 'Capital'}
-                actionSlot={<Button>More info</Button>}
-              />
+              <Link to={`${CITIES}/:${id}`} className={s.page__link}>
+                <Card
+                  image={image}
+                  title={name}
+                  subtitle={`Population: ${population}`}
+                  captionSlot={`Country: ${country}`}
+                  contentSlot={is_capital && 'Capital'}
+                  actionSlot={<Button>Find ticket</Button>}
+                />
+              </Link>
             </li>
           ))}
       </ul>

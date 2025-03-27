@@ -6,6 +6,7 @@
   border: none;
   background-color: var(--button-primary-bg);
   color: var(--button-primary-text);
+  border: solid 1px transparent;
 
   &__text {
     padding: 3px 0;
