@@ -5,6 +5,8 @@
 
   &__image {
     background-color: var(--card-image-bg);
+    width: 360px;
+    object-fit: cover;
   }
 
   &__body {

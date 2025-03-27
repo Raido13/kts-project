@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  column-gap: 15px;
 
   &__arrow {
     all: unset;
@@ -21,7 +20,11 @@
   
   &__item {
     all: unset;
-    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 42px;
     cursor: pointer;
 
     &_active {

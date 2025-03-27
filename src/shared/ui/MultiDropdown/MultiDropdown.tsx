@@ -27,7 +27,13 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({ options, value, onChange,
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const filteredOptions = options.filter((option) => option.value.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredOptions = Array.from(
+    new Map(
+      options
+        .filter((option) => option.value.toLowerCase().includes(searchQuery.toLowerCase()))
+        .map((option) => [option.key.toLowerCase(), option])
+    ).values()
+  );
 
   const checkSelect = (option: Option) => value.some((v) => v.key === option.key);
 

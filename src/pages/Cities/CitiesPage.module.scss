@@ -40,8 +40,9 @@
     grid-row: 5;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 360px);
+    justify-content: center;
     column-gap: 80px;
     row-gap: 30px;
     list-style-type: none;

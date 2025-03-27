@@ -13,8 +13,6 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
   currentPage: number;
   /** Коллбек при смене страницы */
   onChange: (page: number) => void;
-  /** Сколько кнопок показывать от текущей выбранной */
-  siblingCount?: number;
   /** Дополнительный classname */
   className?: string;
 }
@@ -22,51 +20,27 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
 const createRange = (start: number, end: number): number[] =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
-export const Pagination: React.FC<PaginationProps> = ({
-  total,
-  perPage,
-  currentPage,
-  onChange,
-  siblingCount = 1,
-  className,
-}) => {
+export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentPage, onChange, className }) => {
   const totalPages = Math.ceil(total / perPage);
   const DOTS = '...';
 
   const generatePages = () => {
-    const totalNumbers = siblingCount * 2 + 5;
-
-    if (totalNumbers > totalPages) {
+    if (totalPages <= 4) {
       return createRange(1, totalPages);
     }
 
-    const leftSibling = Math.max(currentPage - siblingCount, 1);
-    const rightSibling = Math.min(currentPage + siblingCount, totalPages);
-
-    const showDotsFromLeft = leftSibling > 1;
-    const showDotsFromRight = rightSibling < totalPages - 1;
-
-    if (!showDotsFromLeft && showDotsFromRight) {
-      const leftRange = createRange(1, rightSibling + 1);
-      return [...leftRange, DOTS, totalPages];
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, DOTS, totalPages];
     }
 
-    if (showDotsFromLeft && !showDotsFromRight) {
-      const rightRange = createRange(leftSibling - 1, totalPages);
-      return [1, DOTS, ...rightRange];
+    if (currentPage >= totalPages - 2) {
+      return [1, DOTS, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     }
 
-    if (showDotsFromLeft && showDotsFromRight) {
-      const middleRange = createRange(leftSibling + 1, rightSibling);
-      return [1, 'test', ...middleRange, totalPages];
-    }
-
-    return createRange(1, totalPages);
+    return [1, DOTS, currentPage - 1, currentPage, currentPage + 1, DOTS, totalPages];
   };
 
   const pages = generatePages();
-
-  console.log(total, perPage, currentPage, onChange, siblingCount);
 
   return (
     <div className={cn(s.pagination, className)}>
