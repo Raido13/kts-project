@@ -17,7 +17,7 @@
       cursor: default;
     }
   }
-  
+
   &__item {
     all: unset;
     display: flex;
@@ -30,7 +30,7 @@
     &_active {
       background-color: var(--pagination-bg-active);
     }
-    
+
     &_dots {
       cursor: default;
     }

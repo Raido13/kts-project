@@ -3,7 +3,7 @@ import { Search } from '@shared/ui/Search';
 import { Pagination } from '@shared/ui/Pagination';
 import MultiDropdown from '@shared/ui/MultiDropdown';
 import Card from '@shared/ui/Card';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { City } from '@shared/lib/types/city';
 import { Option } from '@shared/lib/types/options';
 import Button from '@shared/ui/Button';
@@ -25,7 +25,7 @@ export const CitiesPage: FC = () => {
   const getDropdownTitle = (values: Option[]) =>
     values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ');
 
-  const onSearchFilter = () => {
+  const onSearchFilter = useCallback(() => {
     const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
 
     const filtered = initialCities.filter(({ name }) => {
@@ -37,7 +37,7 @@ export const CitiesPage: FC = () => {
 
     setFilteredCities(filtered);
     setCurrentPage(1);
-  };
+  }, [dropdownValue, searchQuery, initialCities]);
 
   useEffect(() => {
     setInitialCities(citiesMock);
