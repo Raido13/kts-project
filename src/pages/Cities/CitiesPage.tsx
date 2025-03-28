@@ -3,8 +3,7 @@ import { Search } from '@shared/ui/Search';
 import { Pagination } from '@shared/ui/Pagination';
 import MultiDropdown from '@shared/ui/MultiDropdown';
 import Card from '@shared/ui/Card';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { City } from '@shared/lib/types/city';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { Option } from '@shared/lib/types/options';
 import Button from '@shared/ui/Button';
 import s from './CitiesPage.module.scss';
@@ -16,14 +15,34 @@ import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 
 export const CitiesPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
-  const [filteredCities, setFilteredCities] = useState<City[]>([]);
   const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
   const windowWidth = useWindowWidth();
 
+  const getDropdownTitle = useCallback(
+    (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
+    []
+  );
+
+  const filteredCities = useMemo(() => {
+    const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
+
+    return cities.filter(({ name }) => {
+      const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
+      const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesDropdown && matchesSearch;
+    });
+  }, [dropdownValue, cities, searchQuery]);
+
+  const onSearchFilter = (value: string) => {
+    setSearchQuery(value);
+  };
+
   const perPage = 6;
   const startIdx = (currentPage - 1) * perPage;
+
   const paginatedCities = useMemo(
     () => filteredCities.slice(startIdx, startIdx + perPage),
     [filteredCities, startIdx, perPage]
@@ -34,42 +53,6 @@ export const CitiesPage: FC = () => {
       value: city.name,
       key: `${city.id}`,
     }));
-  }, [cities]);
-
-  const getDropdownTitle = useCallback(
-    (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
-    []
-  );
-
-  const onSearchFilter = () => {
-    const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
-
-    const filtered = cities.filter(({ name }) => {
-      const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
-
-      return matchesSearch && matchesDropdown;
-    });
-
-    setFilteredCities(filtered);
-    setCurrentPage(1);
-  };
-
-  useEffect(() => {
-    const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
-
-    const filtered = cities.filter(({ name }) => {
-      const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
-
-      return matchesDropdown;
-    });
-
-    setFilteredCities(filtered);
-    setCurrentPage(1);
-  }, [dropdownValue, cities]);
-
-  useEffect(() => {
-    setFilteredCities(cities);
   }, [cities]);
 
   return (
@@ -85,13 +68,7 @@ export const CitiesPage: FC = () => {
       </section>
       <div className={s.page__toolbar}>
         <div className={s.page__toolbar__container}>
-          <Search
-            onSearchFilter={onSearchFilter}
-            setSearchQuery={setSearchQuery}
-            searchQuery={searchQuery}
-            actionName={'Find now'}
-            placeholder={'Search City'}
-          />
+          <Search onSearchFilter={onSearchFilter} actionName={'Find now'} placeholder={'Search City'} />
           {!isLoading && dropdownOptions && dropdownValue && (
             <MultiDropdown
               options={dropdownOptions}
