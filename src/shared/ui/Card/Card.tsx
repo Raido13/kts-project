@@ -5,6 +5,7 @@ import s from './Card.module.scss';
 import { cardVariant } from '@shared/lib/types/card';
 import { getTextFromReactNode } from '@shared/lib/utils';
 import Button from '../Button';
+import { imageMock } from '@shared/lib/mock/cities';
 
 export type CardProps = {
   /** Дополнительный classname */
@@ -12,7 +13,7 @@ export type CardProps = {
   /** Вариант отображения */
   variant?: cardVariant;
   /** URL изображения */
-  image: string;
+  image?: string;
   /** Слот над заголовком */
   captionSlot?: React.ReactNode;
   /** Заголовок карточки */
@@ -43,7 +44,7 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <div onClick={onClick} className={cn(s.card, { [s['card--single']]: variant === 'single' }, className)}>
-      <img src={image} alt={imageText} className={s.card__image} />
+      <img src={image ?? imageMock} alt={imageText} className={s.card__image} />
       <div className={s.card__body}>
         <div className={s['card__body-top']}>
           {!isPreview && captionSlot && (

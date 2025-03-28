@@ -3,7 +3,7 @@ import { Search } from '@shared/ui/Search';
 import { Pagination } from '@shared/ui/Pagination';
 import MultiDropdown from '@shared/ui/MultiDropdown';
 import Card from '@shared/ui/Card';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { City } from '@shared/lib/types/city';
 import { Option } from '@shared/lib/types/options';
 import Button from '@shared/ui/Button';
@@ -17,7 +17,6 @@ import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 export const CitiesPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
   const [filteredCities, setFilteredCities] = useState<City[]>([]);
-  const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
   const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,40 +24,53 @@ export const CitiesPage: FC = () => {
 
   const perPage = 6;
   const startIdx = (currentPage - 1) * perPage;
-  const paginatedCities = filteredCities.slice(startIdx, startIdx + perPage);
+  const paginatedCities = useMemo(
+    () => filteredCities.slice(startIdx, startIdx + perPage),
+    [filteredCities, startIdx, perPage]
+  );
 
-  const getDropdownTitle = (values: Option[]) =>
-    values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ');
+  const dropdownOptions = useMemo(() => {
+    return cities.map((city) => ({
+      value: city.name,
+      key: `${city.id}`,
+    }));
+  }, [cities]);
 
-  const getFilteredCities = (cities: City[], searchQuery: string, dropdownValue: Option[]) => {
+  const getDropdownTitle = useCallback(
+    (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
+    []
+  );
+
+  const onSearchFilter = () => {
     const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
 
-    return cities.filter(({ name }) => {
+    const filtered = cities.filter(({ name }) => {
       const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
 
       return matchesSearch && matchesDropdown;
     });
+
+    setFilteredCities(filtered);
+    setCurrentPage(1);
   };
 
-  const onSearchFilter = useCallback(() => {
-    const filtered = getFilteredCities(cities, '', dropdownValue);
+  useEffect(() => {
+    const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
+
+    const filtered = cities.filter(({ name }) => {
+      const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
+
+      return matchesDropdown;
+    });
+
     setFilteredCities(filtered);
     setCurrentPage(1);
   }, [dropdownValue, cities]);
 
   useEffect(() => {
     setFilteredCities(cities);
-    const currentOptions = cities.map((city) => ({ value: city.name, key: `${city.id}` }));
-
-    setDropdownOptions(currentOptions);
   }, [cities]);
-
-  useEffect(() => {
-    const filtered = getFilteredCities(cities, searchQuery, dropdownValue);
-    setFilteredCities(filtered);
-    setCurrentPage(1);
-  }, [dropdownValue, cities, searchQuery]);
 
   return (
     <div className={s.page}>
@@ -94,7 +106,7 @@ export const CitiesPage: FC = () => {
           <Text tag={'p'} view={'title'} color={'primary'}>
             Total Cities
           </Text>
-          {filteredCities.length !== 0 && (
+          {filteredCities.length && (
             <Text tag={'p'} view={'p-20'} color={'accent'} weight={'bold'}>
               {filteredCities.length}
             </Text>
@@ -106,7 +118,7 @@ export const CitiesPage: FC = () => {
           paginatedCities &&
           paginatedCities.map(({ id, country, name, is_capital, population, image }) => (
             <li key={id} className={s.page__city}>
-              <Link to={`${CITIES}/:${id}`} className={s.page__link}>
+              <Link to={`${CITIES}/${id}`} className={s.page__link}>
                 <Card
                   image={image}
                   title={name}
