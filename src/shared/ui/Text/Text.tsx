@@ -17,18 +17,38 @@ export type TextProps = {
   color?: 'primary' | 'secondary' | 'accent';
   /** Максимальное кол-во строк */
   maxLines?: number;
+  /** Стейт для скелетона */
+  isLoading?: boolean;
 };
 
-const Text: React.FC<TextProps> = ({ className, view, tag, weight, children, color, maxLines, ...props }) => {
+const Text: React.FC<TextProps> = ({
+  className,
+  view,
+  tag,
+  weight,
+  children,
+  color,
+  maxLines,
+  isLoading = false,
+  ...props
+}) => {
   const Element = tag ?? 'p';
   const styles: React.CSSProperties = {
     ...(maxLines && { WebkitLineClamp: maxLines }),
     ...(weight && { fontWeight: weight }),
   };
 
-  return (
+  return isLoading ? (
+    <span className={s.text__preparation} />
+  ) : (
     <Element
-      className={cn(s.text, s[`text_${view ?? 'p-20'}`], s[`text_${color ?? 'primary'}`], className)}
+      className={cn(
+        s.text,
+        s[`text_${view ?? 'p-20'}`],
+        s[`text_${color ?? 'primary'}`],
+        isLoading && s.text_skeleton,
+        className
+      )}
       style={styles}
       {...props}
     >

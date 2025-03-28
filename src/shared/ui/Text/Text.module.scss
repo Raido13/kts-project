@@ -1,3 +1,5 @@
+@use '@shared/ui/styles/animations';
+
 .text {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,5 +48,14 @@
 
   &_accent {
     color: var(--text-accent);
+  }
+  
+  &__preparation {
+    height: 1em;
+    width: 60%;
+    border-radius: 2px;
+    background: var(--animation-skeleton-color);
+    background-size: 200% 100%;
+    animation: pulse 1.5s infinite;
   }
 }

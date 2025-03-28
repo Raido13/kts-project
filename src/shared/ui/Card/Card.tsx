@@ -6,6 +6,7 @@ import { cardVariant } from '@shared/lib/types/card';
 import { getTextFromReactNode } from '@shared/lib/utils';
 import Button from '../Button';
 import { imageMock } from '@shared/lib/mock/cities';
+import { Image } from '../Image';
 
 export type CardProps = {
   /** Дополнительный classname */
@@ -26,6 +27,8 @@ export type CardProps = {
   onClick?: React.MouseEventHandler;
   /** Слот для действия */
   actionSlot?: React.ReactNode;
+  /** Стейт для скелетона */
+  isLoading?: boolean;
 };
 
 const Card: React.FC<CardProps> = ({
@@ -38,36 +41,47 @@ const Card: React.FC<CardProps> = ({
   contentSlot,
   onClick,
   actionSlot,
+  isLoading = false,
 }) => {
   const imageText = getTextFromReactNode(title);
   const isPreview = variant === 'preview';
 
   return (
     <div onClick={onClick} className={cn(s.card, { [s['card--single']]: variant === 'single' }, className)}>
-      <img src={image ?? imageMock} alt={imageText} className={s.card__image} />
+      <Image
+        isLoading={isLoading}
+        src={image ?? imageMock}
+        alt={imageText}
+        className={s.card__image}
+        variant={variant}
+      />
       <div className={s.card__body}>
         <div className={s['card__body-top']}>
           {!isPreview && captionSlot && (
-            <Text view={'p-14'} color={'secondary'}>
+            <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
               {captionSlot}
             </Text>
           )}
-          <Text view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
+          <Text isLoading={isLoading} view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
             {title}
           </Text>
-          <Text view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
+          <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
             {subtitle}
           </Text>
         </div>
         <div className={s['card__body-bottom']}>
           {contentSlot && (
-            <Text view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.card__price}>
+            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.card__price}>
               {contentSlot}
             </Text>
           )}
           <div className={s.card__actions}>
             {actionSlot}
-            {!isPreview && <Button className={s.card__button}>More info</Button>}
+            {!isPreview && (
+              <Button isSkeletonLoading={isLoading} className={s.card__button}>
+                More info
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -52,6 +52,13 @@
 
   --pagination-bg-active: var(--brand);
 
+  --animation-skeleton-color: linear-gradient(
+    90deg,
+    rgba(80, 80, 80, 0.1) 0%,
+    rgba(80, 80, 80, 0.3) 50%,
+    rgba(80, 80, 80, 0.1) 100%
+  );
+
   --space-xl: 24px;
   --space-l: 20px;
   --space-m: 16px;

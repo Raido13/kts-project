@@ -22,7 +22,18 @@ export const CityPage: FC = () => {
       <div className={s.city__back}>
         <CustomLink icon={<ArrowPaginationIcon width={35} height={35} color={'primary'} />} label={'Back'} path={'/'} />
       </div>
-      {!isLoading && (
+      {isLoading ? (
+        <Card
+          className={s.city__card}
+          variant={'single'}
+          image={''}
+          title={''}
+          subtitle={''}
+          contentSlot={''}
+          actionSlot={<Button isSkeletonLoading>{''}</Button>}
+          isLoading
+        />
+      ) : (
         <Card
           className={s.city__card}
           variant={'single'}
@@ -38,9 +49,22 @@ export const CityPage: FC = () => {
           Related Cities
         </Text>
         <ul className={s.city__gallery}>
-          {!isLoading &&
-            relatedCities.map(({ id, country, name, is_capital, population, image }) => (
-              <li key={id} className={s['city__gallery-item']}>
+          {relatedCities.map(({ id, country, name, is_capital, population, image }) => (
+            <li key={id} className={s['city__gallery-item']}>
+              {isLoading ? (
+                <Link to={`${CITIES}/${id}`} className={s.city__link}>
+                  <Card
+                    className={s.city__card}
+                    variant={'single'}
+                    image={''}
+                    title={''}
+                    subtitle={''}
+                    contentSlot={''}
+                    actionSlot={<Button isSkeletonLoading>{''}</Button>}
+                    isLoading
+                  />
+                </Link>
+              ) : (
                 <Link to={`${CITIES}/${id}`} className={s.city__link}>
                   <Card
                     image={image}
@@ -48,11 +72,13 @@ export const CityPage: FC = () => {
                     subtitle={`Population: ${population}`}
                     captionSlot={`Country: ${country}`}
                     contentSlot={is_capital && 'Capital'}
-                    actionSlot={<Button>More info</Button>}
+                    actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
+                    isLoading={isLoading}
                   />
                 </Link>
-              </li>
-            ))}
+              )}
+            </li>
+          ))}
         </ul>
       </section>
     </div>

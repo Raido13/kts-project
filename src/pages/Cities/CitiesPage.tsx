@@ -69,7 +69,7 @@ export const CitiesPage: FC = () => {
       <div className={s.page__toolbar}>
         <div className={s.page__toolbar__container}>
           <Search onSearchFilter={onSearchFilter} actionName={'Find now'} placeholder={'Search City'} />
-          {!isLoading && dropdownOptions && dropdownValue && (
+          {dropdownOptions && dropdownValue && (
             <MultiDropdown
               options={dropdownOptions}
               onChange={setDropdownValue}
@@ -91,22 +91,34 @@ export const CitiesPage: FC = () => {
         </div>
       </div>
       <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-        {!isLoading &&
-          paginatedCities &&
-          paginatedCities.map(({ id, country, name, is_capital, population, image }) => (
-            <li key={id} className={s.page__city}>
-              <Link to={`${CITIES}/${id}`} className={s.page__link}>
+        {isLoading
+          ? Array.from({ length: perPage }).map((_, idx) => (
+              <li key={idx} className={s.page__city}>
                 <Card
-                  image={image}
-                  title={name}
-                  subtitle={`Population: ${population}`}
-                  captionSlot={`Country: ${country}`}
-                  contentSlot={is_capital && 'Capital'}
-                  actionSlot={<Button>Find ticket</Button>}
+                  image=""
+                  title=""
+                  subtitle=""
+                  captionSlot=""
+                  contentSlot=""
+                  actionSlot={<Button isSkeletonLoading>{''}</Button>}
+                  isLoading
                 />
-              </Link>
-            </li>
-          ))}
+              </li>
+            ))
+          : paginatedCities.map(({ id, country, name, is_capital, population, image }) => (
+              <li key={id} className={s.page__city}>
+                <Link to={`${CITIES}/${id}`} className={s.page__link}>
+                  <Card
+                    image={image}
+                    title={name}
+                    subtitle={`Population: ${population}`}
+                    captionSlot={`Country: ${country}`}
+                    contentSlot={is_capital && 'Capital'}
+                    actionSlot={<Button>Find ticket</Button>}
+                  />
+                </Link>
+              </li>
+            ))}
       </ul>
       <Pagination
         total={filteredCities.length}

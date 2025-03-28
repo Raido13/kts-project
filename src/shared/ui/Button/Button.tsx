@@ -11,19 +11,30 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
   /** Дополнительный класс */
   className?: string;
+  /** Стейт для скелетона */
+  isSkeletonLoading?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({ loading, disabled, children, className, ...props }) => (
-  <button
-    className={cn(s.button, loading && s.button_loading, disabled && s.button_disabled, className)}
-    disabled={loading || disabled}
-    {...props}
-  >
-    {loading && <Loader className={s.button__loader} size={'s'} />}
-    <Text className={s.button__text} view={'button'} tag={'p'}>
-      {children}
-    </Text>
-  </button>
-);
-
+const Button: React.FC<ButtonProps> = ({
+  loading,
+  disabled,
+  children,
+  className,
+  isSkeletonLoading = false,
+  ...props
+}) =>
+  isSkeletonLoading ? (
+    <div className={cn(s.button__skeleton, className)} />
+  ) : (
+    <button
+      className={cn(s.button, loading && s.button_loading, disabled && s.button_disabled, className)}
+      disabled={loading || disabled}
+      {...props}
+    >
+      {loading && <Loader className={s.button__loader} size={'s'} />}
+      <Text className={s.button__text} view={'button'} tag={'p'}>
+        {children}
+      </Text>
+    </button>
+  );
 export default Button;
