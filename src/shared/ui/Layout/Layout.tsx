@@ -1,9 +1,10 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, useEffect } from 'react';
 import { Header } from '../Header';
 import LogoIcon from '../Icon/LogoIcon';
 import UserIcon from '../Icon/UserIcon';
 import { HOME, CITIES } from '@shared/lib/constants/links';
 import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { useLocation } from 'react-router-dom';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -14,6 +15,12 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
   const { randomCity } = useCitiesContext();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    console.log(pathname);
+  }, [pathname]);
 
   return (
     <div>
