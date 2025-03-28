@@ -7,20 +7,23 @@ import { CitiesContext } from './CitiesContext';
 export const CitiesContextProvider = ({ children }: PropsWithChildren) => {
   const [cities, setCities] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [randomCity, setRandomCity] = useState<City | null>(null);
 
   useEffect(() => {
     const fetchCities = async () => {
       const snapshot = await getDocs(collection(db, 'cities'));
       const citiesData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as City);
 
+      const randomIdx = Math.floor(Math.random() * citiesData.length);
+      const randomItem = citiesData[randomIdx];
+
       setCities(citiesData);
+      setRandomCity(randomItem);
       setIsLoading(false);
     };
 
     fetchCities();
   }, []);
 
-  return (
-    <CitiesContext.Provider value={{ cities, setCities, isLoading, setIsLoading }}>{children}</CitiesContext.Provider>
-  );
+  return <CitiesContext.Provider value={{ cities, isLoading, randomCity }}>{children}</CitiesContext.Provider>;
 };

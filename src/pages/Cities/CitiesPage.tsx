@@ -9,7 +9,7 @@ import Button from '@shared/ui/Button';
 import s from './CitiesPage.module.scss';
 import { useWindowWidth } from '@shared/lib/hooks/useWindowWidth';
 import cn from 'classnames';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { CITIES } from '@shared/lib/constants/links';
 import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 
@@ -17,8 +17,10 @@ export const CitiesPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
   const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [searchQuery, setSearchQuery] = useState('');
   const windowWidth = useWindowWidth();
+
+  const preInitializedQuery = new URLSearchParams(useLocation().search).get('query');
+  const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
 
   const getDropdownTitle = useCallback(
     (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
@@ -51,7 +53,7 @@ export const CitiesPage: FC = () => {
   const dropdownOptions = useMemo(() => {
     return cities.map((city) => ({
       value: city.name,
-      key: `${city.id}`,
+      key: city.id,
     }));
   }, [cities]);
 

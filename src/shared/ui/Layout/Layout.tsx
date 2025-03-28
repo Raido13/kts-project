@@ -2,7 +2,8 @@ import { HTMLAttributes } from 'react';
 import { Header } from '../Header';
 import LogoIcon from '../Icon/LogoIcon';
 import UserIcon from '../Icon/UserIcon';
-import { HOME } from '@shared/lib/constants/links';
+import { HOME, CITIES } from '@shared/lib/constants/links';
+import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -11,20 +12,24 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => (
-  <div>
-    {header && (
-      <Header
-        logoIcon={<LogoIcon />}
-        homePath={HOME}
-        links={[
-          { label: 'test', path: HOME },
-          { label: 'test2', path: HOME },
-          { label: 'test3', path: HOME },
-        ]}
-        menuItems={[{ icon: <UserIcon />, path: HOME }]}
-      />
-    )}
-    {children}
-  </div>
-);
+export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
+  const { randomCity } = useCitiesContext();
+
+  return (
+    <div>
+      {header && (
+        <Header
+          logoIcon={<LogoIcon />}
+          homePath={HOME}
+          links={[
+            { label: 'Home', path: HOME },
+            { label: 'Cities', path: CITIES },
+            ...(randomCity ? [{ label: 'Good Choice', path: `${CITIES}/${randomCity.id}` }] : []),
+          ]}
+          menuItems={[{ icon: <UserIcon />, path: HOME }]}
+        />
+      )}
+      {children}
+    </div>
+  );
+};

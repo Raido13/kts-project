@@ -13,7 +13,7 @@ export const getTextFromReactNode = (node: React.ReactNode): string => {
   return '';
 };
 
-export const getShuffledItemsFromArray = (array: City[], count: number, excludeId: string): City[] =>
+export const getShuffledItemsFromArray = (array: City[], count: number, excludeId?: string): City[] =>
   array
     .filter((item) => item.id !== excludeId)
     .sort(() => 0.5 - Math.random())

@@ -28,18 +28,14 @@
     }
   }
 
-  &__dropdown {
-    max-width: 300px;
-  }
-
-  &__counter {
+  &__related {
+    grid-row: 5;
     display: flex;
-    align-items: center;
-    column-gap: 24px;
+    flex-direction: column;
+    row-gap: 32px;
   }
 
   &__gallery {
-    grid-row: 5;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, 360px);
@@ -54,17 +50,28 @@
       margin: unset;
       justify-content: center;
     }
-  }
 
-  &__city {
-    padding: 0;
+    &-item {
+      padding: 0;
+    }
   }
 
   &__link {
     text-decoration: none;
   }
 
-  &__pagination {
+  &__suggest {
     grid-row: 7;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 24px;
+    text-align: center;
+
+    &__container {
+      display: flex;
+      justify-content: center;
+    }
   }
 }

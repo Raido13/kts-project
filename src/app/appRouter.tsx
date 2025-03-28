@@ -1,6 +1,7 @@
 import { routes } from '@shared/lib/config/routes';
 import { Layout } from '@shared/ui/Layout/Layout';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { HomePage } from '../pages/Home';
 import { CitiesPage } from '../pages/Cities';
 import { CityPage } from '../pages/City';
 
@@ -9,7 +10,7 @@ const router = createBrowserRouter([
     path: routes.home,
     element: (
       <Layout header>
-        <CitiesPage />
+        <HomePage />
       </Layout>
     ),
   },
