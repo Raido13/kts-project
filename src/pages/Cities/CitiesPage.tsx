@@ -17,7 +17,7 @@ import { Slider } from '@shared/ui/Slider';
 export const CitiesPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
   const windowWidth = useWindowWidth();
-  const preInitializedQuery = new URLSearchParams(useLocation().search).get('query');
+  const preInitializedQuery = new URLSearchParams(useLocation().search).get('query') ?? undefined;
   const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
   const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -70,7 +70,12 @@ export const CitiesPage: FC = () => {
       </section>
       <div className={s.page__toolbar}>
         <div className={s.page__toolbar__container}>
-          <Search onSearchFilter={onSearchFilter} actionName={'Find now'} placeholder={'Search City'} />
+          <Search
+            initialQuery={preInitializedQuery}
+            onSearchFilter={onSearchFilter}
+            actionName={'Find now'}
+            placeholder={'Search City'}
+          />
           {dropdownOptions && dropdownValue && (
             <MultiDropdown
               options={dropdownOptions}

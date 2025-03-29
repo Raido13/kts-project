@@ -49,36 +49,35 @@ export const HomePage: FC = () => {
           Related Cities
         </Text>
         <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-          {relatedCities.map(({ id, country, name, is_capital, population, image }) => (
-            <li key={id} className={s['page__gallery-item']}>
-              {isLoading ? (
-                <Link to={`${CITIES}/${id}`} className={s.page__link}>
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, idx) => (
+                <li key={idx} className={s.page__city}>
                   <Card
-                    className={s.page__card}
-                    variant={'single'}
-                    image={''}
-                    title={''}
-                    subtitle={''}
-                    contentSlot={''}
+                    image=""
+                    title=""
+                    subtitle=""
+                    captionSlot=""
+                    contentSlot=""
                     actionSlot={<Button isSkeletonLoading>{''}</Button>}
                     isLoading
                   />
-                </Link>
-              ) : (
-                <Link to={`${CITIES}/${id}`} className={s.page__link}>
-                  <Card
-                    image={image}
-                    title={name}
-                    subtitle={`Population: ${population}`}
-                    captionSlot={`Country: ${country}`}
-                    contentSlot={is_capital && 'Capital'}
-                    actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
-                    isLoading={isLoading}
-                  />
-                </Link>
-              )}
-            </li>
-          ))}
+                </li>
+              ))
+            : relatedCities.map(({ id, country, name, is_capital, population, image }) => (
+                <li key={id} className={s['page__gallery-item']}>
+                  <Link to={`${CITIES}/${id}`} className={s.page__link}>
+                    <Card
+                      image={image}
+                      title={name}
+                      subtitle={`Population: ${population}`}
+                      captionSlot={`Country: ${country}`}
+                      contentSlot={is_capital && 'Capital'}
+                      actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
+                      isLoading={isLoading}
+                    />
+                  </Link>
+                </li>
+              ))}
         </ul>
       </section>
       <div className={s.page__suggest}>

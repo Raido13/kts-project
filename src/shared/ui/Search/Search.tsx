@@ -5,6 +5,8 @@ import s from './Search.module.scss';
 import cn from 'classnames';
 
 interface SearchProps extends HTMLAttributes<HTMLDivElement> {
+  /** Текст на кнопке */
+  initialQuery?: string;
   /** Функция фильтрации массива */
   onSearchFilter: (value: string) => void;
   /** Текст на кнопке */
@@ -15,8 +17,8 @@ interface SearchProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const Search: React.FC<SearchProps> = ({ onSearchFilter, actionName, placeholder, className }) => {
-  const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
+export const Search: React.FC<SearchProps> = ({ initialQuery, onSearchFilter, actionName, placeholder, className }) => {
+  const [localSearchQuery, setLocalSearchQuery] = useState<string>(initialQuery ?? '');
 
   const handleClearSearch = () => {
     onSearchFilter('');

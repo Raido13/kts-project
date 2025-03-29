@@ -49,36 +49,37 @@ export const CityPage: FC = () => {
           Related Cities
         </Text>
         <ul className={s.city__gallery}>
-          {relatedCities.map(({ id, country, name, is_capital, population, image }) => (
-            <li key={id} className={s['city__gallery-item']}>
-              {isLoading ? (
-                <Link to={`${CITIES}/${id}`} className={s.city__link}>
-                  <Card
-                    className={s.city__card}
-                    variant={'single'}
-                    image={''}
-                    title={''}
-                    subtitle={''}
-                    contentSlot={''}
-                    actionSlot={<Button isSkeletonLoading>{''}</Button>}
-                    isLoading
-                  />
-                </Link>
-              ) : (
-                <Link to={`${CITIES}/${id}`} className={s.city__link}>
-                  <Card
-                    image={image}
-                    title={name}
-                    subtitle={`Population: ${population}`}
-                    captionSlot={`Country: ${country}`}
-                    contentSlot={is_capital && 'Capital'}
-                    actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
-                    isLoading={isLoading}
-                  />
-                </Link>
-              )}
-            </li>
-          ))}
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, idx) => (
+                <li key={idx} className={s['city__gallery-item']}>
+                  <Link to={`${CITIES}/${cardId}`} className={s.city__link}>
+                    <Card
+                      image=""
+                      title=""
+                      subtitle=""
+                      captionSlot=""
+                      contentSlot=""
+                      actionSlot={<Button isSkeletonLoading>{''}</Button>}
+                      isLoading
+                    />
+                  </Link>
+                </li>
+              ))
+            : relatedCities.map(({ id, country, name, is_capital, population, image }) => (
+                <li key={id} className={s['city__gallery-item']}>
+                  <Link to={`${CITIES}/${id}`} className={s.city__link}>
+                    <Card
+                      image={image}
+                      title={name}
+                      subtitle={`Population: ${population}`}
+                      captionSlot={`Country: ${country}`}
+                      contentSlot={is_capital && 'Capital'}
+                      actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
+                      isLoading={isLoading}
+                    />
+                  </Link>
+                </li>
+              ))}
         </ul>
       </section>
     </div>
