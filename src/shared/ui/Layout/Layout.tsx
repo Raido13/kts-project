@@ -19,7 +19,6 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    console.log(pathname);
   }, [pathname]);
 
   return (

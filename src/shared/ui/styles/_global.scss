@@ -52,6 +52,12 @@
 
   --pagination-bg-active: var(--brand);
 
+  --slider-bg: rgba(243, 243, 243, 1);
+  --slider-fill: var(--brand);
+  --slider-mark: #afadb5;
+  --slider-thumb: var(--brand-active);
+
+
   --animation-skeleton-color: linear-gradient(
     90deg,
     rgba(80, 80, 80, 0.1) 0%,

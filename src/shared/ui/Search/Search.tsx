@@ -18,6 +18,11 @@ interface SearchProps extends HTMLAttributes<HTMLDivElement> {
 export const Search: React.FC<SearchProps> = ({ onSearchFilter, actionName, placeholder, className }) => {
   const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
 
+  const handleClearSearch = () => {
+    onSearchFilter('');
+    setLocalSearchQuery('');
+  };
+
   return (
     <div className={cn(s.search, className)}>
       <Input
@@ -28,7 +33,7 @@ export const Search: React.FC<SearchProps> = ({ onSearchFilter, actionName, plac
         className={s.search__input}
       />
       <Button onClick={() => onSearchFilter(localSearchQuery)}>{actionName}</Button>
-      <Button className={s.search__button} onClick={() => setLocalSearchQuery('')}>
+      <Button className={s.search__button} onClick={handleClearSearch}>
         {'Clear Search'}
       </Button>
     </div>

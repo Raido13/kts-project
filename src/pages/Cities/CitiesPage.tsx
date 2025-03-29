@@ -12,20 +12,28 @@ import cn from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import { CITIES } from '@shared/lib/constants/links';
 import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { Slider } from '@shared/ui/Slider';
 
 export const CitiesPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
-  const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const windowWidth = useWindowWidth();
-
   const preInitializedQuery = new URLSearchParams(useLocation().search).get('query');
   const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
+  const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [viewPerPage, setViewPerPage] = useState<number>(3);
 
   const getDropdownTitle = useCallback(
     (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
     []
   );
+
+  const dropdownOptions = useMemo(() => {
+    return cities.map((city) => ({
+      value: city.name,
+      key: city.id,
+    }));
+  }, [cities]);
 
   const filteredCities = useMemo(() => {
     const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
@@ -42,20 +50,12 @@ export const CitiesPage: FC = () => {
     setSearchQuery(value);
   };
 
-  const perPage = 6;
-  const startIdx = (currentPage - 1) * perPage;
+  const startIdx = (currentPage - 1) * viewPerPage;
 
   const paginatedCities = useMemo(
-    () => filteredCities.slice(startIdx, startIdx + perPage),
-    [filteredCities, startIdx, perPage]
+    () => filteredCities.slice(startIdx, startIdx + viewPerPage),
+    [filteredCities, startIdx, viewPerPage]
   );
-
-  const dropdownOptions = useMemo(() => {
-    return cities.map((city) => ({
-      value: city.name,
-      key: city.id,
-    }));
-  }, [cities]);
 
   return (
     <div className={s.page}>
@@ -80,6 +80,7 @@ export const CitiesPage: FC = () => {
               className={s.page__dropdown}
             />
           )}
+          <Slider min={3} max={30} value={viewPerPage} onChange={setViewPerPage} />
         </div>
         <div className={s.page__counter}>
           <Text tag={'p'} view={'title'} color={'primary'}>
@@ -94,7 +95,7 @@ export const CitiesPage: FC = () => {
       </div>
       <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
         {isLoading
-          ? Array.from({ length: perPage }).map((_, idx) => (
+          ? Array.from({ length: viewPerPage }).map((_, idx) => (
               <li key={idx} className={s.page__city}>
                 <Card
                   image=""
@@ -124,7 +125,7 @@ export const CitiesPage: FC = () => {
       </ul>
       <Pagination
         total={filteredCities.length}
-        perPage={perPage}
+        perPage={viewPerPage}
         currentPage={currentPage}
         onChange={(page) => setCurrentPage(page)}
         className={s.page__pagination}
