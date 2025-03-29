@@ -1,5 +1,3 @@
-import { CustomLink } from '@shared/ui/CustomLink';
-import ArrowPaginationIcon from '@shared/ui/Icon/ArrowPaginationIcon';
 import { FC, useMemo } from 'react';
 import s from './CityPage.module.scss';
 import Card from '@shared/ui/Card';
@@ -9,6 +7,7 @@ import { getShuffledItemsFromArray } from '@shared/lib/utils/utils';
 import { Link, useParams } from 'react-router-dom';
 import { CITIES } from '@shared/lib/constants/links';
 import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { BackButton } from '@shared/ui/BackButton';
 
 export const CityPage: FC = () => {
   const { cities, isLoading } = useCitiesContext();
@@ -19,9 +18,7 @@ export const CityPage: FC = () => {
 
   return (
     <div className={s.city}>
-      <div className={s.city__back}>
-        <CustomLink icon={<ArrowPaginationIcon width={35} height={35} color={'primary'} />} label={'Back'} path={'/'} />
-      </div>
+      <BackButton className={s.city__back}>Back</BackButton>
       {isLoading ? (
         <Card
           className={s.city__card}

@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomePage } from '../pages/Home';
 import { CitiesPage } from '../pages/Cities';
 import { CityPage } from '../pages/City';
+import { NotFoundPage } from '../pages/NotFoundPage';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
         <CityPage />
       </Layout>
     ),
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
 
