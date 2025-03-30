@@ -4,6 +4,10 @@ import Input from '@shared/ui/Input';
 import Button from '@shared/ui/Button';
 import s from './CreateCardModal.module.scss';
 import CheckBox from '@shared/ui/CheckBox';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '@shared/lib/config/firebase';
+import { useModalContext } from '@shared/lib/hooks';
+import { COLLECTION } from '@shared/lib/constants/constants';
 
 interface CardFormState {
   name: string;
@@ -14,6 +18,7 @@ interface CardFormState {
 }
 
 export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
+  const { closeModal } = useModalContext();
   const [card, setCard] = useState<CardFormState>({
     name: '',
     country: '',
@@ -24,6 +29,11 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const handleChange = (key: keyof CardFormState, value: string | boolean | number) => {
     setCard((prevState) => ({ ...prevState, [key]: value }));
+  };
+
+  const handleCreateCard = async () => {
+    await addDoc(collection(db, COLLECTION), { ...card, likes: 0 });
+    closeModal();
   };
 
   return (
@@ -62,7 +72,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <CheckBox checked={card.is_capital} onChange={(checked) => handleChange('is_capital', checked)} />
       </div>
       <div className={s.modal__action}>
-        <Button>Create</Button>
+        <Button onClick={handleCreateCard}>Create</Button>
       </div>
     </div>
   );

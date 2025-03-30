@@ -5,4 +5,5 @@ export interface City {
   population: number;
   is_capital: boolean;
   image: string;
+  likes: string[];
 }

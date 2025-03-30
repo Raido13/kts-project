@@ -7,12 +7,16 @@ import { getTextFromReactNode } from '@shared/lib/utils';
 import Button from '../Button';
 import { imageMock } from '@shared/lib/mock/cities';
 import { Image } from '../Image';
+import { Like } from '../Like';
+import { useUserContext } from '@shared/lib/hooks';
 
 export type CardProps = {
   /** Дополнительный classname */
   className?: string;
   /** Вариант отображения */
   variant?: cardVariant;
+  /** Id карточки */
+  cardId: string;
   /** URL изображения */
   image?: string;
   /** Слот над заголовком */
@@ -21,6 +25,12 @@ export type CardProps = {
   title: React.ReactNode;
   /** Описание карточки */
   subtitle: React.ReactNode;
+  /** Количество лайков карточки */
+  likesCount: number;
+  /** Установка лайка на карточку */
+  setLike: (id: string) => void;
+  /** Лайк от юзера */
+  liked: boolean;
   /** Содержимое карточки (футер/боковая часть), может быть пустым */
   contentSlot?: React.ReactNode;
   /** Клик на карточку */
@@ -34,10 +44,14 @@ export type CardProps = {
 const Card: React.FC<CardProps> = ({
   className,
   variant = 'preview',
+  cardId,
   image,
   captionSlot,
   title,
   subtitle,
+  likesCount,
+  setLike,
+  liked,
   contentSlot,
   onClick,
   actionSlot,
@@ -45,6 +59,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const imageText = getTextFromReactNode(title);
   const isPreview = variant === 'preview';
+  const { user } = useUserContext();
 
   return (
     <div onClick={onClick} className={cn(s.card, { [s['card--single']]: variant === 'single' }, className)}>
@@ -68,6 +83,7 @@ const Card: React.FC<CardProps> = ({
           <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
             {subtitle}
           </Text>
+          {!!user && <Like count={likesCount ?? 0} liked={liked} onClick={() => setLike(cardId)} />}
         </div>
         <div className={s['card__body-bottom']}>
           {contentSlot && (

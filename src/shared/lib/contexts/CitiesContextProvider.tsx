@@ -3,6 +3,7 @@ import { City } from '../types/city';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@shared/lib/config/firebase';
 import { CitiesContext } from './CitiesContext';
+import { COLLECTION } from '../constants/constants';
 
 export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [cities, setCities] = useState<City[]>([]);
@@ -11,7 +12,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     const fetchCities = async () => {
-      const snapshot = await getDocs(collection(db, 'cities'));
+      const snapshot = await getDocs(collection(db, COLLECTION));
       const citiesData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as City);
 
       const randomIdx = Math.floor(Math.random() * citiesData.length);
