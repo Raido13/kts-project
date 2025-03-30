@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ logoIcon, homePath, links, menuI
       </ul>
       <ul className={s.header__menu}>
         {menuItems.map((item, idx) => (
-          <li className={s.header__item} key={idx}>
+          <li className={s[`header__menu-item`]} key={idx}>
             <MenuButton {...item} />
           </li>
         ))}

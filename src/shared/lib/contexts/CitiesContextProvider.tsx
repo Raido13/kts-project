@@ -1,10 +1,10 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { City } from '../types/city';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@shared/lib/config/firebase';
 import { CitiesContext } from './CitiesContext';
 
-export const CitiesContextProvider = ({ children }: PropsWithChildren) => {
+export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [cities, setCities] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [randomCity, setRandomCity] = useState<City | null>(null);

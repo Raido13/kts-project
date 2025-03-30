@@ -3,16 +3,6 @@
   flex-direction: column;
   row-gap: 24px;
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    row-gap: 12px;
-
-    &_center {
-      text-align: center;
-    }
-  }
-
   &__action {
     display: flex;
     justify-content: center;

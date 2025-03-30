@@ -1,8 +1,8 @@
-import { FC, ReactNode, useState } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
 import { ModalType } from '../types/modal';
 import { ModalContext } from './ModalContext';
 
-export const ModalContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const ModalContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [modal, setModal] = useState<ModalType>(null);
 
   const openModal = (type: ModalType) => setModal(type);

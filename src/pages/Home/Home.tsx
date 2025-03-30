@@ -2,13 +2,13 @@ import { FC, useMemo } from 'react';
 import { Search } from '@shared/ui/Search';
 import Text from '@shared/ui/Text';
 import s from './Home.module.scss';
-import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { useCitiesContext } from '@shared/lib/hooks';
 import { getShuffledItemsFromArray } from '@shared/lib/utils/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import Card from '@shared/ui/Card';
 import { CITIES } from '@shared/lib/constants/links';
 import Button from '@shared/ui/Button';
-import { useWindowWidth } from '@shared/lib/hooks/useWindowWidth';
+import { useWindowWidth } from '@shared/lib/hooks';
 import cn from 'classnames';
 
 export const HomePage: FC = () => {

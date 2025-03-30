@@ -6,7 +6,7 @@ import Button from '@shared/ui/Button';
 import { getShuffledItemsFromArray } from '@shared/lib/utils/utils';
 import { Link, useParams } from 'react-router-dom';
 import { CITIES } from '@shared/lib/constants/links';
-import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { useCitiesContext } from '@shared/lib/hooks';
 import { BackButton } from '@shared/ui/BackButton';
 
 export const CityPage: FC = () => {

@@ -7,11 +7,11 @@ import { FC, useCallback, useMemo, useState } from 'react';
 import { Option } from '@shared/lib/types/options';
 import Button from '@shared/ui/Button';
 import s from './CitiesPage.module.scss';
-import { useWindowWidth } from '@shared/lib/hooks/useWindowWidth';
+import { useWindowWidth } from '@shared/lib/hooks';
 import cn from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import { CITIES } from '@shared/lib/constants/links';
-import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
+import { useCitiesContext } from '@shared/lib/hooks';
 import { Slider } from '@shared/ui/Slider';
 
 export const CitiesPage: FC = () => {
