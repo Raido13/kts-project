@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { CitiesContext } from '../contexts/CitiesContext';
+import { CitiesContext } from '../contexts';
 
 export const useCitiesContext = () => {
   const citiesContext = useContext(CitiesContext);
 
   if (!citiesContext) {
-    throw new Error('useCitiesContext must be used within CitiesProvider');
+    throw new Error('useCitiesContext must be used within CitiesContextProvider');
   }
 
   return citiesContext;

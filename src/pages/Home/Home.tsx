@@ -40,7 +40,7 @@ export const HomePage: FC = () => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Start your journey
         </Text>
-        <div className={s.page__toolbar__container}>
+        <div className={s['page__toolbar-container']}>
           <Search onSearchFilter={onSearchFilter} actionName={'Find now'} placeholder={'Search City'} />
         </div>
       </div>

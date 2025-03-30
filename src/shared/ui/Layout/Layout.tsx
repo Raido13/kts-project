@@ -5,6 +5,7 @@ import UserIcon from '../Icon/UserIcon';
 import { HOME, CITIES } from '@shared/lib/constants/links';
 import { useCitiesContext } from '@shared/lib/hooks/useCitiesContext';
 import { useLocation } from 'react-router-dom';
+import { useModalContext } from '@shared/lib/hooks/useModalContext';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -16,6 +17,7 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
   const { randomCity } = useCitiesContext();
   const { pathname } = useLocation();
+  const { openModal } = useModalContext();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -32,7 +34,7 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
             { label: 'Cities', path: CITIES },
             ...(randomCity ? [{ label: 'Good Choice', path: `${CITIES}/${randomCity.id}` }] : []),
           ]}
-          menuItems={[{ icon: <UserIcon />, path: HOME }]}
+          menuItems={[{ icon: <UserIcon />, onClick: () => openModal('sign-up') }]}
         />
       )}
       {children}

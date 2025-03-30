@@ -69,7 +69,7 @@ export const CitiesPage: FC = () => {
         </Text>
       </section>
       <div className={s.page__toolbar}>
-        <div className={s.page__toolbar__container}>
+        <div className={s['page__toolbar-container']}>
           <Search
             initialQuery={preInitializedQuery}
             onSearchFilter={onSearchFilter}

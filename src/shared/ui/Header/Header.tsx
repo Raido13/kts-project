@@ -2,6 +2,7 @@ import { HTMLAttributes } from 'react';
 import { CustomLink } from '../CustomLink';
 import s from './Header.module.scss';
 import cn from 'classnames';
+import { MenuButton } from '../MenuButton/MenuButton';
 
 export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   /** Логотип */
@@ -16,7 +17,7 @@ export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   /** Ссылки навигации */
   menuItems: {
     icon: React.ReactNode;
-    path: string;
+    onClick: () => void;
   }[];
   /** Дополнительный classname */
   className?: string;
@@ -36,9 +37,9 @@ export const Header: React.FC<HeaderProps> = ({ logoIcon, homePath, links, menuI
         ))}
       </ul>
       <ul className={s.header__menu}>
-        {menuItems.map((item) => (
-          <li className={s.header__item} key={item.path}>
-            <CustomLink {...item} />
+        {menuItems.map((item, idx) => (
+          <li className={s.header__item} key={idx}>
+            <MenuButton {...item} />
           </li>
         ))}
       </ul>

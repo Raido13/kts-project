@@ -1,8 +1,12 @@
-import { CitiesContextProvider } from '@shared/lib/contexts/';
+import { CitiesContextProvider, ModalContextProvider } from '@shared/lib/contexts/';
 import { AppRouter } from './appRouter';
+import { ModalRoot } from '@shared/ui/Modal';
 
 export const App = () => (
   <CitiesContextProvider>
-    <AppRouter />
+    <ModalContextProvider>
+      <AppRouter />
+      <ModalRoot />
+    </ModalContextProvider>
   </CitiesContextProvider>
 );
