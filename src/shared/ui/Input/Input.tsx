@@ -31,7 +31,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       >
         <input
           onChange={handleChange}
-          type="text"
           className={cn(s.input__field, disabled && s.input_disabled)}
           disabled={disabled}
           ref={ref ?? inputRef}

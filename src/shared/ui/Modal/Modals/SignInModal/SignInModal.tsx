@@ -1,26 +1,46 @@
-import { HTMLAttributes, FC, useState, MouseEvent, useCallback, useEffect } from 'react';
+import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/ui/Text';
-import Input from '@shared/ui/Input';
 import Button from '@shared/ui/Button';
 import s from './SignInModal.module.scss';
-import { useModalContext, useUserContext } from '@shared/lib/hooks';
+import { useForm, useModalContext, useUserContext } from '@shared/lib/hooks';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@shared/lib/config/firebase';
 import cn from 'classnames';
 import { removeExtraEventActions } from '@shared/lib/utils/utils';
+import { Form } from '@shared/ui/Form';
+import { FieldType } from '@shared/lib/types/field';
 
 export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const { recordUser } = useUserContext();
   const { openModal, closeModal } = useModalContext();
 
+  const fieldSet: FieldType[] = [
+    {
+      name: 'email',
+      label: 'Enter Email',
+      type: 'email',
+      value: '',
+      onChange: () => {},
+    },
+    {
+      name: 'password',
+      label: 'Enter Password',
+      type: 'password',
+      value: '',
+      onChange: () => {},
+    },
+  ];
+
+  const { formState, handleCheckboxChange, handleTextChange } = useForm(fieldSet);
+
   const handleSignIn = useCallback(async () => {
+    const email = formState.email as string;
+    const password = formState.password as string;
     if (!email || !password) return;
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     recordUser(userCredential.user);
     closeModal();
-  }, [recordUser, email, password, closeModal]);
+  }, [recordUser, formState.email, formState.password, closeModal]);
 
   const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -53,21 +73,13 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           <Button onClick={() => openModal('sign-up')}>Yes</Button>
         </div>
       </div>
-      <div className={s.modal__field}>
-        <Text view={'p-14'} tag={'p'}>
-          Enter Email
-        </Text>
-        <Input value={email} type={'email'} onChange={setEmail} />
-      </div>
-      <div className={s.modal__field}>
-        <Text view={'p-14'} tag={'p'}>
-          Enter Password
-        </Text>
-        <Input value={password} type={'password'} onChange={setPassword} />
-      </div>
-      <div className={s.modal__action}>
-        <Button onClick={handleButtonSignIn}>Sign In</Button>
-      </div>
+      <Form
+        fields={fieldSet}
+        formState={formState}
+        handleTextChange={handleTextChange}
+        handleCheckboxChange={handleCheckboxChange}
+        actionButton={<Button onClick={handleButtonSignIn}>Sign In</Button>}
+      />
     </div>
   );
 };
