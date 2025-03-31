@@ -7,6 +7,7 @@ import CheckBox from '@shared/ui/CheckBox';
 interface CommonFieldProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   label: string;
   name: string;
+  errors: Record<string, string | null>;
 }
 
 interface TextFieldProps extends CommonFieldProps {
@@ -23,13 +24,20 @@ interface CheckboxFieldProps extends CommonFieldProps {
 
 type FieldProps = TextFieldProps | CheckboxFieldProps;
 
-export const Field: FC<FieldProps> = ({ label, type, value, onChange, ...props }) => (
+export const Field: FC<FieldProps> = ({ label, type, value, onChange, errors, name, ...props }) => (
   <div className={s.field}>
     <Text view={'p-14'}>{label}</Text>
     {type === 'checkbox' ? (
       <CheckBox type={type} checked={value} onChange={onChange} {...props} />
     ) : (
-      <Input type={type} value={value} onChange={onChange} {...props} />
+      <>
+        <Input type={type} value={value} onChange={onChange} {...props} />
+        {errors[name] && (
+          <Text view={'p-14'} className={s.field__error}>
+            {errors[name]}
+          </Text>
+        )}
+      </>
     )}
   </div>
 );

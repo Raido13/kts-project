@@ -20,6 +20,10 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'text',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        if (!value) return 'Name is required';
+        return null;
+      },
     },
     {
       name: 'country',
@@ -27,6 +31,10 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'text',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        if (!value) return 'Country is required';
+        return null;
+      },
     },
     {
       name: 'population',
@@ -34,6 +42,11 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'text',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        if (!value) return 'Population is required';
+        if (!/^\d+$/.test(value as string)) return 'Population must be a valid number';
+        return null;
+      },
     },
     {
       name: 'image',
@@ -41,6 +54,19 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'text',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        const url = value as string;
+        if (!url) return 'Image URL is required';
+        try {
+          new URL(url);
+        } catch {
+          return 'Invalid URL format';
+        }
+        if (!/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url)) {
+          return 'URL must point to an image';
+        }
+        return null;
+      },
     },
     {
       name: 'is_capital',
@@ -51,12 +77,13 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     },
   ];
 
-  const { formState, handleCheckboxChange, handleTextChange } = useForm(fieldSet);
+  const { formState, handleCheckboxChange, handleTextChange, validate, errors } = useForm(fieldSet);
 
   const handleCreateCard = useCallback(async () => {
+    if (!validate()) return;
     await addDoc(collection(db, COLLECTION), { ...formState, likes: 0 });
     closeModal();
-  }, [formState, closeModal]);
+  }, [formState, closeModal, validate]);
 
   const handleButtonCreateCard = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -87,6 +114,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleTextChange={handleTextChange}
         handleCheckboxChange={handleCheckboxChange}
         actionButton={<Button onClick={handleButtonCreateCard}>Create</Button>}
+        errors={errors}
       />
     </div>
   );

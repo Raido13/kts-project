@@ -1,6 +1,7 @@
 type BaseField = {
   label: string;
   name: string;
+  validate?: (value: string | boolean) => string | null;
 };
 
 type TextField = BaseField & {

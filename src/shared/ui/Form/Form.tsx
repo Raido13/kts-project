@@ -9,9 +9,17 @@ interface FormProps extends HTMLAttributes<HTMLFormElement> {
   handleTextChange: (name: string) => (value: string) => void;
   fields: FieldType[];
   actionButton: ReactNode;
+  errors: Record<string, string | null>;
 }
 
-export const Form: FC<FormProps> = ({ formState, handleCheckboxChange, handleTextChange, fields, actionButton }) => (
+export const Form: FC<FormProps> = ({
+  formState,
+  handleCheckboxChange,
+  handleTextChange,
+  fields,
+  actionButton,
+  errors,
+}) => (
   <form className={s.form} onSubmit={(e) => e.preventDefault()}>
     {fields.map(({ name, type, ...field }) =>
       type === 'checkbox' ? (
@@ -22,6 +30,7 @@ export const Form: FC<FormProps> = ({ formState, handleCheckboxChange, handleTex
           value={formState[name] as boolean}
           type="checkbox"
           onChange={handleCheckboxChange(name)}
+          errors={errors}
         />
       ) : (
         <Field
@@ -31,6 +40,7 @@ export const Form: FC<FormProps> = ({ formState, handleCheckboxChange, handleTex
           value={formState[name] as string}
           type={type}
           onChange={handleTextChange(name)}
+          errors={errors}
         />
       )
     )}

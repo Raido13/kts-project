@@ -2,15 +2,4 @@
   display: flex;
   flex-direction: column;
   row-gap: 24px;
-
-  &__field {
-    display: flex;
-    flex-direction: column;
-    row-gap: 12px;
-  }
-
-  &__action {
-    display: flex;
-    justify-content: center;
-  }
 }

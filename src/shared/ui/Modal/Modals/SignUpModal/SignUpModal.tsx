@@ -20,6 +20,11 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'email',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        if (!value) return 'Email is required';
+        if (!(value as string).includes('@')) return 'Email must be valid';
+        return null;
+      },
     },
     {
       name: 'password',
@@ -27,19 +32,24 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       type: 'password',
       value: '',
       onChange: () => {},
+      validate: (value) => {
+        if (!value) return 'Password is required';
+        if ((value as string).length < 6) return 'Password must be at least 6 characters';
+        return null;
+      },
     },
   ];
 
-  const { formState, handleCheckboxChange, handleTextChange } = useForm(fieldSet);
+  const { formState, handleCheckboxChange, handleTextChange, validate, errors } = useForm(fieldSet);
 
   const handleSignUp = useCallback(async () => {
+    if (!validate()) return;
     const email = formState.email as string;
     const password = formState.password as string;
-    if (!email || !password) return;
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     recordUser(userCredential.user);
     closeModal();
-  }, [recordUser, formState.email, formState.password, closeModal]);
+  }, [recordUser, formState.email, formState.password, closeModal, validate]);
 
   const handleButtonSignUp = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -70,6 +80,7 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleTextChange={handleTextChange}
         handleCheckboxChange={handleCheckboxChange}
         actionButton={<Button onClick={handleButtonSignUp}>Sign Up</Button>}
+        errors={errors}
       />
     </div>
   );
