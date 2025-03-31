@@ -1,4 +1,4 @@
-import { HTMLAttributes, FC, useState } from 'react';
+import { HTMLAttributes, FC, useState, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/ui/Text';
 import Input from '@shared/ui/Input';
 import Button from '@shared/ui/Button';
@@ -7,6 +7,7 @@ import { useModalContext, useUserContext } from '@shared/lib/hooks';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@shared/lib/config/firebase';
 import cn from 'classnames';
+import { removeExtraEventActions } from '@shared/lib/utils/utils';
 
 export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const [email, setEmail] = useState<string>('');
@@ -14,11 +15,30 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { recordUser } = useUserContext();
   const { openModal, closeModal } = useModalContext();
 
-  const handleSignIn = async () => {
+  const handleSignIn = useCallback(async () => {
+    if (!email || !password) return;
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     recordUser(userCredential.user);
     closeModal();
+  }, [recordUser, email, password, closeModal]);
+
+  const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
+    removeExtraEventActions(e);
+    handleSignIn();
   };
+
+  const handleEnterDownSignIn = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key !== 'Enter') return;
+      handleSignIn();
+    },
+    [handleSignIn]
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEnterDownSignIn);
+    return () => window.removeEventListener('keydown', handleEnterDownSignIn);
+  }, [handleEnterDownSignIn]);
 
   return (
     <div className={s.modal}>
@@ -46,7 +66,7 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <Input value={password} type={'password'} onChange={setPassword} />
       </div>
       <div className={s.modal__action}>
-        <Button onClick={handleSignIn}>Sign In</Button>
+        <Button onClick={handleButtonSignIn}>Sign In</Button>
       </div>
     </div>
   );

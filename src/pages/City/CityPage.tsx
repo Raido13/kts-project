@@ -23,6 +23,7 @@ export const CityPage: FC = () => {
         <Card
           className={s.city__card}
           variant={'single'}
+          cardId={''}
           image={''}
           title={''}
           subtitle={''}
@@ -34,6 +35,7 @@ export const CityPage: FC = () => {
         <Card
           className={s.city__card}
           variant={'single'}
+          cardId={currentCard?.id ?? ''}
           image={currentCard?.image}
           title={currentCard?.name}
           subtitle={`Population: ${currentCard?.population}`}
@@ -51,6 +53,7 @@ export const CityPage: FC = () => {
                 <li key={idx} className={s['city__gallery-item']}>
                   <Link to={`${CITIES}/${cardId}`} className={s.city__link}>
                     <Card
+                      cardId=""
                       image=""
                       title=""
                       subtitle=""
@@ -66,6 +69,7 @@ export const CityPage: FC = () => {
                 <li key={id} className={s['city__gallery-item']}>
                   <Link to={`${CITIES}/${id}`} className={s.city__link}>
                     <Card
+                      cardId={id}
                       image={image}
                       title={name}
                       subtitle={`Population: ${population}`}

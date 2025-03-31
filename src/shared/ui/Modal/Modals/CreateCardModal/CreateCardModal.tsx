@@ -1,4 +1,4 @@
-import { HTMLAttributes, FC, useState } from 'react';
+import { HTMLAttributes, FC, useState, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/ui/Text';
 import Input from '@shared/ui/Input';
 import Button from '@shared/ui/Button';
@@ -8,6 +8,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@shared/lib/config/firebase';
 import { useModalContext } from '@shared/lib/hooks';
 import { COLLECTION } from '@shared/lib/constants/constants';
+import { removeExtraEventActions } from '@shared/lib/utils/utils';
 
 interface CardFormState {
   name: string;
@@ -31,10 +32,28 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     setCard((prevState) => ({ ...prevState, [key]: value }));
   };
 
-  const handleCreateCard = async () => {
+  const handleCreateCard = useCallback(async () => {
     await addDoc(collection(db, COLLECTION), { ...card, likes: 0 });
     closeModal();
+  }, [card, closeModal]);
+
+  const handleButtonCreateCard = (e: MouseEvent<HTMLButtonElement>) => {
+    removeExtraEventActions(e);
+    handleCreateCard();
   };
+
+  const handleEnterDownCreateCard = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key !== 'Enter') return;
+      handleCreateCard();
+    },
+    [handleCreateCard]
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEnterDownCreateCard);
+    return () => window.removeEventListener('keydown', handleEnterDownCreateCard);
+  }, [handleEnterDownCreateCard]);
 
   return (
     <div className={s.modal}>
@@ -72,7 +91,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <CheckBox checked={card.is_capital} onChange={(checked) => handleChange('is_capital', checked)} />
       </div>
       <div className={s.modal__action}>
-        <Button onClick={handleCreateCard}>Create</Button>
+        <Button onClick={handleButtonCreateCard}>Create</Button>
       </div>
     </div>
   );

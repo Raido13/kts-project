@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { Search } from '@shared/ui/Search';
 import Text from '@shared/ui/Text';
-import s from './Home.module.scss';
+import s from './HomePage.module.scss';
 import { useCitiesContext } from '@shared/lib/hooks';
 import { getShuffledItemsFromArray } from '@shared/lib/utils/utils';
 import { Link, useNavigate } from 'react-router-dom';
@@ -53,6 +53,7 @@ export const HomePage: FC = () => {
             ? Array.from({ length: 6 }).map((_, idx) => (
                 <li key={idx} className={s.page__city}>
                   <Card
+                    cardId=""
                     image=""
                     title=""
                     subtitle=""
@@ -67,6 +68,7 @@ export const HomePage: FC = () => {
                 <li key={id} className={s['page__gallery-item']}>
                   <Link to={`${CITIES}/${id}`} className={s.page__link}>
                     <Card
+                      cardId={id}
                       image={image}
                       title={name}
                       subtitle={`Population: ${population}`}

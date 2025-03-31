@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { City } from '../types/city';
 
 export const getTextFromReactNode = (node: React.ReactNode): string => {
@@ -18,3 +18,8 @@ export const getShuffledItemsFromArray = (array: City[], count: number, excludeI
     .filter((item) => item.id !== excludeId)
     .sort(() => 0.5 - Math.random())
     .slice(0, count);
+
+export const removeExtraEventActions = (e: MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault?.();
+  e.stopPropagation?.();
+};

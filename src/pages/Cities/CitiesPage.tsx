@@ -103,6 +103,7 @@ export const CitiesPage: FC = () => {
           ? Array.from({ length: viewPerPage }).map((_, idx) => (
               <li key={idx} className={s.page__city}>
                 <Card
+                  cardId=""
                   image=""
                   title=""
                   subtitle=""
@@ -117,6 +118,7 @@ export const CitiesPage: FC = () => {
               <li key={id} className={s.page__city}>
                 <Link to={`${CITIES}/${id}`} className={s.page__link}>
                   <Card
+                    cardId={id}
                     image={image}
                     title={name}
                     subtitle={`Population: ${population}`}

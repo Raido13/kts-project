@@ -1,14 +1,16 @@
-import { HTMLAttributes, FC } from 'react';
+import { HTMLAttributes, FC, MouseEvent } from 'react';
 import Text from '@shared/ui/Text';
 import Button from '@shared/ui/Button';
 import s from './LogoutModal.module.scss';
 import { useModalContext, useUserContext } from '@shared/lib/hooks';
+import { removeExtraEventActions } from '@shared/lib/utils/utils';
 
 export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { recordUser } = useUserContext();
   const { closeModal } = useModalContext();
 
-  const handleLogout = () => {
+  const handleLogout = (e: MouseEvent<HTMLButtonElement>) => {
+    removeExtraEventActions(e);
     recordUser(null);
     closeModal();
   };
