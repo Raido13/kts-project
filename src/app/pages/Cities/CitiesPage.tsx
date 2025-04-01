@@ -2,17 +2,18 @@ import Text from '@shared/components/Text';
 import { Search } from '@shared/components/Search';
 import { Pagination } from '@shared/components/Pagination';
 import MultiDropdown from '@shared/components/MultiDropdown';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Option } from '@shared/types/options';
 import Button from '@shared/components/Button';
 import s from './CitiesPage.module.scss';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { useLocation } from 'react-router-dom';
-import { useCitiesContext } from '@shared/hooks';
 import { Slider } from '@shared/components/Slider';
 import { City } from '@shared/types/city';
 import { ListCard } from '@shared/components/ListCard';
+import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { fetchCards } from '@shared/services/cities/fetchCards';
 
 const CitiesPageHeader: FC = () => (
   <section className={s.page__description}>
@@ -35,7 +36,7 @@ interface CitiesPageActionsProps {
   getDropdownTitle: (value: Option[]) => string;
   viewPerPage: number;
   setViewPerPage: (value: number) => void;
-  filteredCities: City[];
+  cities: City[];
 }
 
 const CitiesPageActions: FC<CitiesPageActionsProps> = ({
@@ -47,7 +48,7 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
   getDropdownTitle,
   viewPerPage,
   setViewPerPage,
-  filteredCities,
+  cities,
 }) => (
   <div className={s.page__toolbar}>
     <div className={s['page__toolbar-container']}>
@@ -72,9 +73,9 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
       <Text tag={'p'} view={'title'} color={'primary'}>
         Total Cities
       </Text>
-      {filteredCities.length && (
+      {cities.length && (
         <Text tag={'p'} view={'p-20'} color={'accent'} weight={'bold'}>
-          {filteredCities.length}
+          {cities.length}
         </Text>
       )}
     </div>
@@ -85,21 +86,26 @@ interface CitiesPageListProps {
   windowWidth: number;
   isLoading: boolean;
   viewPerPage: number;
-  paginatedCities: City[];
+  cities: City[];
 }
 
-const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, viewPerPage, paginatedCities }) => (
+const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, viewPerPage, cities }) => (
   <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
     {isLoading
       ? Array.from({ length: viewPerPage }).map((_, idx) => <ListCard isLoading key={idx} />)
-      : paginatedCities.map(({ id, ...card }) => (
+      : cities.map(({ id, ...card }) => (
           <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} key={id} />
         ))}
   </ul>
 );
 
 export const CitiesPage: FC = () => {
-  const { cities, isLoading } = useCitiesContext();
+  const [cities, setCities] = useState<City[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [lastDocs, setLastDocs] = useState<QueryDocumentSnapshot<DocumentData>[]>([]);
+  const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
+
   const windowWidth = useWindowWidth();
   const preInitializedQuery = new URLSearchParams(useLocation().search).get('query') ?? undefined;
   const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
@@ -112,34 +118,54 @@ export const CitiesPage: FC = () => {
     []
   );
 
-  const dropdownOptions = useMemo(() => {
-    return cities.map((city) => ({
-      value: city.name,
-      key: city.id,
-    }));
-  }, [cities]);
-
-  const filteredCities = useMemo(() => {
-    const selectedNames = dropdownValue.map(({ value }) => value.toLowerCase());
-
-    return cities.filter(({ name }) => {
-      const matchesDropdown = selectedNames.length === 0 || selectedNames.includes(name.toLowerCase());
-      const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return matchesDropdown && matchesSearch;
-    });
-  }, [dropdownValue, cities, searchQuery]);
-
   const onSearchFilter = (value: string) => {
     setSearchQuery(value);
+    setCurrentPage(1);
+    setLastDocs([]);
   };
 
-  const startIdx = (currentPage - 1) * viewPerPage;
+  const handlePagination = useCallback(
+    async (page: number) => {
+      setIsLoading(true);
+      setCurrentPage(page);
 
-  const paginatedCities = useMemo(
-    () => filteredCities.slice(startIdx, startIdx + viewPerPage),
-    [filteredCities, startIdx, viewPerPage]
+      const selectedNames = dropdownValue.map((d) => d.value);
+      const targetCursor = page === 1 ? null : lastDocs[page - 2];
+
+      fetchCards({
+        mode: 'paginate',
+        perPage: viewPerPage,
+        searchQuery,
+        filters: selectedNames,
+        lastDoc: targetCursor,
+      })
+        .then((res) => {
+          if (typeof res !== 'string' && 'data' in res) {
+            setCities(res.data);
+            setTotalCount(res.total);
+
+            if (page === lastDocs.length + 1) {
+              setLastDocs([...lastDocs, res.lastDoc]);
+            }
+          }
+        })
+        .finally(() => setIsLoading(false));
+    },
+    [viewPerPage, searchQuery, dropdownValue, lastDocs]
   );
+
+  useEffect(() => {
+    const fetchDropdownOptions = async () => {
+      const res = (await fetchCards({ mode: 'filter' })) as Option[];
+      if (Array.isArray(res)) setDropdownOptions(res);
+    };
+
+    fetchDropdownOptions();
+  }, []);
+
+  useEffect(() => {
+    handlePagination(currentPage);
+  }, [currentPage, handlePagination]);
 
   return (
     <div className={s.page}>
@@ -153,19 +179,14 @@ export const CitiesPage: FC = () => {
         getDropdownTitle={getDropdownTitle}
         viewPerPage={viewPerPage}
         setViewPerPage={setViewPerPage}
-        filteredCities={filteredCities}
+        cities={cities}
       />
-      <CitiesPageList
-        windowWidth={windowWidth}
-        isLoading={isLoading}
-        viewPerPage={viewPerPage}
-        paginatedCities={paginatedCities}
-      />
+      <CitiesPageList windowWidth={windowWidth} isLoading={isLoading} viewPerPage={viewPerPage} cities={cities} />
       <Pagination
-        total={filteredCities.length}
+        total={totalCount}
         perPage={viewPerPage}
         currentPage={currentPage}
-        onChange={(page) => setCurrentPage(page)}
+        onChange={handlePagination}
         className={s.page__pagination}
       />
     </div>

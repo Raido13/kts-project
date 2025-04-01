@@ -21,7 +21,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const fetchWithRetry = async (retries = 3, delay = 2000) => {
       if (isCancelled) return;
 
-      const res = await fetchCards();
+      const res = (await fetchCards({ mode: 'all' })) as City[];
 
       if (typeof res === 'string') {
         if (retries > 0) {
