@@ -3,15 +3,17 @@ import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './SignInModal.module.scss';
 import { useForm, useModalContext, useUserContext } from '@shared/hooks';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@shared/config/firebase';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { Form } from '@shared/components/Form';
 import { FieldType } from '@shared/types/field';
+import { signIn } from '@shared/services/auth/signIn';
+import { useRequestError } from '@shared/hooks/useRequestError';
+import { User } from 'firebase/auth';
 
 export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { recordUser } = useUserContext();
   const { openModal, closeModal } = useModalContext();
+  const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = [
     {
@@ -46,10 +48,17 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     if (!validate()) return;
     const email = formState.email as string;
     const password = formState.password as string;
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    recordUser(userCredential.user);
+    const userCredential = await signIn({ email, password });
+
+    if (typeof userCredential === 'string') {
+      setRequestError(userCredential);
+      return;
+    }
+
+    recordUser(userCredential as User);
+    clearError();
     closeModal();
-  }, [recordUser, formState.email, formState.password, closeModal, validate]);
+  }, [recordUser, formState.email, formState.password, closeModal, validate, clearError, setRequestError]);
 
   const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -89,6 +98,7 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleCheckboxChange={handleCheckboxChange}
         actionButton={<Button onClick={handleButtonSignIn}>Sign In</Button>}
         errors={errors}
+        requestError={requestError}
       />
     </div>
   );

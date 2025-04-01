@@ -2,16 +2,17 @@ import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './CreateCardModal.module.scss';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '@shared/config/firebase';
 import { useForm, useModalContext } from '@shared/hooks';
-import { COLLECTION } from '@shared/constants/constants';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
+import { useRequestError } from '@shared/hooks/useRequestError';
+import { createCard } from '@shared/services/cities/createCard';
+import { City } from '@shared/types/city';
 
 export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { closeModal } = useModalContext();
+  const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = [
     {
@@ -81,9 +82,22 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const handleCreateCard = useCallback(async () => {
     if (!validate()) return;
-    await addDoc(collection(db, COLLECTION), { ...formState, likes: 0 });
+
+    const newCard = {
+      ...formState,
+      likes: [] as string[],
+    } as City;
+
+    const creatingCard = await createCard(newCard);
+
+    if (typeof creatingCard === 'string') {
+      setRequestError(creatingCard);
+      return;
+    }
+
+    clearError();
     closeModal();
-  }, [formState, closeModal, validate]);
+  }, [formState, closeModal, setRequestError, clearError, validate]);
 
   const handleButtonCreateCard = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -115,6 +129,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleCheckboxChange={handleCheckboxChange}
         actionButton={<Button onClick={handleButtonCreateCard}>Create</Button>}
         errors={errors}
+        requestError={requestError}
       />
     </div>
   );

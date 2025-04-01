@@ -2,6 +2,7 @@ import { FC, HTMLAttributes, ReactNode } from 'react';
 import { Field } from '@shared/components/Field';
 import { FieldType } from '@shared/types/field';
 import s from './Form.module.scss';
+import Text from '@shared/components/Text';
 
 interface FormProps extends HTMLAttributes<HTMLFormElement> {
   formState: Record<string, string | boolean>;
@@ -10,6 +11,7 @@ interface FormProps extends HTMLAttributes<HTMLFormElement> {
   fields: FieldType[];
   actionButton: ReactNode;
   errors: Record<string, string | null>;
+  requestError: string | null;
 }
 
 export const Form: FC<FormProps> = ({
@@ -19,6 +21,7 @@ export const Form: FC<FormProps> = ({
   fields,
   actionButton,
   errors,
+  requestError,
 }) => (
   <form className={s.form} onSubmit={(e) => e.preventDefault()}>
     {fields.map(({ name, type, ...field }) =>
@@ -43,6 +46,11 @@ export const Form: FC<FormProps> = ({
           errors={errors}
         />
       )
+    )}
+    {requestError && (
+      <Text view={'p-20'} className={s.form__error}>
+        {requestError}
+      </Text>
     )}
     <div className={s.form__action}>{actionButton}</div>
   </form>

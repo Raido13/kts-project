@@ -2,16 +2,18 @@ import { HTMLAttributes, FC, MouseEvent, useEffect, useCallback } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './SignUpModal.module.scss';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@shared/config/firebase';
+import { User } from 'firebase/auth';
 import { useForm, useModalContext, useUserContext } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
+import { useRequestError } from '@shared/hooks/useRequestError';
+import { signUp } from '@shared/services/auth/signUp';
 
 export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { recordUser } = useUserContext();
   const { closeModal } = useModalContext();
+  const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = [
     {
@@ -46,10 +48,18 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     if (!validate()) return;
     const email = formState.email as string;
     const password = formState.password as string;
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    recordUser(userCredential.user);
+    const userCredential = await signUp({ email, password });
+
+    if (typeof userCredential === 'string') {
+      setRequestError(userCredential);
+      return;
+    }
+
+    recordUser(userCredential as User);
+    clearError();
+
     closeModal();
-  }, [recordUser, formState.email, formState.password, closeModal, validate]);
+  }, [recordUser, formState.email, formState.password, closeModal, validate, clearError, setRequestError]);
 
   const handleButtonSignUp = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -81,6 +91,7 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleCheckboxChange={handleCheckboxChange}
         actionButton={<Button onClick={handleButtonSignUp}>Sign Up</Button>}
         errors={errors}
+        requestError={requestError}
       />
     </div>
   );

@@ -7,6 +7,8 @@ import { HOME, CITIES } from '@shared/constants/links';
 import { useCitiesContext, useUserContext } from '@shared/hooks';
 import { useLocation } from 'react-router-dom';
 import { useModalContext } from '@shared/hooks';
+import Text from '@shared/components/Text';
+import s from './Layout.module.scss';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -16,14 +18,26 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
-  const { randomCity } = useCitiesContext();
+  const { randomCity, cardsRequestError } = useCitiesContext();
   const { pathname } = useLocation();
   const { openModal } = useModalContext();
   const { user } = useUserContext();
-
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [pathname]);
+
+  if (cardsRequestError) {
+    return (
+      <div className={s.error}>
+        <Text view={'title'} tag={'p'} weight={'bold'} className={s.error__title}>
+          Request Error
+        </Text>
+        <Text view={'p-20'} tag={'p'} weight={'bold'} color={'secondary'} className={s.error__description}>
+          Please try again later
+        </Text>
+      </div>
+    );
+  }
 
   const nextAuthModal = user === null ? 'sign-in' : 'log-out';
 
