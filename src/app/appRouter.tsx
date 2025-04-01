@@ -1,10 +1,10 @@
-import { routes } from '@shared/lib/config/routes';
-import { Layout } from '@shared/ui/Layout/Layout';
+import { routes } from '@shared/config/routes';
+import { Layout } from '@shared/components/Layout';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage } from '../pages/Home';
-import { CitiesPage } from '../pages/Cities';
-import { CityPage } from '../pages/City';
-import { NotFoundPage } from '../pages/NotFoundPage';
+import { HomePage } from '@shared/app/pages/Home';
+import { CitiesPage } from '@shared/app/pages/Cities';
+import { CityPage } from '@shared/app/pages/City';
+import { NotFoundPage } from '@shared/app/pages/NotFound';
 
 const router = createBrowserRouter([
   {

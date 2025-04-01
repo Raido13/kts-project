@@ -1,0 +1,17 @@
+@use '@shared/styles/animations';
+
+.image {
+  &__preparation {
+    width: 360px;
+    height: 360px;
+    border-radius: 2px;
+    background: var(--animation-skeleton-color);
+    background-size: 200% 100%;
+    animation: pulse 1.5s infinite;
+
+    &_single {
+      width: inherit;
+      height: 600px;
+    }
+  }
+}
