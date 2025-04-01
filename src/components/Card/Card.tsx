@@ -51,7 +51,7 @@ const Card: React.FC<CardProps> = ({
   const isPreview = variant === 'preview';
 
   return (
-    <div onClick={onClick} className={cn(s.card, { [s['card--single']]: variant === 'single' }, className)}>
+    <div onClick={onClick} className={cn(s.card, { [s['card--single']]: !isPreview }, className)}>
       <Image
         isLoading={isLoading}
         src={image ?? imageMock}
@@ -61,7 +61,7 @@ const Card: React.FC<CardProps> = ({
       />
       <div className={s.card__body}>
         <div className={s['card__body-top']}>
-          {!isPreview && captionSlot && (
+          {captionSlot && (
             <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
               {captionSlot}
             </Text>
