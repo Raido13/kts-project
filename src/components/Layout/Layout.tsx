@@ -50,13 +50,14 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
           links={[
             { label: 'Home', path: HOME },
             { label: 'Cities', path: CITIES },
-            ...(randomCity ? [{ label: 'Good Choice', path: `${CITIES}/${randomCity.id}` }] : []),
+            { label: 'Good Choice', path: randomCity ? `${CITIES}/${randomCity.id}` : '' },
           ]}
           menuItems={[
             { icon: <UserIcon />, onClick: () => openModal(nextAuthModal) },
-            ...(user
-              ? [{ icon: <PlusIcon height={24} width={24} color={'primary'} />, onClick: () => openModal('add-card') }]
-              : []),
+            {
+              icon: <PlusIcon height={24} width={24} color={'primary'} />,
+              onClick: () => openModal(!user ? 'sign-in' : 'add-card'),
+            },
           ]}
         />
       )}

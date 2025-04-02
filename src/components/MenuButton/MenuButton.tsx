@@ -4,10 +4,17 @@ import s from './MenuButton.module.scss';
 interface MenuButtonProps extends HTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   onClick: () => void;
+  onClose: () => void;
 }
 
-export const MenuButton: FC<MenuButtonProps> = ({ icon, onClick }) => (
-  <button className={s.button} onClick={onClick}>
+export const MenuButton: FC<MenuButtonProps> = ({ icon, onClick, onClose }) => (
+  <button
+    className={s.button}
+    onClick={() => {
+      onClick();
+      onClose();
+    }}
+  >
     {icon}
   </button>
 );

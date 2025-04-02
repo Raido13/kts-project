@@ -51,7 +51,7 @@ const Card: React.FC<CardProps> = ({
   const isPreview = variant === 'preview';
 
   return (
-    <div onClick={onClick} className={cn(s.card, { [s['card--single']]: !isPreview }, className)}>
+    <div onClick={onClick} className={cn(s.card, { [s.card_single]: !isPreview }, className)}>
       <Image
         isLoading={isLoading}
         src={image ?? imageMock}

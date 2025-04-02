@@ -2,16 +2,16 @@
 
 .image {
   &__preparation {
-    width: 360px;
-    height: 360px;
+    max-width: 360px;
+    max-height: 360px;
     border-radius: 2px;
     background: var(--animation-skeleton-color);
     background-size: 200% 100%;
     animation: pulse 1.5s infinite;
 
     &_single {
-      width: inherit;
-      height: 600px;
+      max-width: inherit;
+      max-height: 600px;
     }
   }
 }

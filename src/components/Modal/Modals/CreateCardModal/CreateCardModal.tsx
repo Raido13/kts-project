@@ -120,7 +120,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   return (
     <div className={s.modal}>
       <Text view={'title'} weight={'bold'} tag={'p'}>
-        Create City card
+        Create Card
       </Text>
       <Form
         fields={fieldSet}

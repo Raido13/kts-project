@@ -12,9 +12,11 @@ export interface LinkProps {
   icon?: React.ReactNode;
   /** Дополнительный classname */
   className?: string;
+  /** Колбек закрытия бургера */
+  onClose?: () => void;
 }
 
-export const CustomLink: React.FC<LinkProps> = ({ path, label, icon, className }) => (
+export const CustomLink: React.FC<LinkProps> = ({ path, label, icon, className, onClose }) => (
   <NavLink to={path} end className={s.link}>
     {({ isActive }) => (
       <div
@@ -24,6 +26,7 @@ export const CustomLink: React.FC<LinkProps> = ({ path, label, icon, className }
           label && isActive && s.link__container_active,
           className
         )}
+        onClick={onClose}
       >
         {icon}
         {label && (

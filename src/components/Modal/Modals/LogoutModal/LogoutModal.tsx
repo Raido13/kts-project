@@ -31,7 +31,7 @@ export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   return (
     <div className={s.modal}>
-      <Text view={'title'} weight={'bold'} tag={'p'}>
+      <Text className={s.modal__title} view={'title'} weight={'bold'} tag={'p'}>
         Are you want to LogOff?
       </Text>
       {requestError && (

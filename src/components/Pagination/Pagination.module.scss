@@ -27,6 +27,10 @@
     height: 42px;
     cursor: pointer;
 
+    @media (max-width: 400px) {
+      display: none;
+    }
+
     &_active {
       background-color: var(--pagination-bg-active);
     }

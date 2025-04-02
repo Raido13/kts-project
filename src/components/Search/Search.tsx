@@ -34,8 +34,10 @@ export const Search: React.FC<SearchProps> = ({ initialQuery, onSearchFilter, ac
         placeholder={placeholder}
         className={s.search__input}
       />
-      <Button onClick={() => onSearchFilter(localSearchQuery)}>{actionName}</Button>
-      <Button className={s.search__button} onClick={handleClearSearch}>
+      <Button className={s.search__button} onClick={() => onSearchFilter(localSearchQuery)}>
+        {actionName}
+      </Button>
+      <Button className={cn(s.search__button, s[`search__button-second`])} onClick={handleClearSearch}>
         {'Clear Search'}
       </Button>
     </div>

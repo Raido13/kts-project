@@ -4,6 +4,10 @@
   grid-template-rows: auto 50px auto 35px auto 65px auto;
   background-color: var(--page-bg);
 
+  @media (max-width: 768px) {
+    padding: 50px 10px;
+  }
+
   &__description {
     grid-row: 1;
     margin: 0 auto;
@@ -38,7 +42,7 @@
   &__gallery {
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, 360px);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
     max-width: calc(360px * 3 + 80px * 2);
     margin: 0 auto;
     column-gap: 80px;

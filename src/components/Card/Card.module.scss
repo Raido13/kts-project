@@ -5,7 +5,6 @@
 
   &__image {
     background-color: var(--card-image-bg);
-    width: 360px;
     object-fit: cover;
   }
 
@@ -57,14 +56,23 @@
     cursor: pointer;
   }
 
-  &--single {
+  &_single {
     flex-direction: inherit;
     column-gap: 48px;
     width: 100%;
     max-width: inherit;
 
+    @media (max-width: 830px) {
+      flex-direction: column;
+      column-gap: 0;
+    }
+
     .card__image {
       width: 50%;
+
+      @media (max-width: 830px) {
+        width: 100%;
+      }
     }
 
     .card__body {
@@ -72,6 +80,12 @@
       row-gap: 48px;
       width: 50%;
       background-color: transparent;
+
+      @media (max-width: 830px) {
+        padding: 24px 10px 0;
+        width: 100%;
+        row-gap: 24px;
+      }
 
       &-top {
         row-gap: 24px;
@@ -83,6 +97,11 @@
         row-gap: 48px;
         justify-content: unset;
         align-items: unset;
+
+        @media (max-width: 830px) {
+          padding-top: 0;
+          row-gap: 24px;
+        }
       }
     }
 

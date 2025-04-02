@@ -2,20 +2,32 @@
   display: flex;
   column-gap: 24px;
 
+  @media (max-width: 550px) {
+    flex-direction: column;
+    row-gap: 24px;
+    column-gap: 0;
+  }
+
   &__input {
     flex: 1;
   }
 
   &__button {
-    background-color: transparent;
-    border-color: var(--card-button-border);
+    &-second {
+      background-color: transparent;
+      border-color: var(--card-button-border);
 
-    & > p {
-      color: var(--button-secondary-text);
+      & > p {
+        color: var(--button-secondary-text);
+      }
+
+      &:not(:disabled):hover {
+        background-color: transparent;
+      }
     }
 
-    &:not(:disabled):hover {
-      background-color: transparent;
+    @media (max-width: 480px) {
+      justify-content: center;
     }
   }
 }
