@@ -126,18 +126,13 @@ export const CitiesPage: FC = () => {
     setLastDoc(null);
   }, []);
 
-  const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value.toLowerCase()), [dropdownValue]);
-
   const onSearchFilter = useCallback((value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
   }, []);
 
-  const startIdx = (currentPage - 1) * viewPerPage;
-  const paginatedCities = useMemo(
-    () => cities.slice(startIdx, startIdx + viewPerPage),
-    [cities, startIdx, viewPerPage]
-  );
+  const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value.toLowerCase()), [dropdownValue]);
+  const currentLastDoc = useMemo(() => (currentPage > 1 ? lastDoc : null), [currentPage, lastDoc]);
 
   useEffect(() => {
     fetchCards({ mode: 'options' }).then((res) => {
@@ -153,7 +148,7 @@ export const CitiesPage: FC = () => {
       perPage: viewPerPage,
       searchQuery,
       filters: selectedNames,
-      lastDoc: currentPage > 1 ? lastDoc : null,
+      lastDoc: currentLastDoc,
     })
       .then((res) => {
         if (typeof res !== 'string' && 'data' in res) {
@@ -166,13 +161,14 @@ export const CitiesPage: FC = () => {
           if (res.lastRequest === 'search' && selectedNames.length) {
             cities = cities.filter((city) => selectedNames.includes(city.name.toLowerCase()));
           }
+
           setLastDoc(res.lastDoc);
           setCities(cities);
           setTotalCities(res.total);
         }
       })
       .finally(() => setIsLoading(false));
-  }, [dropdownValue, searchQuery, viewPerPage, lastDoc, selectedNames, currentPage]);
+  }, [dropdownValue, searchQuery, viewPerPage, currentLastDoc, selectedNames, currentPage]);
 
   return (
     <div className={s.page}>
@@ -193,7 +189,7 @@ export const CitiesPage: FC = () => {
         windowWidth={windowWidth}
         isLoading={isLoading}
         viewPerPage={viewPerPage}
-        paginatedCities={paginatedCities}
+        paginatedCities={cities}
       />
       <Pagination
         total={totalCities}
