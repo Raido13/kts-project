@@ -2,7 +2,7 @@ import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './CreateCardModal.module.scss';
-import { useForm, useModalContext } from '@shared/hooks';
+import { useCitiesContext, useForm, useModalContext } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
@@ -11,6 +11,7 @@ import { createCard } from '@shared/services/cities/createCard';
 import { City } from '@shared/types/city';
 
 export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
+  const { fetchWithRetry } = useCitiesContext();
   const { closeModal } = useModalContext();
   const { requestError, setRequestError, clearError } = useRequestError();
 
@@ -78,10 +79,12 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     },
   ];
 
-  const { formState, handleCheckboxChange, handleTextChange, validate, errors } = useForm(fieldSet);
+  const { formState, handleCheckboxChange, handleTextChange, validate, errors, isSubmitting, setIsSubmitting } =
+    useForm(fieldSet);
 
   const handleCreateCard = useCallback(async () => {
     if (!validate()) return;
+    setIsSubmitting(true);
 
     const newCard = {
       ...formState,
@@ -92,12 +95,16 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
     if (typeof creatingCard === 'string') {
       setRequestError(creatingCard);
+      setIsSubmitting(false);
       return;
     }
 
+    fetchWithRetry();
+
+    setIsSubmitting(false);
     clearError();
     closeModal();
-  }, [formState, closeModal, setRequestError, clearError, validate]);
+  }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate, fetchWithRetry]);
 
   const handleButtonCreateCard = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -106,10 +113,10 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const handleEnterDownCreateCard = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key !== 'Enter') return;
+      if (e.key !== 'Enter' || isSubmitting) return;
       handleCreateCard();
     },
-    [handleCreateCard]
+    [handleCreateCard, isSubmitting]
   );
 
   useEffect(() => {
@@ -127,7 +134,11 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         formState={formState}
         handleTextChange={handleTextChange}
         handleCheckboxChange={handleCheckboxChange}
-        actionButton={<Button onClick={handleButtonCreateCard}>Create</Button>}
+        actionButton={
+          <Button disabled={isSubmitting} onClick={handleButtonCreateCard}>
+            {isSubmitting ? 'Creating' : 'Create'}
+          </Button>
+        }
         errors={errors}
         requestError={requestError}
       />

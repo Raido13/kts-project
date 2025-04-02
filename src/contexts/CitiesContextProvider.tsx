@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { City } from '@shared/types/city';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@shared/config/firebase';
@@ -14,13 +14,8 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [citiesLikes, setCitiesLikes] = useState<Record<string, string[]>>({});
   const { requestError, setRequestError, clearError } = useRequestError();
 
-  useEffect(() => {
-    let isCancelled = false;
-    setIsLoading(true);
-
-    const fetchWithRetry = async (retries = 3, delay = 2000) => {
-      if (isCancelled) return;
-
+  const fetchWithRetry = useCallback(
+    async (retries = 3, delay = 2000) => {
       const res = (await fetchCards({ mode: 'all' })) as City[];
 
       if (typeof res === 'string') {
@@ -32,8 +27,6 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
         }
         return;
       }
-
-      if (isCancelled) return;
 
       clearError();
       setCities(res);
@@ -49,14 +42,22 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
       setCitiesLikes(likesMap);
 
       setIsLoading(false);
-    };
+    },
+    [clearError, setRequestError]
+  );
 
-    fetchWithRetry();
+  useEffect(() => {
+    let isCancelled = false;
+    setIsLoading(true);
+
+    if (!isCancelled) {
+      fetchWithRetry();
+    }
 
     return () => {
       isCancelled = true;
     };
-  }, [clearError, setRequestError]);
+  }, [fetchWithRetry]);
 
   const toggleLike = async (cityId: string, userId: string) => {
     const cityRef = doc(db, COLLECTION, cityId);
@@ -80,6 +81,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
         citiesLikes,
         toggleLike,
         cardsRequestError: requestError,
+        fetchWithRetry,
       }}
     >
       {children}

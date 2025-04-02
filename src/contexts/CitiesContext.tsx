@@ -8,6 +8,7 @@ export interface CitiesContextType {
   citiesLikes: Record<string, string[]>;
   toggleLike: (cityId: string, userId: string) => void;
   cardsRequestError: string | null;
+  fetchWithRetry: () => void;
 }
 
 export const CitiesContext = createContext<CitiesContextType | null>(null);

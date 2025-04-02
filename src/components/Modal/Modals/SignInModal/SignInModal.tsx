@@ -42,23 +42,36 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     },
   ];
 
-  const { formState, handleCheckboxChange, handleTextChange, validate, errors } = useForm(fieldSet);
+  const { formState, handleCheckboxChange, handleTextChange, validate, errors, isSubmitting, setIsSubmitting } =
+    useForm(fieldSet);
 
   const handleSignIn = useCallback(async () => {
     if (!validate()) return;
+    setIsSubmitting(true);
     const email = formState.email as string;
     const password = formState.password as string;
     const userCredential = await signIn({ email, password });
 
     if (typeof userCredential === 'string') {
       setRequestError(userCredential);
+      setIsSubmitting(false);
       return;
     }
 
     recordUser(userCredential as User);
+    setIsSubmitting(false);
     clearError();
     closeModal();
-  }, [recordUser, formState.email, formState.password, closeModal, validate, clearError, setRequestError]);
+  }, [
+    recordUser,
+    formState.email,
+    formState.password,
+    closeModal,
+    validate,
+    clearError,
+    setRequestError,
+    setIsSubmitting,
+  ]);
 
   const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -67,10 +80,10 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const handleEnterDownSignIn = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key !== 'Enter') return;
+      if (e.key !== 'Enter' || isSubmitting) return;
       handleSignIn();
     },
-    [handleSignIn]
+    [handleSignIn, isSubmitting]
   );
 
   useEffect(() => {
@@ -96,7 +109,11 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         formState={formState}
         handleTextChange={handleTextChange}
         handleCheckboxChange={handleCheckboxChange}
-        actionButton={<Button onClick={handleButtonSignIn}>Sign In</Button>}
+        actionButton={
+          <Button disabled={isSubmitting} onClick={handleButtonSignIn}>
+            {isSubmitting ? 'Signing in...' : 'Sign In'}
+          </Button>
+        }
         errors={errors}
         requestError={requestError}
       />

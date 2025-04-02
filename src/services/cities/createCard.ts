@@ -7,6 +7,7 @@ import { addDoc, collection } from 'firebase/firestore';
 export const createCard = async (card: City): Promise<true | string> => {
   try {
     await addDoc(collection(db, COLLECTION), card);
+
     return true;
   } catch (e) {
     if (e instanceof FirebaseError) {

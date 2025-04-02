@@ -11,6 +11,7 @@ export const useForm = (fields: FieldType[]) => {
   );
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const validate = () => {
     const newErrors: Record<string, string | null> = {};
@@ -39,5 +40,7 @@ export const useForm = (fields: FieldType[]) => {
     handleTextChange,
     validate,
     errors,
+    isSubmitting,
+    setIsSubmitting,
   };
 };
