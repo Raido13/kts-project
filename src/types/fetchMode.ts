@@ -1,1 +1,1 @@
-export type FetchModeType = 'all' | 'paginate' | 'filter' | 'query';
+export type FetchModeType = 'all' | 'paginate' | 'options';

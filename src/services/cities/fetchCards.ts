@@ -16,6 +16,7 @@ import { COLLECTION } from '@shared/constants/constants';
 import { City } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
 import { FetchModeType } from '@shared/types/fetchMode';
+import { Option } from '@shared/types/options';
 
 interface FetchCardsOptions {
   mode?: FetchModeType;
@@ -28,12 +29,8 @@ interface FetchCardsOptions {
 interface FetchCardsPaginatedResult {
   data: City[];
   total: number;
+  lastRequest: 'search' | 'filter';
   lastDoc: QueryDocumentSnapshot;
-}
-
-interface DropdownOption {
-  key: string;
-  value: string;
 }
 
 export const fetchCards = async ({
@@ -42,7 +39,7 @@ export const fetchCards = async ({
   searchQuery = '',
   filters = [],
   lastDoc = null,
-}: FetchCardsOptions): Promise<City[] | FetchCardsPaginatedResult | DropdownOption[] | string> => {
+}: FetchCardsOptions): Promise<City[] | FetchCardsPaginatedResult | Option[] | string> => {
   try {
     const collectionRef = collection(db, COLLECTION);
 
@@ -63,34 +60,41 @@ export const fetchCards = async ({
     if (mode === 'paginate') {
       let q = query(collectionRef, orderBy('name'));
 
-      if (searchQuery) {
-        q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery));
+      if (searchQuery && filters.length) {
+        q = query(
+          q,
+          where('name', '>=', searchQuery),
+          where('name', '<=', searchQuery + '\uf8ff'),
+          where('name', 'in', filters),
+          limit(perPage)
+        );
+      } else if (searchQuery) {
+        q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery + '\uf8ff'), limit(perPage));
+      } else if (filters.length) {
+        q = query(q, where('name', 'in', filters), limit(perPage));
+      } else {
+        q = query(q, limit(perPage));
       }
 
-      q = lastDoc ? query(q, startAfter(lastDoc), limit(perPage)) : query(q, limit(perPage));
+      if (lastDoc) {
+        q = query(q, startAfter(lastDoc));
+      }
+
       const snapshot = await getDocs(q);
       const countSnap = await getCountFromServer(collectionRef);
       const total = countSnap.data().count ?? 0;
 
       return {
         data: fetchingCards(snapshot),
+        lastRequest: searchQuery ? 'search' : 'filter',
         total,
         lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
       };
     }
 
-    if (mode === 'query') {
-      let q = query(collectionRef);
-      if (filters.length) {
-        q = query(q, where('name', 'in', filters));
-      }
-      const snapshot = await getDocs(q);
-      return fetchingCards(snapshot);
-    }
-
-    if (mode === 'filter') {
+    if (mode === 'options') {
       const snapshot = getDocs(query(collectionRef, orderBy('name')));
-      const options: DropdownOption[] = (await snapshot).docs.map((doc) => ({
+      const options: Option[] = (await snapshot).docs.map((doc) => ({
         key: doc.id,
         value: doc.data().name,
       }));
