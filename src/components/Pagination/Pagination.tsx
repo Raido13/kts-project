@@ -3,6 +3,7 @@ import cn from 'classnames';
 import s from './Pagination.module.scss';
 import ArrowPaginationIcon from '@shared/components/Icon/ArrowPaginationIcon';
 import Text from '@shared/components/Text';
+import { createRange } from '@shared/utils/utils';
 
 interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Всего элементов */
@@ -16,9 +17,6 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
   /** Дополнительный classname */
   className?: string;
 }
-
-const createRange = (start: number, end: number): number[] =>
-  Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
 export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentPage, onChange, className }) => {
   const totalPages = Math.ceil(total / perPage);

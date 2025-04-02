@@ -5,6 +5,7 @@ import {
   getDocs,
   limit,
   orderBy,
+  Query,
   query,
   QueryDocumentSnapshot,
   QuerySnapshot,
@@ -17,6 +18,7 @@ import { City } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
 import { FetchModeType } from '@shared/types/fetchMode';
 import { Option } from '@shared/types/options';
+import { capitalizeFirst } from '@shared/utils/utils';
 
 interface FetchCardsOptions {
   mode?: FetchModeType;
@@ -30,7 +32,7 @@ interface FetchCardsPaginatedResult {
   data: City[];
   total: number;
   lastRequest: 'search' | 'filter';
-  lastDoc: QueryDocumentSnapshot;
+  lastDoc: QueryDocumentSnapshot | null;
 }
 
 export const fetchCards = async ({
@@ -58,37 +60,48 @@ export const fetchCards = async ({
     }
 
     if (mode === 'paginate') {
-      let q = query(collectionRef, orderBy('name'));
+      let q;
+      const conditions = [];
+      let countQuery: Query<DocumentData> = collectionRef;
 
-      if (searchQuery && filters.length) {
-        q = query(
-          q,
-          where('name', '>=', searchQuery),
-          where('name', '<=', searchQuery + '\uf8ff'),
-          where('name', 'in', filters),
-          limit(perPage)
+      if (searchQuery) {
+        const capitalizedSearchQuery = capitalizeFirst(searchQuery);
+
+        conditions.push(
+          where('name', '>=', capitalizedSearchQuery),
+          where('name', '<', capitalizedSearchQuery + '\uf8ff')
         );
-      } else if (searchQuery) {
-        q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery + '\uf8ff'), limit(perPage));
-      } else if (filters.length) {
-        q = query(q, where('name', 'in', filters), limit(perPage));
-      } else {
-        q = query(q, limit(perPage));
+        countQuery = query(
+          countQuery,
+          where('name', '>=', capitalizedSearchQuery),
+          where('name', '<', capitalizedSearchQuery + '\uf8ff')
+        );
       }
+
+      if (filters.length > 0) {
+        conditions.push(where('country', 'in', filters));
+        countQuery = query(countQuery, where('country', 'in', filters));
+      }
+
+      const orderField = filters.length > 0 ? 'country' : 'name';
+
+      q = query(collectionRef, ...conditions, orderBy(orderField), limit(perPage));
 
       if (lastDoc) {
-        q = query(q, startAfter(lastDoc));
+        q = query(collectionRef, ...conditions, orderBy(orderField), startAfter(lastDoc), limit(perPage));
       }
 
-      const snapshot = await getDocs(q);
-      const countSnap = await getCountFromServer(collectionRef);
+      const [snapshot, countSnap] = await Promise.all([getDocs(q), getCountFromServer(countQuery)]);
+
       const total = countSnap.data().count ?? 0;
+
+      const lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
 
       return {
         data: fetchingCards(snapshot),
         lastRequest: searchQuery ? 'search' : 'filter',
         total,
-        lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
+        lastDoc: lastVisibleDoc,
       };
     }
 
@@ -96,7 +109,7 @@ export const fetchCards = async ({
       const snapshot = getDocs(query(collectionRef, orderBy('name')));
       const options: Option[] = (await snapshot).docs.map((doc) => ({
         key: doc.id,
-        value: doc.data().name,
+        value: doc.data().country,
       }));
       return options;
     }

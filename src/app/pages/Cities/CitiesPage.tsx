@@ -70,7 +70,7 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
           className={s.page__dropdown}
         />
       )}
-      <Slider min={3} max={Math.min(totalCities, 31) as Range<4, 31>} value={viewPerPage} onChange={setViewPerPage} />
+      <Slider min={3} max={Math.min(totalCities, 10) as Range<4, 10>} value={viewPerPage} onChange={setViewPerPage} />
     </div>
     <div className={s.page__counter}>
       <Text tag={'p'} view={'title'} color={'primary'}>
@@ -88,17 +88,14 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
 interface CitiesPageListProps {
   windowWidth: number;
   isLoading: boolean;
-  viewPerPage: number;
   paginatedCities: City[];
 }
 
-const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, viewPerPage, paginatedCities }) => (
+const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, paginatedCities }) => (
   <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-    {isLoading
-      ? Array.from({ length: viewPerPage }).map((_, idx) => <ListCard isLoading key={idx} />)
-      : paginatedCities.map(({ id, ...card }) => (
-          <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} key={id} />
-        ))}
+    {paginatedCities.map(({ id, ...card }) => (
+      <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
+    ))}
   </ul>
 );
 
@@ -113,26 +110,29 @@ export const CitiesPage: FC = () => {
   const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [viewPerPage, setViewPerPageState] = useState<number>(3);
-  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData, DocumentData> | null>(null);
+  const [lastDocs, setLastDocs] = useState<QueryDocumentSnapshot<DocumentData, DocumentData>[]>([]);
 
   const getDropdownTitle = useCallback(
-    (values: Option[]) => (values.length === 0 ? 'Choose City' : values.map(({ value }) => value).join(', ')),
+    (values: Option[]) => (values.length === 0 ? 'Choose Country' : values.map(({ value }) => value).join(', ')),
     []
   );
 
   const setViewPerPage = useCallback((value: number) => {
     setViewPerPageState(value);
     setCurrentPage(1);
-    setLastDoc(null);
+    setLastDocs([]);
   }, []);
 
   const onSearchFilter = useCallback((value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
+    setLastDocs([]);
   }, []);
 
-  const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value.toLowerCase()), [dropdownValue]);
-  const currentLastDoc = useMemo(() => (currentPage > 1 ? lastDoc : null), [currentPage, lastDoc]);
+  const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value), [dropdownValue]);
+  const targetCursor = useMemo(() => {
+    return currentPage === 1 ? null : (lastDocs[currentPage - 2] ?? null);
+  }, [currentPage, lastDocs]);
 
   useEffect(() => {
     fetchCards({ mode: 'options' }).then((res) => {
@@ -148,27 +148,23 @@ export const CitiesPage: FC = () => {
       perPage: viewPerPage,
       searchQuery,
       filters: selectedNames,
-      lastDoc: currentLastDoc,
+      lastDoc: targetCursor,
     })
       .then((res) => {
         if (typeof res !== 'string' && 'data' in res) {
-          let cities = res.data;
-
-          if (res.lastRequest === 'filter' && searchQuery) {
-            cities = cities.filter((city) => city.name.toLowerCase().includes(searchQuery.toLowerCase()));
-          }
-
-          if (res.lastRequest === 'search' && selectedNames.length) {
-            cities = cities.filter((city) => selectedNames.includes(city.name.toLowerCase()));
-          }
-
-          setLastDoc(res.lastDoc);
-          setCities(cities);
+          setCities(res.data);
           setTotalCities(res.total);
+
+          setLastDocs((prev) => {
+            if (currentPage > prev.length && res.lastDoc) {
+              return [...prev, res.lastDoc];
+            }
+            return prev;
+          });
         }
       })
       .finally(() => setIsLoading(false));
-  }, [dropdownValue, searchQuery, viewPerPage, currentLastDoc, selectedNames, currentPage]);
+  }, [dropdownValue, searchQuery, viewPerPage, targetCursor, selectedNames, currentPage]);
 
   return (
     <div className={s.page}>
@@ -185,12 +181,7 @@ export const CitiesPage: FC = () => {
         fetchedCities={cities}
         totalCities={totalCities}
       />
-      <CitiesPageList
-        windowWidth={windowWidth}
-        isLoading={isLoading}
-        viewPerPage={viewPerPage}
-        paginatedCities={cities}
-      />
+      <CitiesPageList windowWidth={windowWidth} isLoading={isLoading} paginatedCities={cities} />
       <Pagination
         total={totalCities}
         perPage={viewPerPage}

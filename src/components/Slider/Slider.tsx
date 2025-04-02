@@ -5,9 +5,9 @@ import s from './Slider.module.scss';
 
 interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   /** Минимальное значение карточек, от 3 до 30 */
-  min?: Range<3, 30>;
+  min?: Range<3, 9>;
   /** Максимальное значение карточек, от 4 до 31 */
-  max?: Range<4, 31>;
+  max?: Range<4, 10>;
   /** Текущее значение для вывода карточек */
   value: number;
   /** Возвращаем новое значение для вывода карточек */
