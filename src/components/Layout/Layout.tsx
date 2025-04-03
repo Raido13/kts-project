@@ -4,11 +4,13 @@ import LogoIcon from '@shared/components/Icon/LogoIcon';
 import UserIcon from '@shared/components/Icon/UserIcon';
 import PlusIcon from '@shared/components/Icon/PlusIcon';
 import { HOME, CITIES } from '@shared/constants/links';
-import { useCitiesContext, useUserContext } from '@shared/hooks';
 import { useLocation } from 'react-router-dom';
-import { useModalContext } from '@shared/hooks';
 import Text from '@shared/components/Text';
 import s from './Layout.module.scss';
+import { observer } from 'mobx-react-lite';
+import { uiStore } from '@shared/stores/uiStore';
+import { userStore } from '@shared/stores/userStore';
+import { citiesStore } from '@shared/stores';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -17,16 +19,16 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
-  const { randomCity, citiesRequestError } = useCitiesContext();
+export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
+  const { randomCity, requestError } = citiesStore;
   const { pathname } = useLocation();
-  const { openModal } = useModalContext();
-  const { user } = useUserContext();
+  const { openModal } = uiStore;
+  const { user } = userStore;
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [pathname]);
 
-  if (citiesRequestError) {
+  if (requestError) {
     return (
       <div className={s.error}>
         <Text view={'title'} tag={'p'} weight={'bold'} className={s.error__title}>
@@ -64,4 +66,4 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
       {children}
     </div>
   );
-};
+});

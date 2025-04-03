@@ -1,46 +1,49 @@
-import { HTMLAttributes, FC, MouseEvent, useEffect, useCallback } from 'react';
+import { HTMLAttributes, FC, MouseEvent, useEffect, useCallback, useMemo } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './SignUpModal.module.scss';
-import { User } from 'firebase/auth';
-import { useForm, useModalContext, useUserContext } from '@shared/hooks';
+import { useForm } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks/useRequestError';
-import { signUp } from '@shared/services/auth/signUp';
+import { observer } from 'mobx-react-lite';
+import { userStore } from '@shared/stores/userStore';
+import { uiStore } from '@shared/stores/uiStore';
 
-export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
-  const { recordUser } = useUserContext();
-  const { closeModal } = useModalContext();
+export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
+  const { closeModal } = uiStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
-  const fieldSet: FieldType[] = [
-    {
-      name: 'email',
-      label: 'Enter Email',
-      type: 'email',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        if (!value) return 'Email is required';
-        if (!(value as string).includes('@')) return 'Email must be valid';
-        return null;
+  const fieldSet: FieldType[] = useMemo(
+    () => [
+      {
+        name: 'email',
+        label: 'Enter Email',
+        type: 'email',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          if (!value) return 'Email is required';
+          if (!(value as string).includes('@')) return 'Email must be valid';
+          return null;
+        },
       },
-    },
-    {
-      name: 'password',
-      label: 'Enter Password',
-      type: 'password',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        if (!value) return 'Password is required';
-        if ((value as string).length < 6) return 'Password must be at least 6 characters';
-        return null;
+      {
+        name: 'password',
+        label: 'Enter Password',
+        type: 'password',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          if (!value) return 'Password is required';
+          if ((value as string).length < 6) return 'Password must be at least 6 characters';
+          return null;
+        },
       },
-    },
-  ];
+    ],
+    []
+  );
 
   const { formState, handleCheckboxChange, handleTextChange, validate, errors, isSubmitting, setIsSubmitting } =
     useForm(fieldSet);
@@ -50,7 +53,7 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     setIsSubmitting(true);
     const email = formState.email as string;
     const password = formState.password as string;
-    const userCredential = await signUp({ email, password });
+    const userCredential = await userStore.register(email, password);
 
     if (typeof userCredential === 'string') {
       setIsSubmitting(false);
@@ -58,20 +61,10 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       return;
     }
 
-    recordUser(userCredential as User);
     setIsSubmitting(false);
     clearError();
     closeModal();
-  }, [
-    recordUser,
-    formState.email,
-    formState.password,
-    closeModal,
-    validate,
-    clearError,
-    setRequestError,
-    setIsSubmitting,
-  ]);
+  }, [formState.email, formState.password, closeModal, validate, clearError, setRequestError, setIsSubmitting]);
 
   const handleButtonSignUp = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -111,4 +104,4 @@ export const SignUpModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       />
     </div>
   );
-};
+});

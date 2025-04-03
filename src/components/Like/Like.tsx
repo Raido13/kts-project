@@ -2,17 +2,20 @@ import { FC, HTMLAttributes, MouseEvent } from 'react';
 import s from './Like.module.scss';
 import LikeIcon from '@shared/components/Icon/LikeIcon';
 import Text from '@shared/components/Text';
-import { useCitiesContext, useModalContext, useUserContext } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
+import { observer } from 'mobx-react-lite';
+import { uiStore } from '@shared/stores/uiStore';
+import { userStore } from '@shared/stores/userStore';
+import { citiesStore } from '@shared/stores';
 
 interface LikeProps extends HTMLAttributes<HTMLDivElement> {
   cityId: string;
 }
 
-export const Like: FC<LikeProps> = ({ cityId }) => {
-  const { user } = useUserContext();
-  const { citiesLikes, toggleLike } = useCitiesContext();
-  const { openModal } = useModalContext();
+export const Like: FC<LikeProps> = observer(({ cityId }) => {
+  const { user } = userStore;
+  const { citiesLikes, toggleLike } = citiesStore;
+  const { openModal } = uiStore;
 
   const likes = citiesLikes[cityId] ?? [];
   const likesCount = likes.length;
@@ -37,4 +40,4 @@ export const Like: FC<LikeProps> = ({ cityId }) => {
       </Text>
     </button>
   );
-};
+});

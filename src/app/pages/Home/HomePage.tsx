@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
-import { useCitiesContext } from '@shared/hooks';
 import { Link, useNavigate } from 'react-router-dom';
 import City from '@shared/components/City';
 import { CITIES } from '@shared/constants/links';
@@ -11,9 +10,11 @@ import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { CityType } from '@shared/types/city';
+import { observer } from 'mobx-react-lite';
+import { citiesStore } from '@shared/stores';
 
-export const HomePage: FC = () => {
-  const { randomCity } = useCitiesContext();
+export const HomePage: FC = observer(() => {
+  const { randomCity } = citiesStore;
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -108,4 +109,4 @@ export const HomePage: FC = () => {
       </div>
     </div>
   );
-};
+});

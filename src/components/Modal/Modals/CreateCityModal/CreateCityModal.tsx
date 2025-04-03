@@ -1,80 +1,84 @@
-import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect } from 'react';
+import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect, useMemo } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './CreateCityModal.module.scss';
-import { useCitiesContext, useForm, useModalContext } from '@shared/hooks';
+import { useForm } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks/useRequestError';
 import { createCity } from '@shared/services/cities/createCity';
 import { CityType } from '@shared/types/city';
+import { uiStore } from '@shared/stores/uiStore';
+import { observer } from 'mobx-react-lite';
 
-export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
-  const { fetchWithRetry } = useCitiesContext();
-  const { closeModal } = useModalContext();
+export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
+  const { closeModal } = uiStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
-  const fieldSet: FieldType[] = [
-    {
-      name: 'name',
-      label: 'Enter city name',
-      type: 'text',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        if (!value) return 'Name is required';
-        return null;
+  const fieldSet: FieldType[] = useMemo(
+    () => [
+      {
+        name: 'name',
+        label: 'Enter city name',
+        type: 'text',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          if (!value) return 'Name is required';
+          return null;
+        },
       },
-    },
-    {
-      name: 'country',
-      label: 'Enter city country',
-      type: 'text',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        if (!value) return 'Country is required';
-        return null;
+      {
+        name: 'country',
+        label: 'Enter city country',
+        type: 'text',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          if (!value) return 'Country is required';
+          return null;
+        },
       },
-    },
-    {
-      name: 'population',
-      label: 'Enter population',
-      type: 'text',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        if (!value) return 'Population is required';
-        if (!/^\d+$/.test(value as string)) return 'Population must be a valid number';
-        return null;
+      {
+        name: 'population',
+        label: 'Enter population',
+        type: 'text',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          if (!value) return 'Population is required';
+          if (!/^\d+$/.test(value as string)) return 'Population must be a valid number';
+          return null;
+        },
       },
-    },
-    {
-      name: 'image',
-      label: 'Enter image',
-      type: 'text',
-      value: '',
-      onChange: () => {},
-      validate: (value) => {
-        const url = value as string;
-        if (!url) return 'Image URL is required';
-        try {
-          new URL(url);
-        } catch {
-          return 'Invalid URL format';
-        }
-        return null;
+      {
+        name: 'image',
+        label: 'Enter image',
+        type: 'text',
+        value: '',
+        onChange: () => {},
+        validate: (value) => {
+          const url = value as string;
+          if (!url) return 'Image URL is required';
+          try {
+            new URL(url);
+          } catch {
+            return 'Invalid URL format';
+          }
+          return null;
+        },
       },
-    },
-    {
-      name: 'is_capital',
-      label: 'Is it Capital',
-      type: 'checkbox',
-      value: false,
-      onChange: () => {},
-    },
-  ];
+      {
+        name: 'is_capital',
+        label: 'Is it Capital',
+        type: 'checkbox',
+        value: false,
+        onChange: () => {},
+      },
+    ],
+    []
+  );
 
   const { formState, handleCheckboxChange, handleTextChange, validate, errors, isSubmitting, setIsSubmitting } =
     useForm(fieldSet);
@@ -96,12 +100,10 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       return;
     }
 
-    fetchWithRetry();
-
     setIsSubmitting(false);
     clearError();
     closeModal();
-  }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate, fetchWithRetry]);
+  }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate]);
 
   const handleButtonCreateCity = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
@@ -141,4 +143,4 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       />
     </div>
   );
-};
+});
