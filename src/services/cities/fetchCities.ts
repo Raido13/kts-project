@@ -22,47 +22,47 @@ import { FetchModeType } from '@shared/types/fetchMode';
 import { Option } from '@shared/types/options';
 import { capitalizeFirst } from '@shared/utils/utils';
 
-interface FetchCardsOptions {
+interface FetchCitiesOptions {
   mode?: FetchModeType;
   perPage?: number;
   searchQuery?: string;
   filters?: string[];
   lastDoc?: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
-  relatedCards?: number;
-  currentCardId?: string;
+  relatedCities?: number;
+  currentCityId?: string;
 }
 
-interface FetchCardsPaginatedResult {
+interface FetchCitiesPaginatedResult {
   data: City[];
   total: number;
   lastRequest: 'search' | 'filter';
   lastDoc: QueryDocumentSnapshot | null;
 }
 
-export const fetchCards = async ({
+export const fetchCities = async ({
   mode = 'all',
   perPage = 3,
   searchQuery = '',
   filters = [],
   lastDoc = null,
-  relatedCards,
-  currentCardId,
-}: FetchCardsOptions): Promise<City[] | City | FetchCardsPaginatedResult | Option[] | string> => {
+  relatedCities,
+  currentCityId,
+}: FetchCitiesOptions): Promise<City[] | City | FetchCitiesPaginatedResult | Option[] | string> => {
   try {
     const collectionRef = collection(db, COLLECTION);
 
-    const fetchingCards = (snapshot: QuerySnapshot<DocumentData, DocumentData>) => {
-      const cards: City[] = snapshot.docs.map((doc) => ({
+    const fetchingCities = (snapshot: QuerySnapshot<DocumentData, DocumentData>) => {
+      const cities: City[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as City[];
 
-      return cards;
+      return cities;
     };
 
     if (mode === 'all') {
       const snapshot = await getDocs(collectionRef);
-      return fetchingCards(snapshot);
+      return fetchingCities(snapshot);
     }
 
     if (mode === 'paginate') {
@@ -104,7 +104,7 @@ export const fetchCards = async ({
       const lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
 
       return {
-        data: fetchingCards(snapshot),
+        data: fetchingCities(snapshot),
         lastRequest: searchQuery ? 'search' : 'filter',
         total,
         lastDoc: lastVisibleDoc,
@@ -120,23 +120,25 @@ export const fetchCards = async ({
       return options;
     }
 
-    if (mode === 'related' && relatedCards) {
+    if (mode === 'related' && relatedCities) {
       const countSnapshot = await getCountFromServer(collectionRef);
       const collectionLength = countSnapshot.data().count ?? 0;
       const indexes = new Set<number>();
-      while (indexes.size < relatedCards + (currentCardId ? 1 : 0))
+      while (indexes.size < relatedCities + (currentCityId ? 1 : 0))
         indexes.add(Math.floor(Math.random() * collectionLength));
 
       const snapshot = await getDocs(query(collectionRef, where('index', 'in', Array.from(indexes))));
 
-      const cards = fetchingCards(snapshot);
+      const cities = fetchingCities(snapshot);
 
-      const filtered = currentCardId ? cards.filter((card) => card.id !== currentCardId).slice(0, relatedCards) : cards;
+      const filtered = currentCityId
+        ? cities.filter((cities) => cities.id !== currentCityId).slice(0, relatedCities)
+        : cities;
       return filtered.sort(() => 0.5 - Math.random());
     }
 
-    if (mode === 'single' && currentCardId) {
-      const snapshot = await getDoc(doc(collectionRef, currentCardId));
+    if (mode === 'single' && currentCityId) {
+      const snapshot = await getDoc(doc(collectionRef, currentCityId));
 
       if (!snapshot.exists()) return 'City not found';
 
@@ -156,7 +158,7 @@ export const fetchCards = async ({
         'resource-exhausted': 'Quota exceeded. Please try again later.',
         'unauthenticated': 'You must be logged in to perform this action.',
       };
-      return errorMessages[e.code] ?? 'Failed to fetch cards. Please try again later.';
+      return errorMessages[e.code] ?? 'Failed to fetch cities. Please try again later.';
     }
     return 'Unexpected error. Please try again.';
   }

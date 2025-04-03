@@ -18,7 +18,7 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
-  const { randomCity, cardsRequestError } = useCitiesContext();
+  const { randomCity, citiesRequestError } = useCitiesContext();
   const { pathname } = useLocation();
   const { openModal } = useModalContext();
   const { user } = useUserContext();
@@ -26,7 +26,7 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [pathname]);
 
-  if (cardsRequestError) {
+  if (citiesRequestError) {
     return (
       <div className={s.error}>
         <Text view={'title'} tag={'p'} weight={'bold'} className={s.error__title}>
@@ -56,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
             { icon: <UserIcon />, onClick: () => openModal(nextAuthModal) },
             {
               icon: <PlusIcon height={24} width={24} color={'primary'} />,
-              onClick: () => openModal(!user ? 'sign-in' : 'add-card'),
+              onClick: () => openModal(!user ? 'sign-in' : 'add-city'),
             },
           ]}
         />

@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import { Slider } from '@shared/components/Slider';
 import { City } from '@shared/types/city';
 import { ListCard } from '@shared/components/ListCard';
-import { fetchCards } from '@shared/services/cities/fetchCards';
+import { fetchCities } from '@shared/services/cities/fetchCities';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
 
@@ -93,8 +93,8 @@ interface CitiesPageListProps {
 
 const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, paginatedCities }) => (
   <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-    {paginatedCities.map(({ id, ...card }) => (
-      <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
+    {paginatedCities.map(({ id, ...city }) => (
+      <ListCard currentCard={{ ...city, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
     ))}
   </ul>
 );
@@ -135,7 +135,7 @@ export const CitiesPage: FC = () => {
   }, [currentPage, lastDocs]);
 
   useEffect(() => {
-    fetchCards({ mode: 'options' }).then((res) => {
+    fetchCities({ mode: 'options' }).then((res) => {
       if (Array.isArray(res)) setDropdownOptions(res as Option[]);
     });
   }, []);
@@ -143,7 +143,7 @@ export const CitiesPage: FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    fetchCards({
+    fetchCities({
       mode: 'paginate',
       perPage: viewPerPage,
       searchQuery,

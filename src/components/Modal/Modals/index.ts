@@ -1,4 +1,4 @@
 export { SignUpModal } from './SignUpModal/SignUpModal';
 export { SignInModal } from './SignInModal/SignInModal';
-export { CreateCardModal } from './CreateCardModal/CreateCardModal';
+export { CreateCityModal } from './CreateCityModal/CreateCityModal';
 export { LogoutModal } from './LogoutModal/LogoutModal';

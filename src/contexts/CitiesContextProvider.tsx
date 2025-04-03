@@ -4,8 +4,9 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@shared/config/firebase';
 import { CitiesContext } from '@shared/contexts/CitiesContext';
 import { COLLECTION } from '@shared/constants/constants';
-import { fetchCards } from '@shared/services/cities/fetchCards';
+import { fetchCities } from '@shared/services/cities/fetchCities';
 import { useRequestError } from '@shared/hooks/useRequestError';
+import { subscribeToCities } from '@shared/services/cities/subscribeToCity';
 
 export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [cities, setCities] = useState<City[]>([]);
@@ -16,7 +17,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const fetchWithRetry = useCallback(
     async (retries = 3, delay = 2000) => {
-      const res = (await fetchCards({ mode: 'all' })) as City[];
+      const res = (await fetchCities({ mode: 'all' })) as City[];
 
       if (typeof res === 'string') {
         if (retries > 0) {
@@ -59,6 +60,19 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [fetchWithRetry]);
 
+  useEffect(() => {
+    const unsubscribe = subscribeToCities({
+      mode: 'all',
+      onUpdate: (data) => {
+        if (typeof data !== 'string') {
+          setCities(data as City[]);
+        }
+      },
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const toggleLike = async (cityId: string, userId: string) => {
     const cityRef = doc(db, COLLECTION, cityId);
     const docSnap = await getDoc(cityRef);
@@ -68,6 +82,11 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const updatedLikes = likes.includes(userId) ? likes.filter((id) => id !== userId) : [...likes, userId];
 
     await updateDoc(cityRef, { likes: updatedLikes });
+
+    if (typeof updatedLikes === 'string') {
+      setRequestError(updatedLikes);
+      return;
+    }
 
     setCitiesLikes((prevState) => ({ ...prevState, [cityId]: updatedLikes }));
   };
@@ -80,7 +99,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
         randomCity,
         citiesLikes,
         toggleLike,
-        cardsRequestError: requestError,
+        citiesRequestError: requestError,
         fetchWithRetry,
       }}
     >

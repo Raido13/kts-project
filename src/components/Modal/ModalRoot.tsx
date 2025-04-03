@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useModalContext } from '@shared/hooks/useModalContext';
 import { ModalLayout } from './ModalLayout';
-import { CreateCardModal, LogoutModal, SignInModal, SignUpModal } from './Modals';
+import { CreateCityModal, LogoutModal, SignInModal, SignUpModal } from './Modals';
 
 export const ModalRoot: FC = () => {
   const { modal, closeModal } = useModalContext();
@@ -14,7 +14,7 @@ export const ModalRoot: FC = () => {
         {
           'sign-up': <SignUpModal />,
           'sign-in': <SignInModal />,
-          'add-card': <CreateCardModal />,
+          'add-city': <CreateCityModal />,
           'log-out': <LogoutModal />,
         }[modal]
       }

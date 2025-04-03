@@ -6,33 +6,33 @@ import { useParams } from 'react-router-dom';
 import { BackButton } from '@shared/components/BackButton';
 import { ListCard } from '@shared/components/ListCard';
 import { CardDetail } from '@shared/components/CardDetail';
-import { fetchCards } from '@shared/services/cities/fetchCards';
+import { fetchCities } from '@shared/services/cities/fetchCities';
 import { City } from '@shared/types/city';
 
 export const CityPage: FC = () => {
-  const { id: currentCardId } = useParams();
+  const { id: currentCityId } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentCard, setCurrentCard] = useState<City | null>(null);
+  const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [relatedCities, setRelatedCities] = useState<City[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
 
-    fetchCards({
+    fetchCities({
       mode: 'single',
-      currentCardId,
+      currentCityId,
     })
       .then((res) => {
         if (typeof res !== 'string') {
-          setCurrentCard(res as City);
+          setCurrentCity(res as City);
         }
       })
       .finally(() => setIsLoading(false));
 
-    fetchCards({
+    fetchCities({
       mode: 'related',
-      currentCardId,
-      relatedCards: 3,
+      currentCityId,
+      relatedCities: 3,
     })
       .then((res) => {
         if (Array.isArray(res)) {
@@ -40,14 +40,14 @@ export const CityPage: FC = () => {
         }
       })
       .finally(() => setIsLoading(false));
-  }, [currentCardId]);
+  }, [currentCityId]);
 
   return (
     <div className={s.city}>
       <BackButton className={s.city__back}>Back</BackButton>
       {
         <CardDetail
-          currentCard={currentCard ?? undefined}
+          currentCard={currentCity ?? undefined}
           action={<Button>Find ticket</Button>}
           className={s.city__card}
         />
@@ -59,8 +59,8 @@ export const CityPage: FC = () => {
         <ul className={s.city__gallery}>
           {isLoading
             ? Array.from({ length: 3 }).map((_, idx) => <ListCard isLoading={isLoading} key={idx} />)
-            : relatedCities.map(({ id, ...card }) => (
-                <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} key={id} />
+            : relatedCities.map(({ id, ...city }) => (
+                <ListCard currentCard={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
               ))}
         </ul>
       </section>

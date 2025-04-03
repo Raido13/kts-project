@@ -1,16 +1,16 @@
 import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
-import s from './CreateCardModal.module.scss';
+import s from './CreateCityModal.module.scss';
 import { useCitiesContext, useForm, useModalContext } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks/useRequestError';
-import { createCard } from '@shared/services/cities/createCard';
+import { createCity } from '@shared/services/cities/createCity';
 import { City } from '@shared/types/city';
 
-export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
+export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { fetchWithRetry } = useCitiesContext();
   const { closeModal } = useModalContext();
   const { requestError, setRequestError, clearError } = useRequestError();
@@ -64,9 +64,6 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         } catch {
           return 'Invalid URL format';
         }
-        if (!/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url)) {
-          return 'URL must point to an image';
-        }
         return null;
       },
     },
@@ -82,19 +79,19 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { formState, handleCheckboxChange, handleTextChange, validate, errors, isSubmitting, setIsSubmitting } =
     useForm(fieldSet);
 
-  const handleCreateCard = useCallback(async () => {
+  const handleCreateCity = useCallback(async () => {
     if (!validate()) return;
     setIsSubmitting(true);
 
-    const newCard = {
+    const newCity = {
       ...formState,
       likes: [] as string[],
     } as City;
 
-    const creatingCard = await createCard(newCard);
+    const creatingCity = await createCity(newCity);
 
-    if (typeof creatingCard === 'string') {
-      setRequestError(creatingCard);
+    if (typeof creatingCity === 'string') {
+      setRequestError(creatingCity);
       setIsSubmitting(false);
       return;
     }
@@ -106,28 +103,28 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     closeModal();
   }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate, fetchWithRetry]);
 
-  const handleButtonCreateCard = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleButtonCreateCity = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
-    handleCreateCard();
+    handleCreateCity();
   };
 
-  const handleEnterDownCreateCard = useCallback(
+  const handleEnterDownCreateCity = useCallback(
     (e: KeyboardEvent) => {
       if (e.key !== 'Enter' || isSubmitting) return;
-      handleCreateCard();
+      handleCreateCity();
     },
-    [handleCreateCard, isSubmitting]
+    [handleCreateCity, isSubmitting]
   );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleEnterDownCreateCard);
-    return () => window.removeEventListener('keydown', handleEnterDownCreateCard);
-  }, [handleEnterDownCreateCard]);
+    window.addEventListener('keydown', handleEnterDownCreateCity);
+    return () => window.removeEventListener('keydown', handleEnterDownCreateCity);
+  }, [handleEnterDownCreateCity]);
 
   return (
     <div className={s.modal}>
       <Text view={'title'} weight={'bold'} tag={'p'}>
-        Create Card
+        Create City
       </Text>
       <Form
         fields={fieldSet}
@@ -135,7 +132,7 @@ export const CreateCardModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         handleTextChange={handleTextChange}
         handleCheckboxChange={handleCheckboxChange}
         actionButton={
-          <Button disabled={isSubmitting} onClick={handleButtonCreateCard}>
+          <Button disabled={isSubmitting} onClick={handleButtonCreateCity}>
             {isSubmitting ? 'Creating' : 'Create'}
           </Button>
         }

@@ -9,7 +9,7 @@ import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
-import { fetchCards } from '@shared/services/cities/fetchCards';
+import { fetchCities } from '@shared/services/cities/fetchCities';
 import { City } from '@shared/types/city';
 
 export const HomePage: FC = () => {
@@ -22,9 +22,9 @@ export const HomePage: FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    fetchCards({
+    fetchCities({
       mode: 'related',
-      relatedCards: 6,
+      relatedCities: 6,
     })
       .then((res) => {
         if (Array.isArray(res)) {

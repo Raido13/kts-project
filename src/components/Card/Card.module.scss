@@ -5,6 +5,7 @@
 
   &__image {
     background-color: var(--card-image-bg);
+    aspect-ratio: 16 / 9;
     object-fit: cover;
   }
 
