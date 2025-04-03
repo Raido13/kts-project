@@ -1,22 +1,38 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
 import { useCitiesContext } from '@shared/hooks';
-import { getShuffledItemsFromArray } from '@shared/utils/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import Card from '@shared/components/Card';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
+import { fetchCards } from '@shared/services/cities/fetchCards';
+import { City } from '@shared/types/city';
 
 export const HomePage: FC = () => {
-  const { cities, isLoading, randomCity } = useCitiesContext();
+  const { randomCity } = useCitiesContext();
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [relatedCities, setRelatedCities] = useState<City[]>([]);
 
-  const relatedCities = useMemo(() => getShuffledItemsFromArray(cities, 6), [cities]);
+  useEffect(() => {
+    setIsLoading(true);
+
+    fetchCards({
+      mode: 'related',
+      relatedCards: 6,
+    })
+      .then((res) => {
+        if (Array.isArray(res)) {
+          setRelatedCities(res as City[]);
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const onSearchFilter = (value: string) => {
     navigation({ pathname: CITIES, search: `?query=${value}` });

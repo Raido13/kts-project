@@ -2,11 +2,15 @@ import { db } from '@shared/config/firebase';
 import { COLLECTION } from '@shared/constants/constants';
 import { City } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, getCountFromServer } from 'firebase/firestore';
 
 export const createCard = async (card: City): Promise<true | string> => {
   try {
-    await addDoc(collection(db, COLLECTION), card);
+    const collectionRef = collection(db, COLLECTION);
+    const countSnapshot = await getCountFromServer(collectionRef);
+    const index = countSnapshot.data().count ?? 0;
+
+    await addDoc(collection(db, COLLECTION), { ...card, index });
 
     return true;
   } catch (e) {

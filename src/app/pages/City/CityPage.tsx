@@ -1,28 +1,53 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useState } from 'react';
 import s from './CityPage.module.scss';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
-import { getShuffledItemsFromArray } from '@shared/utils/utils';
 import { useParams } from 'react-router-dom';
-import { useCitiesContext } from '@shared/hooks';
 import { BackButton } from '@shared/components/BackButton';
 import { ListCard } from '@shared/components/ListCard';
 import { CardDetail } from '@shared/components/CardDetail';
+import { fetchCards } from '@shared/services/cities/fetchCards';
+import { City } from '@shared/types/city';
 
 export const CityPage: FC = () => {
-  const { cities, isLoading } = useCitiesContext();
-  const { id: cardId } = useParams();
+  const { id: currentCardId } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentCard, setCurrentCard] = useState<City | null>(null);
+  const [relatedCities, setRelatedCities] = useState<City[]>([]);
 
-  const relatedCities = useMemo(() => getShuffledItemsFromArray(cities, 3, cardId as string), [cities, cardId]);
-  const currentCard = useMemo(() => cities.find(({ id }) => id === cardId), [cities, cardId]);
+  useEffect(() => {
+    setIsLoading(true);
+
+    fetchCards({
+      mode: 'single',
+      currentCardId,
+    })
+      .then((res) => {
+        if (typeof res !== 'string') {
+          setCurrentCard(res as City);
+        }
+      })
+      .finally(() => setIsLoading(false));
+
+    fetchCards({
+      mode: 'related',
+      currentCardId,
+      relatedCards: 3,
+    })
+      .then((res) => {
+        if (Array.isArray(res)) {
+          setRelatedCities(res as City[]);
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }, [currentCardId]);
 
   return (
     <div className={s.city}>
       <BackButton className={s.city__back}>Back</BackButton>
       {
         <CardDetail
-          isLoading={isLoading}
-          currentCard={currentCard}
+          currentCard={currentCard ?? undefined}
           action={<Button>Find ticket</Button>}
           className={s.city__card}
         />
@@ -33,7 +58,7 @@ export const CityPage: FC = () => {
         </Text>
         <ul className={s.city__gallery}>
           {isLoading
-            ? Array.from({ length: 6 }).map((_, idx) => <ListCard isLoading={isLoading} key={idx} />)
+            ? Array.from({ length: 3 }).map((_, idx) => <ListCard isLoading={isLoading} key={idx} />)
             : relatedCities.map(({ id, ...card }) => (
                 <ListCard currentCard={{ ...card, id }} action={<Button>Find ticket</Button>} key={id} />
               ))}

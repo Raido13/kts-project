@@ -1,7 +1,9 @@
 import {
   collection,
+  doc,
   DocumentData,
   getCountFromServer,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -26,6 +28,8 @@ interface FetchCardsOptions {
   searchQuery?: string;
   filters?: string[];
   lastDoc?: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
+  relatedCards?: number;
+  currentCardId?: string;
 }
 
 interface FetchCardsPaginatedResult {
@@ -41,7 +45,9 @@ export const fetchCards = async ({
   searchQuery = '',
   filters = [],
   lastDoc = null,
-}: FetchCardsOptions): Promise<City[] | FetchCardsPaginatedResult | Option[] | string> => {
+  relatedCards,
+  currentCardId,
+}: FetchCardsOptions): Promise<City[] | City | FetchCardsPaginatedResult | Option[] | string> => {
   try {
     const collectionRef = collection(db, COLLECTION);
 
@@ -91,9 +97,9 @@ export const fetchCards = async ({
         q = query(collectionRef, ...conditions, orderBy(orderField), startAfter(lastDoc), limit(perPage));
       }
 
-      const [snapshot, countSnap] = await Promise.all([getDocs(q), getCountFromServer(countQuery)]);
+      const [snapshot, countSnapshot] = await Promise.all([getDocs(q), getCountFromServer(countQuery)]);
 
-      const total = countSnap.data().count ?? 0;
+      const total = countSnapshot.data().count ?? 0;
 
       const lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
 
@@ -106,12 +112,38 @@ export const fetchCards = async ({
     }
 
     if (mode === 'options') {
-      const snapshot = getDocs(query(collectionRef, orderBy('name')));
-      const options: Option[] = (await snapshot).docs.map((doc) => ({
+      const snapshot = await getDocs(query(collectionRef, orderBy('name')));
+      const options: Option[] = snapshot.docs.map((doc) => ({
         key: doc.id,
         value: doc.data().country,
       }));
       return options;
+    }
+
+    if (mode === 'related' && relatedCards) {
+      const countSnapshot = await getCountFromServer(collectionRef);
+      const collectionLength = countSnapshot.data().count ?? 0;
+      const indexes = new Set<number>();
+      while (indexes.size < relatedCards + (currentCardId ? 1 : 0))
+        indexes.add(Math.floor(Math.random() * collectionLength));
+
+      const snapshot = await getDocs(query(collectionRef, where('index', 'in', Array.from(indexes))));
+
+      const cards = fetchingCards(snapshot);
+
+      const filtered = currentCardId ? cards.filter((card) => card.id !== currentCardId).slice(0, relatedCards) : cards;
+      return filtered.sort(() => 0.5 - Math.random());
+    }
+
+    if (mode === 'single' && currentCardId) {
+      const snapshot = await getDoc(doc(collectionRef, currentCardId));
+
+      if (!snapshot.exists()) return 'City not found';
+
+      return {
+        id: snapshot.id,
+        ...snapshot.data(),
+      } as City;
     }
 
     return 'Unsupported fetch mode.';
