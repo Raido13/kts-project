@@ -1,0 +1,1 @@
+export { CityDetail } from './CityDetail';

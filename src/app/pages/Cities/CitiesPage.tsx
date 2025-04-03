@@ -10,8 +10,8 @@ import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { Slider } from '@shared/components/Slider';
-import { City } from '@shared/types/city';
-import { ListCard } from '@shared/components/ListCard';
+import { CityType } from '@shared/types/city';
+import { ListCity } from '@shared/components/ListCity';
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
@@ -37,7 +37,7 @@ interface CitiesPageActionsProps {
   getDropdownTitle: (value: Option[]) => string;
   viewPerPage: number;
   setViewPerPage: (value: number) => void;
-  fetchedCities: City[];
+  fetchedCities: CityType[];
   totalCities: number;
 }
 
@@ -88,19 +88,19 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
 interface CitiesPageListProps {
   windowWidth: number;
   isLoading: boolean;
-  paginatedCities: City[];
+  paginatedCities: CityType[];
 }
 
 const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, paginatedCities }) => (
   <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
     {paginatedCities.map(({ id, ...city }) => (
-      <ListCard currentCard={{ ...city, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
+      <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
     ))}
   </ul>
 );
 
 export const CitiesPage: FC = () => {
-  const [cities, setCities] = useState<City[]>([]);
+  const [cities, setCities] = useState<CityType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [totalCities, setTotalCities] = useState<number>(0);
   const windowWidth = useWindowWidth();

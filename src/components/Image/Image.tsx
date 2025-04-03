@@ -1,13 +1,13 @@
 import React, { ImgHTMLAttributes } from 'react';
 import cn from 'classnames';
 import s from './Image.module.scss';
-import { cardVariant } from '@shared/types/card';
+import { CityVariant } from '@shared/types/city';
 
 interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   /** Стейт для скелетона */
   isLoading?: boolean;
   /** Вариант отображения */
-  variant?: cardVariant;
+  variant?: CityVariant;
 }
 
 export const Image: React.FC<ImageProps> = ({ isLoading = false, className, variant, ...props }) =>

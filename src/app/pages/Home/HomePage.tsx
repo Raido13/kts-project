@@ -4,20 +4,20 @@ import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
 import { useCitiesContext } from '@shared/hooks';
 import { Link, useNavigate } from 'react-router-dom';
-import Card from '@shared/components/Card';
+import City from '@shared/components/City';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { fetchCities } from '@shared/services/cities/fetchCities';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 
 export const HomePage: FC = () => {
   const { randomCity } = useCitiesContext();
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [relatedCities, setRelatedCities] = useState<City[]>([]);
+  const [relatedCities, setRelatedCities] = useState<CityType[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -28,7 +28,7 @@ export const HomePage: FC = () => {
     })
       .then((res) => {
         if (Array.isArray(res)) {
-          setRelatedCities(res as City[]);
+          setRelatedCities(res as CityType[]);
         }
       })
       .finally(() => setIsLoading(false));
@@ -68,8 +68,8 @@ export const HomePage: FC = () => {
           {isLoading
             ? Array.from({ length: 6 }).map((_, idx) => (
                 <li key={idx} className={s.page__city}>
-                  <Card
-                    cardId=""
+                  <City
+                    cityId=""
                     image=""
                     title=""
                     subtitle=""
@@ -83,8 +83,8 @@ export const HomePage: FC = () => {
             : relatedCities.map(({ id, country, name, is_capital, population, image }) => (
                 <li key={id} className={s['page__gallery-item']}>
                   <Link to={`${CITIES}/${id}`} className={s.page__link}>
-                    <Card
-                      cardId={id}
+                    <City
+                      cityId={id}
                       image={image}
                       title={name}
                       subtitle={`Population: ${population}`}

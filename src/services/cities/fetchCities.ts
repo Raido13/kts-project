@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@shared/config/firebase';
 import { COLLECTION } from '@shared/constants/constants';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
 import { FetchModeType } from '@shared/types/fetchMode';
 import { Option } from '@shared/types/options';
@@ -33,7 +33,7 @@ interface FetchCitiesOptions {
 }
 
 interface FetchCitiesPaginatedResult {
-  data: City[];
+  data: CityType[];
   total: number;
   lastRequest: 'search' | 'filter';
   lastDoc: QueryDocumentSnapshot | null;
@@ -47,15 +47,15 @@ export const fetchCities = async ({
   lastDoc = null,
   relatedCities,
   currentCityId,
-}: FetchCitiesOptions): Promise<City[] | City | FetchCitiesPaginatedResult | Option[] | string> => {
+}: FetchCitiesOptions): Promise<CityType[] | CityType | FetchCitiesPaginatedResult | Option[] | string> => {
   try {
     const collectionRef = collection(db, COLLECTION);
 
     const fetchingCities = (snapshot: QuerySnapshot<DocumentData, DocumentData>) => {
-      const cities: City[] = snapshot.docs.map((doc) => ({
+      const cities: CityType[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as City[];
+      })) as CityType[];
 
       return cities;
     };
@@ -145,7 +145,7 @@ export const fetchCities = async ({
       return {
         id: snapshot.id,
         ...snapshot.data(),
-      } as City;
+      } as CityType;
     }
 
     return 'Unsupported fetch mode.';

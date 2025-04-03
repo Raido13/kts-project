@@ -1,6 +1,6 @@
 import { db } from '@shared/config/firebase';
 import { COLLECTION } from '@shared/constants/constants';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 import { FetchModeType } from '@shared/types/fetchMode';
 import { Unsubscribe } from 'firebase/auth';
 import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -8,7 +8,7 @@ import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
 interface subscribeToCitiesProps {
   mode: Extract<FetchModeType, 'all' | 'single'>;
   currentCityId?: string;
-  onUpdate: (data: City[] | City | string) => void;
+  onUpdate: (data: CityType[] | CityType | string) => void;
 }
 
 export const subscribeToCities = ({ mode, currentCityId, onUpdate }: subscribeToCitiesProps): Unsubscribe => {
@@ -18,10 +18,10 @@ export const subscribeToCities = ({ mode, currentCityId, onUpdate }: subscribeTo
     const q = query(collectionRef, orderBy('name'));
 
     return onSnapshot(q, (snapshot) => {
-      const cities: City[] = snapshot.docs.map((doc) => ({
+      const cities: CityType[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as City[];
+      })) as CityType[];
       onUpdate(cities);
     });
   }
@@ -36,7 +36,7 @@ export const subscribeToCities = ({ mode, currentCityId, onUpdate }: subscribeTo
         onUpdate({
           id: snapshot.id,
           ...snapshot.data(),
-        } as City);
+        } as CityType);
       }
     });
   }

@@ -1,10 +1,10 @@
-.card {
+.city {
   display: flex;
   flex-direction: column;
   max-width: 360px;
 
   &__image {
-    background-color: var(--card-image-bg);
+    background-color: var(--city-image-bg);
     aspect-ratio: 16 / 9;
     object-fit: cover;
   }
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 20px;
-    background-color: var(--card-bg);
+    background-color: var(--city-bg);
 
     &-top {
       display: flex;
@@ -41,7 +41,7 @@
 
   &__button {
     background-color: transparent;
-    border-color: var(--card-button-border);
+    border-color: var(--city-button-border);
 
     & > p {
       color: var(--button-secondary-text);
@@ -68,7 +68,7 @@
       column-gap: 0;
     }
 
-    .card__image {
+    .city__image {
       width: 50%;
 
       @media (max-width: 830px) {
@@ -76,7 +76,7 @@
       }
     }
 
-    .card__body {
+    .city__body {
       padding: 0;
       row-gap: 48px;
       width: 50%;

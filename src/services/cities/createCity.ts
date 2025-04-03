@@ -1,10 +1,10 @@
 import { db } from '@shared/config/firebase';
 import { COLLECTION } from '@shared/constants/constants';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
 import { addDoc, collection, getCountFromServer } from 'firebase/firestore';
 
-export const createCity = async (city: City): Promise<true | string> => {
+export const createCity = async (city: CityType): Promise<true | string> => {
   try {
     const collectionRef = collection(db, COLLECTION);
     const countSnapshot = await getCountFromServer(collectionRef);

@@ -6,15 +6,15 @@ import { useCitiesContext, useModalContext, useUserContext } from '@shared/hooks
 import { removeExtraEventActions } from '@shared/utils/utils';
 
 interface LikeProps extends HTMLAttributes<HTMLDivElement> {
-  cardId: string;
+  cityId: string;
 }
 
-export const Like: FC<LikeProps> = ({ cardId }) => {
+export const Like: FC<LikeProps> = ({ cityId }) => {
   const { user } = useUserContext();
   const { citiesLikes, toggleLike } = useCitiesContext();
   const { openModal } = useModalContext();
 
-  const likes = citiesLikes[cardId] ?? [];
+  const likes = citiesLikes[cityId] ?? [];
   const likesCount = likes.length;
   const liked = user ? likes.includes(user.uid) : false;
 
@@ -26,7 +26,7 @@ export const Like: FC<LikeProps> = ({ cardId }) => {
       return;
     }
 
-    toggleLike(cardId, user.uid);
+    toggleLike(cityId, user.uid);
   };
 
   return (

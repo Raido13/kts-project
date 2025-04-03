@@ -1,10 +1,10 @@
 import { createContext } from 'react';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 
 export interface CitiesContextType {
-  cities: City[];
+  cities: CityType[];
   isLoading: boolean;
-  randomCity: City | null;
+  randomCity: CityType | null;
   citiesLikes: Record<string, string[]>;
   toggleLike: (cityId: string, userId: string) => void;
   citiesRequestError: string | null;

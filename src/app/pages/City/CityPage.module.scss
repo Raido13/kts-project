@@ -1,4 +1,4 @@
-.city {
+.page {
   padding: 60px 39px 146px 100px;
   display: grid;
   grid-template-rows: auto 32px auto 48px auto;
@@ -13,7 +13,7 @@
     width: fit-content;
   }
 
-  &__card {
+  &__city {
     grid-row: 3;
   }
 

@@ -8,7 +8,7 @@ import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks/useRequestError';
 import { createCity } from '@shared/services/cities/createCity';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 
 export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const { fetchWithRetry } = useCitiesContext();
@@ -86,7 +86,7 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     const newCity = {
       ...formState,
       likes: [] as string[],
-    } as City;
+    } as CityType;
 
     const creatingCity = await createCity(newCity);
 

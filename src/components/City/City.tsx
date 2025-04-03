@@ -1,21 +1,21 @@
 import React from 'react';
 import cn from 'classnames';
 import Text from '@shared/components/Text';
-import s from './Card.module.scss';
-import { cardVariant } from '@shared/types/card';
+import s from './City.module.scss';
+import { CityVariant } from '@shared/types/city';
 import { getTextFromReactNode } from '@shared/utils';
 import Button from '@shared/components/Button';
 import { imageMock } from '@shared/mock/cities';
 import { Image } from '@shared/components/Image';
 import { Like } from '@shared/components/Like';
 
-export type CardProps = {
+export type CityProps = {
   /** Дополнительный classname */
   className?: string;
   /** Вариант отображения */
-  variant?: cardVariant;
+  variant?: CityVariant;
   /** Id карточки */
-  cardId: string;
+  cityId: string;
   /** URL изображения */
   image?: string;
   /** Слот над заголовком */
@@ -34,10 +34,10 @@ export type CardProps = {
   isLoading?: boolean;
 };
 
-const Card: React.FC<CardProps> = ({
+const City: React.FC<CityProps> = ({
   className,
   variant = 'preview',
-  cardId,
+  cityId,
   image,
   captionSlot,
   title,
@@ -51,16 +51,16 @@ const Card: React.FC<CardProps> = ({
   const isPreview = variant === 'preview';
 
   return (
-    <div onClick={onClick} className={cn(s.card, { [s.card_single]: !isPreview }, className)}>
+    <div onClick={onClick} className={cn(s.city, { [s.city_single]: !isPreview }, className)}>
       <Image
         isLoading={isLoading}
         src={image ?? imageMock}
         alt={imageText}
-        className={s.card__image}
+        className={s.city__image}
         variant={variant}
       />
-      <div className={s.card__body}>
-        <div className={s['card__body-top']}>
+      <div className={s.city__body}>
+        <div className={s['city__body-top']}>
           {captionSlot && (
             <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
               {captionSlot}
@@ -72,18 +72,18 @@ const Card: React.FC<CardProps> = ({
           <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
             {subtitle}
           </Text>
-          <Like cardId={cardId} />
+          <Like cityId={cityId} />
         </div>
-        <div className={s['card__body-bottom']}>
+        <div className={s['city__body-bottom']}>
           {contentSlot && (
-            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.card__price}>
+            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.city__price}>
               {contentSlot}
             </Text>
           )}
-          <div className={s.card__actions}>
+          <div className={s.city__actions}>
             {actionSlot}
             {!isPreview && (
-              <Button isSkeletonLoading={isLoading} className={s.card__button}>
+              <Button isSkeletonLoading={isLoading} className={s.city__button}>
                 More info
               </Button>
             )}
@@ -94,4 +94,4 @@ const Card: React.FC<CardProps> = ({
   );
 };
 
-export default Card;
+export default City;

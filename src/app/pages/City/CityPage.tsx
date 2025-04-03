@@ -4,16 +4,16 @@ import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import { useParams } from 'react-router-dom';
 import { BackButton } from '@shared/components/BackButton';
-import { ListCard } from '@shared/components/ListCard';
-import { CardDetail } from '@shared/components/CardDetail';
+import { ListCity } from '@shared/components/ListCity';
+import { CityDetail } from '@shared/components/CityDetail';
 import { fetchCities } from '@shared/services/cities/fetchCities';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 
 export const CityPage: FC = () => {
   const { id: currentCityId } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentCity, setCurrentCity] = useState<City | null>(null);
-  const [relatedCities, setRelatedCities] = useState<City[]>([]);
+  const [currentCity, setCurrentCity] = useState<CityType | null>(null);
+  const [relatedCities, setRelatedCities] = useState<CityType[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -24,7 +24,7 @@ export const CityPage: FC = () => {
     })
       .then((res) => {
         if (typeof res !== 'string') {
-          setCurrentCity(res as City);
+          setCurrentCity(res as CityType);
         }
       })
       .finally(() => setIsLoading(false));
@@ -36,31 +36,31 @@ export const CityPage: FC = () => {
     })
       .then((res) => {
         if (Array.isArray(res)) {
-          setRelatedCities(res as City[]);
+          setRelatedCities(res as CityType[]);
         }
       })
       .finally(() => setIsLoading(false));
   }, [currentCityId]);
 
   return (
-    <div className={s.city}>
-      <BackButton className={s.city__back}>Back</BackButton>
+    <div className={s.page}>
+      <BackButton className={s.page__back}>Back</BackButton>
       {
-        <CardDetail
-          currentCard={currentCity ?? undefined}
+        <CityDetail
+          currentCity={currentCity ?? undefined}
           action={<Button>Find ticket</Button>}
-          className={s.city__card}
+          className={s.page__city}
         />
       }
-      <section className={s.city__related}>
+      <section className={s.page__related}>
         <Text tag={'p'} view={'title'} color={'primary'}>
           Related Cities
         </Text>
-        <ul className={s.city__gallery}>
+        <ul className={s.page__gallery}>
           {isLoading
-            ? Array.from({ length: 3 }).map((_, idx) => <ListCard isLoading={isLoading} key={idx} />)
+            ? Array.from({ length: 3 }).map((_, idx) => <ListCity isLoading={isLoading} key={idx} />)
             : relatedCities.map(({ id, ...city }) => (
-                <ListCard currentCard={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
+                <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
               ))}
         </ul>
       </section>

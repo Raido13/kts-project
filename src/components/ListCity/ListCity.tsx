@@ -1,25 +1,25 @@
-import Card from '@shared/components/Card';
+import City from '@shared/components/City';
 import Button from '@shared/components/Button';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 import { FC, ReactNode, useEffect, useState } from 'react';
-import { cardVariant } from '@shared/types/card';
+import { CityVariant } from '@shared/types/city';
 import { CITIES } from '@shared/constants/links';
 import { Link } from 'react-router-dom';
-import s from './ListCard.module.scss';
+import s from './ListCity.module.scss';
 import cn from 'classnames';
 import { MIN_LOADING_TIME } from '@shared/constants/constants';
 
-interface ListCardProps {
+interface ListCityProps {
   isLoading?: boolean;
-  currentCard?: City;
-  variant?: cardVariant;
+  currentCity?: CityType;
+  variant?: CityVariant;
   action?: ReactNode;
   className?: string;
 }
 
-export const ListCard: FC<ListCardProps> = ({
+export const ListCity: FC<ListCityProps> = ({
   isLoading: externalLoading,
-  currentCard,
+  currentCity,
   variant = 'preview',
   action,
   className,
@@ -34,11 +34,11 @@ export const ListCard: FC<ListCardProps> = ({
   const isLoading = externalLoading || milLoading;
 
   return (
-    <li className={cn(s.card, className)}>
-      {!currentCard || isLoading ? (
-        <Card
+    <li className={cn(s.city, className)}>
+      {!currentCity || isLoading ? (
+        <City
           variant={variant}
-          cardId={''}
+          cityId={''}
           image={''}
           title={''}
           subtitle={''}
@@ -47,15 +47,15 @@ export const ListCard: FC<ListCardProps> = ({
           isLoading
         />
       ) : (
-        <Link to={`${CITIES}/${currentCard.id}`} className={s.card__link}>
-          <Card
+        <Link to={`${CITIES}/${currentCity.id}`} className={s.city__link}>
+          <City
             variant={variant}
-            cardId={currentCard.id}
-            image={currentCard.image}
-            title={currentCard.name}
-            captionSlot={variant !== 'single' && `Country: ${currentCard.country}`}
-            subtitle={`Population: ${currentCard.population}`}
-            contentSlot={currentCard.is_capital && 'Capital'}
+            cityId={currentCity.id}
+            image={currentCity.image}
+            title={currentCity.name}
+            captionSlot={variant !== 'single' && `Country: ${currentCity.country}`}
+            subtitle={`Population: ${currentCity.population}`}
+            contentSlot={currentCity.is_capital && 'Capital'}
             actionSlot={action}
           />
         </Link>

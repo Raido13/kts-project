@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react';
-import { City } from '@shared/types/city';
+import { CityType } from '@shared/types/city';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@shared/config/firebase';
 import { CitiesContext } from '@shared/contexts/CitiesContext';
@@ -9,15 +9,15 @@ import { useRequestError } from '@shared/hooks/useRequestError';
 import { subscribeToCities } from '@shared/services/cities/subscribeToCity';
 
 export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [cities, setCities] = useState<City[]>([]);
+  const [cities, setCities] = useState<CityType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [randomCity, setRandomCity] = useState<City | null>(null);
+  const [randomCity, setRandomCity] = useState<CityType | null>(null);
   const [citiesLikes, setCitiesLikes] = useState<Record<string, string[]>>({});
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fetchWithRetry = useCallback(
     async (retries = 3, delay = 2000) => {
-      const res = (await fetchCities({ mode: 'all' })) as City[];
+      const res = (await fetchCities({ mode: 'all' })) as CityType[];
 
       if (typeof res === 'string') {
         if (retries > 0) {
@@ -65,7 +65,7 @@ export const CitiesContextProvider: FC<PropsWithChildren> = ({ children }) => {
       mode: 'all',
       onUpdate: (data) => {
         if (typeof data !== 'string') {
-          setCities(data as City[]);
+          setCities(data as CityType[]);
         }
       },
     });

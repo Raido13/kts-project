@@ -1,4 +1,4 @@
-export interface City {
+export interface CityType {
   id: string;
   country: string;
   name: string;
@@ -7,3 +7,5 @@ export interface City {
   image: string;
   likes: string[];
 }
+
+export type CityVariant = 'preview' | 'single';
