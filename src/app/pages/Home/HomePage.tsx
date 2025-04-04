@@ -1,39 +1,25 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
-import { Link, useNavigate } from 'react-router-dom';
-import City from '@shared/components/City';
+import { useNavigate } from 'react-router-dom';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
-import { fetchCities } from '@shared/services/cities/fetchCities';
-import { CityType } from '@shared/types/city';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
+import { ListCity } from '@shared/components/ListCity';
 
 export const HomePage: FC = observer(() => {
-  const { randomCity } = citiesStore;
+  const { randomCity, fetchRelated, relatedCities, isLoading } = citiesStore;
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [relatedCities, setRelatedCities] = useState<CityType[]>([]);
+  const relatedNumber = 6;
 
   useEffect(() => {
-    setIsLoading(true);
-
-    fetchCities({
-      mode: 'related',
-      relatedCities: 6,
-    })
-      .then((res) => {
-        if (Array.isArray(res)) {
-          setRelatedCities(res as CityType[]);
-        }
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
+    fetchRelated(relatedNumber);
+  }, [fetchRelated]);
 
   const onSearchFilter = (value: string) => {
     navigation({ pathname: CITIES, search: `?query=${value}` });
@@ -67,35 +53,9 @@ export const HomePage: FC = observer(() => {
         </Text>
         <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
           {isLoading
-            ? Array.from({ length: 6 }).map((_, idx) => (
-                <li key={idx} className={s.page__city}>
-                  <City
-                    cityId=""
-                    image=""
-                    title=""
-                    subtitle=""
-                    captionSlot=""
-                    contentSlot=""
-                    actionSlot={<Button isSkeletonLoading>{''}</Button>}
-                    isLoading
-                  />
-                </li>
-              ))
-            : relatedCities.map(({ id, country, name, is_capital, population, image }) => (
-                <li key={id} className={s['page__gallery-item']}>
-                  <Link to={`${CITIES}/${id}`} className={s.page__link}>
-                    <City
-                      cityId={id}
-                      image={image}
-                      title={name}
-                      subtitle={`Population: ${population}`}
-                      captionSlot={`Country: ${country}`}
-                      contentSlot={is_capital && 'Capital'}
-                      actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
-                      isLoading={isLoading}
-                    />
-                  </Link>
-                </li>
+            ? Array.from({ length: relatedNumber }).map((_, idx) => <ListCity isLoading={isLoading} key={idx} />)
+            : relatedCities.map(({ id, ...city }) => (
+                <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
               ))}
         </ul>
       </section>

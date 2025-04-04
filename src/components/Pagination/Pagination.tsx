@@ -4,22 +4,17 @@ import s from './Pagination.module.scss';
 import ArrowPaginationIcon from '@shared/components/Icon/ArrowPaginationIcon';
 import Text from '@shared/components/Text';
 import { createRange } from '@shared/utils/utils';
+import { observer } from 'mobx-react-lite';
+import { citiesStore } from '@shared/stores';
 
 interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
-  /** Всего элементов */
-  total: number;
-  /** Всего элементов на странице */
-  perPage: number;
-  /** Текущая страница */
-  currentPage: number;
-  /** Коллбек при смене страницы */
-  onChange: (page: number) => void;
   /** Дополнительный classname */
   className?: string;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentPage, onChange, className }) => {
-  const totalPages = Math.ceil(total / perPage);
+export const Pagination: React.FC<PaginationProps> = observer(({ className }) => {
+  const { totalCities, viewPerPage, currentPage, setCurrentPage } = citiesStore;
+  const totalPages = Math.ceil(totalCities / viewPerPage);
   const DOTS = '...';
 
   const generatePages = () => {
@@ -42,7 +37,11 @@ export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentP
 
   return (
     <div className={cn(s.pagination, className)}>
-      <button disabled={currentPage === 1} className={s.pagination__arrow} onClick={() => onChange(currentPage - 1)}>
+      <button
+        disabled={currentPage === 1}
+        className={s.pagination__arrow}
+        onClick={() => setCurrentPage(currentPage - 1)}
+      >
         <ArrowPaginationIcon width={35} height={35} color={currentPage === 1 ? 'secondary' : 'primary'} />
       </button>
       {pages.map((page, idx) => (
@@ -52,7 +51,7 @@ export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentP
             [s.pagination__item_active]: page === currentPage,
             [s.pagination__item_dots]: page === DOTS,
           })}
-          onClick={() => onChange(Number(page))}
+          onClick={() => setCurrentPage(Number(page))}
           disabled={page === DOTS}
         >
           <Text tag={'p'} view={'p-18'} color={page === currentPage ? 'secondary' : 'primary'}>
@@ -63,10 +62,10 @@ export const Pagination: React.FC<PaginationProps> = ({ total, perPage, currentP
       <button
         disabled={currentPage === totalPages}
         className={cn(s.pagination__arrow, s.pagination__arrow_right)}
-        onClick={() => onChange(currentPage + 1)}
+        onClick={() => setCurrentPage(currentPage + 1)}
       >
         <ArrowPaginationIcon width={35} height={35} color={currentPage === totalPages ? 'secondary' : 'primary'} />
       </button>
     </div>
   );
-};
+});

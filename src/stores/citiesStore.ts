@@ -5,6 +5,7 @@ import { CityType } from '@shared/types/city';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Option } from '@shared/types/options';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { Range } from '@shared/types/slider';
 
 class CitiesStore {
   cities: CityType[] = [];
@@ -14,14 +15,20 @@ class CitiesStore {
   paginatedCities: CityType[] = [];
 
   randomCity: CityType | null = null;
-  singleCity: CityType | null = null;
+  currentCity: CityType | null = null;
   citiesLikes: Record<string, string[]> = {};
 
   isLoading: boolean = true;
   requestError: string | null = null;
 
   dropdownOptions: Option[] = [];
+  dropdownValue: Option[] = [];
+  filters: string[] = [];
   lastDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
+  targetCursor: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null;
+  searchQuery: string = '';
+  currentPage: number = 1;
+  viewPerPage: Range<3, 10> = 3;
   private unsubscribeFn: (() => void) | null = null;
 
   constructor() {
@@ -72,7 +79,7 @@ class CitiesStore {
       .finally(() => (this.isLoading = false));
   }
 
-  async fetchSingle(currentCityId: string) {
+  async fetchCurrent(currentCityId: string) {
     this.isLoading = true;
     await fetchCities({
       mode: 'single',
@@ -81,7 +88,7 @@ class CitiesStore {
       .then((res) => {
         if (typeof res !== 'string') {
           runInAction(() => {
-            this.singleCity = res as CityType;
+            this.currentCity = res as CityType;
           });
         }
       })
@@ -126,27 +133,39 @@ class CitiesStore {
     }
   }
 
-  async loadPaginatedCities({
-    perPage,
-    searchQuery,
-    filters,
-    lastDoc,
-    currentPage,
-  }: {
-    perPage: number;
-    searchQuery: string;
-    filters: string[];
-    lastDoc: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
-    currentPage: number;
-  }) {
+  setDropdownValue(value: Option[]) {
+    this.dropdownValue = value;
+  }
+
+  getDropdownTitle() {
+    return this.dropdownValue.length === 0 ? 'Choose Country' : this.dropdownValue.map(({ value }) => value).join(', ');
+  }
+
+  setSearchQuery(value: string) {
+    this.searchQuery = value;
+  }
+
+  setCurrentPage(page: number) {
+    this.currentPage = page;
+  }
+
+  setViewPerPageState(viewPerPage: Range<3, 10>) {
+    this.viewPerPage = viewPerPage;
+  }
+
+  makeEmptyLastDocs() {
+    this.lastDocs = [];
+  }
+
+  async loadPaginatedCities() {
     this.isLoading = true;
 
     const res = await fetchCities({
       mode: 'paginate',
-      perPage,
-      searchQuery,
-      filters,
-      lastDoc,
+      perPage: this.viewPerPage,
+      searchQuery: this.searchQuery,
+      filters: this.filters,
+      lastDoc: this.targetCursor,
     });
 
     if (typeof res !== 'string' && 'data' in res) {
@@ -154,7 +173,7 @@ class CitiesStore {
         this.paginatedCities = res.data;
         this.totalCities = res.total;
 
-        if (currentPage > this.lastDocs.length && res.lastDoc) {
+        if (this.currentPage > this.lastDocs.length && res.lastDoc) {
           this.lastDocs.push(res.lastDoc);
         }
       });

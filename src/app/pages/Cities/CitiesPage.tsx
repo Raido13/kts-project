@@ -1,8 +1,9 @@
+/* eslint-disable */
 import Text from '@shared/components/Text';
 import { Search } from '@shared/components/Search';
 import { Pagination } from '@shared/components/Pagination';
 import MultiDropdown from '@shared/components/MultiDropdown';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { Option } from '@shared/types/options';
 import Button from '@shared/components/Button';
 import s from './CitiesPage.module.scss';
@@ -12,9 +13,9 @@ import { useLocation } from 'react-router-dom';
 import { Slider } from '@shared/components/Slider';
 import { CityType } from '@shared/types/city';
 import { ListCity } from '@shared/components/ListCity';
-import { fetchCities } from '@shared/services/cities/fetchCities';
-import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
+import { observer } from 'mobx-react-lite';
+import { citiesStore } from '@shared/stores';
 
 const CitiesPageHeader: FC = () => (
   <section className={s.page__description}>
@@ -44,10 +45,6 @@ interface CitiesPageActionsProps {
 const CitiesPageActions: FC<CitiesPageActionsProps> = ({
   preInitializedQuery,
   onSearchFilter,
-  dropdownOptions,
-  dropdownValue,
-  setDropdownValue,
-  getDropdownTitle,
   viewPerPage,
   setViewPerPage,
   fetchedCities,
@@ -61,15 +58,7 @@ const CitiesPageActions: FC<CitiesPageActionsProps> = ({
         actionName={'Find now'}
         placeholder={'Search City'}
       />
-      {dropdownOptions && dropdownValue && (
-        <MultiDropdown
-          options={dropdownOptions}
-          onChange={setDropdownValue}
-          value={dropdownValue}
-          getTitle={getDropdownTitle}
-          className={s.page__dropdown}
-        />
-      )}
+      <MultiDropdown className={s.page__dropdown} />
       <Slider min={3} max={Math.min(totalCities, 10) as Range<4, 10>} value={viewPerPage} onChange={setViewPerPage} />
     </div>
     <div className={s.page__counter}>
@@ -99,25 +88,26 @@ const CitiesPageList: FC<CitiesPageListProps> = ({ windowWidth, isLoading, pagin
   </ul>
 );
 
-export const CitiesPage: FC = () => {
-  const [cities, setCities] = useState<CityType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [totalCities, setTotalCities] = useState<number>(0);
+export const CitiesPage: FC = observer(() => {
   const windowWidth = useWindowWidth();
   const preInitializedQuery = new URLSearchParams(useLocation().search).get('query') ?? undefined;
-  const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
-  const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
-  const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [viewPerPage, setViewPerPageState] = useState<number>(3);
-  const [lastDocs, setLastDocs] = useState<QueryDocumentSnapshot<DocumentData, DocumentData>[]>([]);
+  const { loadPaginatedCities } = citiesStore;
+  // const [cities, setCities] = useState<CityType[]>([]);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  // const [totalCities, setTotalCities] = useState<number>(0);
+  // const [searchQuery, setSearchQuery] = useState(preInitializedQuery ?? '');
+  // const [dropdownValue, setDropdownValue] = useState<Option[]>([]);
+  // const [dropdownOptions, setDropdownOptions] = useState<Option[]>([]);
+  // const [currentPage, setCurrentPage] = useState<number>(1);
+  // const [viewPerPage, setViewPerPageState] = useState<number>(3);
+  // const [lastDocs, setLastDocs] = useState<QueryDocumentSnapshot<DocumentData, DocumentData>[]>([]);
 
-  const getDropdownTitle = useCallback(
-    (values: Option[]) => (values.length === 0 ? 'Choose Country' : values.map(({ value }) => value).join(', ')),
-    []
-  );
+  // const getDropdownTitle = useCallback(
+  //   (values: Option[]) => (values.length === 0 ? 'Choose Country' : values.map(({ value }) => value).join(', ')),
+  //   []
+  // );
 
-  const setViewPerPage = useCallback((value: number) => {
+  const setViewPerPage = useCallback((value: numbser) => {
     setViewPerPageState(value);
     setCurrentPage(1);
     setLastDocs([]);
@@ -129,42 +119,20 @@ export const CitiesPage: FC = () => {
     setLastDocs([]);
   }, []);
 
-  const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value), [dropdownValue]);
-  const targetCursor = useMemo(() => {
-    return currentPage === 1 ? null : (lastDocs[currentPage - 2] ?? null);
-  }, [currentPage, lastDocs]);
+  // const selectedNames = useMemo(() => dropdownValue.map(({ value }) => value), [dropdownValue]);
+  // const targetCursor = useMemo(() => {
+  //   return currentPage === 1 ? null : (lastDocs[currentPage - 2] ?? null);
+  // }, [currentPage, lastDocs]);
+
+  // useEffect(() => {
+  //   fetchCities({ mode: 'options' }).then((res) => {
+  //     if (Array.isArray(res)) setDropdownOptions(res as Option[]);
+  //   });
+  // }, []);
 
   useEffect(() => {
-    fetchCities({ mode: 'options' }).then((res) => {
-      if (Array.isArray(res)) setDropdownOptions(res as Option[]);
-    });
+    loadPaginatedCities();
   }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    fetchCities({
-      mode: 'paginate',
-      perPage: viewPerPage,
-      searchQuery,
-      filters: selectedNames,
-      lastDoc: targetCursor,
-    })
-      .then((res) => {
-        if (typeof res !== 'string' && 'data' in res) {
-          setCities(res.data);
-          setTotalCities(res.total);
-
-          setLastDocs((prev) => {
-            if (currentPage > prev.length && res.lastDoc) {
-              return [...prev, res.lastDoc];
-            }
-            return prev;
-          });
-        }
-      })
-      .finally(() => setIsLoading(false));
-  }, [dropdownValue, searchQuery, viewPerPage, targetCursor, selectedNames, currentPage]);
 
   return (
     <div className={s.page}>
@@ -182,13 +150,7 @@ export const CitiesPage: FC = () => {
         totalCities={totalCities}
       />
       <CitiesPageList windowWidth={windowWidth} isLoading={isLoading} paginatedCities={cities} />
-      <Pagination
-        total={totalCities}
-        perPage={viewPerPage}
-        currentPage={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-        className={s.page__pagination}
-      />
+      <Pagination className={s.page__pagination} />
     </div>
   );
-};
+});

@@ -1,4 +1,5 @@
-import { FC, useEffect, useState } from 'react';
+/* eslint-disable */
+import { FC, useEffect } from 'react';
 import s from './CityPage.module.scss';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
@@ -6,41 +7,17 @@ import { useParams } from 'react-router-dom';
 import { BackButton } from '@shared/components/BackButton';
 import { ListCity } from '@shared/components/ListCity';
 import { CityDetail } from '@shared/components/CityDetail';
-import { fetchCities } from '@shared/services/cities/fetchCities';
-import { CityType } from '@shared/types/city';
+import { observer } from 'mobx-react-lite';
+import { citiesStore } from '@shared/stores';
 
-export const CityPage: FC = () => {
+export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentCity, setCurrentCity] = useState<CityType | null>(null);
-  const [relatedCities, setRelatedCities] = useState<CityType[]>([]);
+  const { fetchRelated, fetchCurrent, relatedCities, currentCity, isLoading } = citiesStore;
 
   useEffect(() => {
-    setIsLoading(true);
-
-    fetchCities({
-      mode: 'single',
-      currentCityId,
-    })
-      .then((res) => {
-        if (typeof res !== 'string') {
-          setCurrentCity(res as CityType);
-        }
-      })
-      .finally(() => setIsLoading(false));
-
-    fetchCities({
-      mode: 'related',
-      currentCityId,
-      relatedCities: 3,
-    })
-      .then((res) => {
-        if (Array.isArray(res)) {
-          setRelatedCities(res as CityType[]);
-        }
-      })
-      .finally(() => setIsLoading(false));
-  }, [currentCityId]);
+    fetchRelated(3);
+    currentCityId && fetchCurrent(currentCityId);
+  }, [currentCityId, fetchRelated]);
 
   return (
     <div className={s.page}>
@@ -66,4 +43,4 @@ export const CityPage: FC = () => {
       </section>
     </div>
   );
-};
+});
