@@ -20,7 +20,7 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
-  const { randomCity, requestError } = citiesStore;
+  const { mostLikedCity, requestError } = citiesStore;
   const { pathname } = useLocation();
   const { openModal } = uiStore;
   const { user } = userStore;
@@ -52,7 +52,7 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
           links={[
             { label: 'Home', path: HOME },
             { label: 'Cities', path: CITIES },
-            { label: 'Good Choice', path: randomCity ? `${CITIES}/${randomCity.id}` : '' },
+            { label: 'Good Choice', path: mostLikedCity ? `${CITIES}/${mostLikedCity.id}` : '' },
           ]}
           menuItems={[
             { icon: <UserIcon />, onClick: () => openModal(nextAuthModal) },

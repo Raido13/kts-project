@@ -6,6 +6,7 @@ import { makeAutoObservable, runInAction, reaction } from 'mobx';
 import { Option } from '@shared/types/options';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
+import { getMostLikedCity } from '@shared/utils/utils';
 
 class CitiesStore {
   cities: CityType[] = [];
@@ -14,7 +15,7 @@ class CitiesStore {
   relatedCities: CityType[] = [];
   paginatedCities: CityType[] = [];
 
-  randomCity: CityType | null = null;
+  mostLikedCity: CityType | null = null;
   currentCity: CityType | null = null;
   citiesLikes: Record<string, string[]> = {};
 
@@ -25,7 +26,6 @@ class CitiesStore {
   dropdownValue: Option[] = [];
   filters: string[] = [];
   lastDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
-  targetCursor: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null;
   searchQuery: string = '';
   currentPage: number = 1;
   viewPerPage: Range<3, 10> = 3;
@@ -33,8 +33,6 @@ class CitiesStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.fetchAllWithRetry();
-    this.subscribeToUpdates();
 
     reaction(
       () => [
@@ -51,12 +49,19 @@ class CitiesStore {
     );
   }
 
+  init() {
+    this.fetchAllWithRetry();
+    this.subscribeToUpdates();
+  }
+
   setError = (message: string | null) => {
     this.requestError = message;
   };
 
   fetchAllWithRetry = async (retries = 3, delay = 2000) => {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     const res = (await fetchCities({ mode: 'all' })) as CityType[];
 
     if (typeof res === 'string') {
@@ -74,14 +79,16 @@ class CitiesStore {
     runInAction(() => {
       this.setError(null);
       this.cities = res;
-      this.randomCity = res[Math.floor(Math.random() * res.length)];
+      this.mostLikedCity = getMostLikedCity(res);
       this.citiesLikes = Object.fromEntries(res.map((c) => [c.id, c.likes || []]));
       this.isLoading = false;
     });
   };
 
   fetchRelated = async (citiesNumber: number) => {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     await fetchCities({ mode: 'related', relatedCities: citiesNumber })
       .then((res) => {
         if (Array.isArray(res)) {
@@ -98,7 +105,9 @@ class CitiesStore {
   };
 
   fetchCurrent = async (currentCityId: string) => {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     await fetchCities({
       mode: 'single',
       currentCityId,
@@ -121,7 +130,9 @@ class CitiesStore {
     this.unsubscribeFn = subscribeToCities({
       mode: 'all',
       onUpdate: (data) => {
-        this.isLoading = true;
+        runInAction(() => {
+          this.isLoading = true;
+        });
         if (typeof data === 'string') {
           this.setError(data);
           return;
@@ -157,11 +168,16 @@ class CitiesStore {
 
   setDropdownValue = (value: Option[]) => {
     this.dropdownValue = value;
+    this.filters = value.map(({ value }) => value);
   };
 
   get getDropdownTitle() {
     if (!this.dropdownValue) return 'Choose Country';
     return this.dropdownValue.length === 0 ? 'Choose Country' : this.dropdownValue.map(({ value }) => value).join(', ');
+  }
+
+  get targetCursor() {
+    return this.currentPage === 1 ? null : (this.lastDocs[this.currentPage - 2] ?? null);
   }
 
   setSearchQuery = (value: string) => {
@@ -181,7 +197,9 @@ class CitiesStore {
   };
 
   loadPaginatedCities = async () => {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
 
     const res = await fetchCities({
       mode: 'paginate',
@@ -201,7 +219,9 @@ class CitiesStore {
         }
       });
     }
-    this.isLoading = false;
+    runInAction(() => {
+      this.isLoading = false;
+    });
   };
 
   dispose() {

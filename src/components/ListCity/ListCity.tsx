@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import s from './ListCity.module.scss';
 import cn from 'classnames';
 import { MIN_LOADING_TIME } from '@shared/constants/constants';
-import { observer } from 'mobx-react-lite';
 
 interface ListCityProps {
   isLoading?: boolean;
@@ -18,45 +17,49 @@ interface ListCityProps {
   className?: string;
 }
 
-export const ListCity: FC<ListCityProps> = observer(
-  ({ isLoading: externalLoading, currentCity, variant = 'preview', action, className }) => {
-    const [milLoading, setMinLoading] = useState(true);
+export const ListCity: FC<ListCityProps> = ({
+  isLoading: externalLoading,
+  currentCity,
+  variant = 'preview',
+  action,
+  className,
+}) => {
+  const [milLoading, setMinLoading] = useState(true);
 
-    useEffect(() => {
-      const timer = setTimeout(() => setMinLoading(false), MIN_LOADING_TIME);
-      return () => clearTimeout(timer);
-    });
+  useEffect(() => {
+    const timer = setTimeout(() => setMinLoading(false), MIN_LOADING_TIME);
+    return () => clearTimeout(timer);
+  });
 
-    const isLoading = externalLoading || milLoading;
+  const isLoading = externalLoading || milLoading;
 
-    return (
-      <li className={cn(s.city, className)}>
-        {!currentCity || isLoading ? (
+  return (
+    <li className={cn(s.city, className)}>
+      {!currentCity || isLoading ? (
+        <City
+          variant={variant}
+          cityId={''}
+          image={''}
+          title={''}
+          subtitle={''}
+          contentSlot={''}
+          actionSlot={<Button isSkeletonLoading>{''}</Button>}
+          isLoading
+        />
+      ) : (
+        <Link to={`${CITIES}/${currentCity.id}`} className={s.city__link}>
           <City
             variant={variant}
-            cityId={''}
-            image={''}
-            title={''}
-            subtitle={''}
-            contentSlot={''}
-            actionSlot={<Button isSkeletonLoading>{''}</Button>}
-            isLoading
+            cityId={currentCity.id}
+            image={currentCity.image}
+            title={currentCity.name}
+            captionSlot={variant !== 'single' && `Country: ${currentCity.country}`}
+            subtitle={`Population: ${currentCity.population}`}
+            contentSlot={currentCity.is_capital && 'Capital'}
+            actionSlot={action}
           />
-        ) : (
-          <Link to={`${CITIES}/${currentCity.id}`} className={s.city__link}>
-            <City
-              variant={variant}
-              cityId={currentCity.id}
-              image={currentCity.image}
-              title={currentCity.name}
-              captionSlot={variant !== 'single' && `Country: ${currentCity.country}`}
-              subtitle={`Population: ${currentCity.population}`}
-              contentSlot={currentCity.is_capital && 'Capital'}
-              actionSlot={action}
-            />
-          </Link>
-        )}
-      </li>
-    );
-  }
-);
+        </Link>
+      )}
+    </li>
+  );
+};

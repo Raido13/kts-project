@@ -12,7 +12,7 @@ import { citiesStore } from '@shared/stores';
 import { ListCity } from '@shared/components/ListCity';
 
 export const HomePage: FC = observer(() => {
-  const { randomCity, fetchRelated, relatedCities, isLoading } = citiesStore;
+  const { mostLikedCity, fetchRelated, relatedCities, isLoading } = citiesStore;
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
   const relatedNumber = 6;
@@ -26,7 +26,7 @@ export const HomePage: FC = observer(() => {
   };
 
   const handleSuggest = () => {
-    navigation({ pathname: `${CITIES}/${randomCity?.id}` });
+    navigation({ pathname: `${CITIES}/${mostLikedCity?.id}` });
   };
 
   return (

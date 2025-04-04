@@ -12,31 +12,35 @@ interface CityDetailProps {
   className?: string;
 }
 
-export const CityDetail: FC<CityDetailProps> = observer(
-  ({ isLoading, currentCity, variant = 'single', action, ...props }) =>
-    !currentCity || isLoading ? (
-      <City
-        variant={variant}
-        cityId={''}
-        image={''}
-        title={''}
-        subtitle={''}
-        contentSlot={''}
-        actionSlot={<Button isSkeletonLoading>{''}</Button>}
-        isLoading
-        {...props}
-      />
-    ) : (
-      <City
-        variant={variant}
-        cityId={currentCity.id}
-        image={currentCity.image}
-        title={currentCity.name}
-        captionSlot={variant !== 'single' && `Country: ${currentCity.country}`}
-        subtitle={`Population: ${currentCity.population}`}
-        contentSlot={currentCity.is_capital && 'Capital'}
-        actionSlot={action}
-        {...props}
-      />
-    )
+export const CityDetail: FC<CityDetailProps> = ({ isLoading, currentCity, variant = 'single', ...props }) =>
+  !currentCity || isLoading ? (
+    <City
+      variant={variant}
+      cityId={''}
+      image={''}
+      title={''}
+      subtitle={''}
+      contentSlot={''}
+      actionSlot={<Button isSkeletonLoading>{''}</Button>}
+      isLoading
+      {...props}
+    />
+  ) : (
+    <CityContent variant={variant} currentCity={currentCity} {...props} />
+  );
+
+const CityContent = observer(
+  ({ currentCity, action, variant, ...props }: { currentCity: CityType } & CityDetailProps) => (
+    <City
+      variant={variant}
+      cityId={currentCity.id}
+      image={currentCity.image}
+      title={currentCity.name}
+      captionSlot={variant !== 'single' && `Country: ${currentCity.country}`}
+      subtitle={`Population: ${currentCity.population}`}
+      contentSlot={currentCity.is_capital && 'Capital'}
+      actionSlot={action}
+      {...props}
+    />
+  )
 );

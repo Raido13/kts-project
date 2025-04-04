@@ -1,3 +1,4 @@
+import { CityType } from '@shared/types/city';
 import React, { MouseEvent } from 'react';
 
 export const getTextFromReactNode = (node: React.ReactNode): string => {
@@ -22,3 +23,6 @@ export const createRange = (start: number, end: number): number[] =>
 
 export const capitalizeFirst = (str: string) =>
   str.length === 0 ? '' : str[0].toUpperCase() + str.slice(1).toLowerCase();
+
+export const getMostLikedCity = (cities: CityType[]) =>
+  cities.reduce((max, city) => ((city.likes?.length || 0) > (max.likes?.length || 0) ? city : max), cities[0]);
