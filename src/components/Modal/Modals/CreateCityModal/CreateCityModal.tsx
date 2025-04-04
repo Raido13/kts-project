@@ -6,7 +6,7 @@ import { useForm } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
-import { useRequestError } from '@shared/hooks/useRequestError';
+import { useRequestError } from '@shared/hooks';
 import { createCity } from '@shared/services/cities/createCity';
 import { CityType } from '@shared/types/city';
 import { uiStore } from '@shared/stores/uiStore';

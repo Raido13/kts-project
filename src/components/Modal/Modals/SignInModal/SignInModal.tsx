@@ -6,7 +6,7 @@ import { useForm } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { Form } from '@shared/components/Form';
 import { FieldType } from '@shared/types/field';
-import { useRequestError } from '@shared/hooks/useRequestError';
+import { useRequestError } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '@shared/stores/userStore';
 import { uiStore } from '@shared/stores/uiStore';

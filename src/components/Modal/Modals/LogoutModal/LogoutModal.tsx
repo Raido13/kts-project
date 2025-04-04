@@ -3,7 +3,7 @@ import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './LogoutModal.module.scss';
 import { removeExtraEventActions } from '@shared/utils/utils';
-import { useRequestError } from '@shared/hooks/useRequestError';
+import { useRequestError } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '@shared/stores/userStore';
 import { uiStore } from '@shared/stores/uiStore';

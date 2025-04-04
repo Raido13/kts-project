@@ -49,7 +49,18 @@ class CitiesStore {
     );
   }
 
-  init() {
+  init(query?: URLSearchParams) {
+    if (query) {
+      if (query) {
+        this.setSearchQuery(query.get('query') ?? '');
+        this.setCurrentPage(Number(query.get('page') ?? 1));
+        this.setViewPerPage(Number(query.get('perPage') ?? 3) as Range<3, 10>);
+        const filters = query.getAll('filter');
+        const matchedOptions = this.dropdownOptions.filter((o) => filters.includes(o.value));
+        this.setDropdownValue(matchedOptions);
+      }
+    }
+
     this.fetchAllWithRetry();
     this.subscribeToUpdates();
   }

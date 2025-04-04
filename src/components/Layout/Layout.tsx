@@ -24,6 +24,7 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
   const { pathname } = useLocation();
   const { openModal } = uiStore;
   const { user } = userStore;
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [pathname]);
