@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { FC, useEffect } from 'react';
 import s from './CityPage.module.scss';
 import Text from '@shared/components/Text';
@@ -13,11 +12,12 @@ import { citiesStore } from '@shared/stores';
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
   const { fetchRelated, fetchCurrent, relatedCities, currentCity, isLoading } = citiesStore;
+  const relatedNumber = 3;
 
   useEffect(() => {
-    fetchRelated(3);
-    currentCityId && fetchCurrent(currentCityId);
-  }, [currentCityId, fetchRelated]);
+    (async () => await fetchRelated(relatedNumber))();
+    if (currentCityId) (async () => fetchCurrent(currentCityId))();
+  }, [currentCityId, fetchRelated, fetchCurrent]);
 
   return (
     <div className={s.page}>
@@ -35,7 +35,7 @@ export const CityPage: FC = observer(() => {
         </Text>
         <ul className={s.page__gallery}>
           {isLoading
-            ? Array.from({ length: 3 }).map((_, idx) => <ListCity isLoading={isLoading} key={idx} />)
+            ? Array.from({ length: relatedNumber }).map((_, idx) => <ListCity isLoading={isLoading} key={idx} />)
             : relatedCities.map(({ id, ...city }) => (
                 <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
               ))}

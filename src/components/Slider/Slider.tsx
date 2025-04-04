@@ -2,16 +2,14 @@ import { Range } from '@shared/types/slider';
 import { FC, HTMLAttributes } from 'react';
 import cn from 'classnames';
 import s from './Slider.module.scss';
+import { observer } from 'mobx-react-lite';
+import { citiesStore } from '@shared/stores';
 
 interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   /** Минимальное значение карточек, от 3 до 30 */
   min?: Range<3, 9>;
   /** Максимальное значение карточек, от 4 до 31 */
   max?: Range<4, 10>;
-  /** Текущее значение для вывода карточек */
-  value: number;
-  /** Возвращаем новое значение для вывода карточек */
-  onChange: (value: number) => void;
   /** Дополнительный класс */
   className?: string;
 }
@@ -19,7 +17,8 @@ interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'>
 const STEP = 1;
 const FILL_OFFSET = 8;
 
-export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, className, ...props }) => {
+export const Slider: FC<SliderProps> = observer(({ min = 3, max = 30, className, ...props }) => {
+  const { viewPerPage, setViewPerPage } = citiesStore;
   const markList = [];
 
   for (let i = min; i <= max; i += STEP) {
@@ -27,7 +26,7 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
   }
 
   const getPercentage = (n: number) => ((n - min) / (max - min)) * 100;
-  const percentage = getPercentage(value);
+  const percentage = getPercentage(viewPerPage);
 
   return (
     <div className={cn(s.slider, className)}>
@@ -35,7 +34,7 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
         type={'range'}
         min={min}
         max={max}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => setViewPerPage(Number(e.target.value) as Range<3, 10>)}
         className={s.slider__range}
         {...props}
       />
@@ -52,4 +51,4 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
       </div>
     </div>
   );
-};
+});

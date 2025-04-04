@@ -62,14 +62,14 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
     : searchQuery !== ''
       ? searchQuery
       : dropdownValue.length > 0
-        ? getDropdownTitle()
+        ? getDropdownTitle
         : '';
 
   return (
     <div className={cn(s.dropdown, className)} ref={dropdownRef}>
       <Input
         value={inputValue}
-        placeholder={getDropdownTitle()}
+        placeholder={getDropdownTitle}
         onChange={(value) => {
           setSearchQuery(value);
         }}

@@ -2,7 +2,7 @@ import { fetchCities } from '@shared/services/cities/fetchCities';
 import { subscribeToCities } from '@shared/services/cities/subscribeToCity';
 import { updateCity } from '@shared/services/cities/updateCity';
 import { CityType } from '@shared/types/city';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction, reaction } from 'mobx';
 import { Option } from '@shared/types/options';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
@@ -35,13 +35,27 @@ class CitiesStore {
     makeAutoObservable(this);
     this.fetchAllWithRetry();
     this.subscribeToUpdates();
+
+    reaction(
+      () => [
+        this.dropdownValue.map(({ key }) => key).join(','),
+        this.searchQuery,
+        this.viewPerPage,
+        this.targetCursor,
+        this.currentPage,
+        this.filters.join(','),
+      ],
+      () => {
+        this.loadPaginatedCities();
+      }
+    );
   }
 
-  setError(message: string | null) {
+  setError = (message: string | null) => {
     this.requestError = message;
-  }
+  };
 
-  async fetchAllWithRetry(retries = 3, delay = 2000) {
+  fetchAllWithRetry = async (retries = 3, delay = 2000) => {
     this.isLoading = true;
     const res = (await fetchCities({ mode: 'all' })) as CityType[];
 
@@ -64,9 +78,9 @@ class CitiesStore {
       this.citiesLikes = Object.fromEntries(res.map((c) => [c.id, c.likes || []]));
       this.isLoading = false;
     });
-  }
+  };
 
-  async fetchRelated(citiesNumber: number) {
+  fetchRelated = async (citiesNumber: number) => {
     this.isLoading = true;
     await fetchCities({ mode: 'related', relatedCities: citiesNumber })
       .then((res) => {
@@ -76,10 +90,14 @@ class CitiesStore {
           });
         }
       })
-      .finally(() => (this.isLoading = false));
-  }
+      .finally(() =>
+        runInAction(() => {
+          this.isLoading = false;
+        })
+      );
+  };
 
-  async fetchCurrent(currentCityId: string) {
+  fetchCurrent = async (currentCityId: string) => {
     this.isLoading = true;
     await fetchCities({
       mode: 'single',
@@ -92,10 +110,14 @@ class CitiesStore {
           });
         }
       })
-      .finally(() => (this.isLoading = false));
-  }
+      .finally(() =>
+        runInAction(() => {
+          this.isLoading = false;
+        })
+      );
+  };
 
-  subscribeToUpdates() {
+  subscribeToUpdates = () => {
     this.unsubscribeFn = subscribeToCities({
       mode: 'all',
       onUpdate: (data) => {
@@ -106,13 +128,13 @@ class CitiesStore {
         }
         runInAction(() => {
           this.cities = data as CityType[];
+          this.isLoading = false;
         });
-        this.isLoading = false;
       },
     });
-  }
+  };
 
-  async toggleLike(cityId: string, userId: string) {
+  toggleLike = async (cityId: string, userId: string) => {
     const updatedLikes = await updateCity({ mode: 'like', userId });
 
     if (typeof updatedLikes === 'string') {
@@ -122,42 +144,43 @@ class CitiesStore {
     runInAction(() => {
       this.citiesLikes = { ...this.citiesLikes, [cityId]: updatedLikes };
     });
-  }
+  };
 
-  async loadDropdownOptions() {
+  loadDropdownOptions = async () => {
     const res = await fetchCities({ mode: 'options' });
     if (Array.isArray(res)) {
       runInAction(() => {
         this.dropdownOptions = res as Option[];
       });
     }
-  }
+  };
 
-  setDropdownValue(value: Option[]) {
+  setDropdownValue = (value: Option[]) => {
     this.dropdownValue = value;
-  }
+  };
 
-  getDropdownTitle() {
+  get getDropdownTitle() {
+    if (!this.dropdownValue) return 'Choose Country';
     return this.dropdownValue.length === 0 ? 'Choose Country' : this.dropdownValue.map(({ value }) => value).join(', ');
   }
 
-  setSearchQuery(value: string) {
-    this.searchQuery = value;
-  }
-
-  setCurrentPage(page: number) {
-    this.currentPage = page;
-  }
-
-  setViewPerPageState(viewPerPage: Range<3, 10>) {
-    this.viewPerPage = viewPerPage;
-  }
-
-  makeEmptyLastDocs() {
+  setSearchQuery = (value: string) => {
+    this.setCurrentPage(1);
     this.lastDocs = [];
-  }
+    this.searchQuery = value;
+  };
 
-  async loadPaginatedCities() {
+  setCurrentPage = (page: number) => {
+    this.currentPage = page;
+  };
+
+  setViewPerPage = (viewPerPage: Range<3, 10>) => {
+    this.lastDocs = [];
+    this.setCurrentPage(1);
+    this.viewPerPage = viewPerPage;
+  };
+
+  loadPaginatedCities = async () => {
     this.isLoading = true;
 
     const res = await fetchCities({
@@ -179,7 +202,7 @@ class CitiesStore {
       });
     }
     this.isLoading = false;
-  }
+  };
 
   dispose() {
     this.unsubscribeFn?.();

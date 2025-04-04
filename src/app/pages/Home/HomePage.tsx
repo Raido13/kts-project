@@ -18,7 +18,7 @@ export const HomePage: FC = observer(() => {
   const relatedNumber = 6;
 
   useEffect(() => {
-    fetchRelated(relatedNumber);
+    (async () => await fetchRelated(relatedNumber))();
   }, [fetchRelated]);
 
   const onSearchFilter = (value: string) => {
