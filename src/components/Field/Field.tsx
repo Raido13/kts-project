@@ -24,20 +24,28 @@ interface CheckboxFieldProps extends CommonFieldProps {
 
 type FieldProps = TextFieldProps | CheckboxFieldProps;
 
-export const Field: FC<FieldProps> = ({ label, type, value, onChange, errors, name, ...props }) => (
-  <div className={s.field}>
-    <Text view={'p-14'}>{label}</Text>
-    {type === 'checkbox' ? (
-      <CheckBox type={type} checked={value} onChange={onChange} {...props} />
-    ) : (
-      <>
-        <Input type={type} value={value} onChange={onChange} {...props} />
-        {errors[name] && (
-          <Text view={'p-14'} className={s.field__error}>
-            {errors[name]}
-          </Text>
-        )}
-      </>
-    )}
-  </div>
-);
+export const Field: FC<FieldProps> = ({ label, type, value, onChange, errors, name }) => {
+  const inputProps = {
+    name,
+    [type === 'checkbox' ? 'checked' : 'value']: value,
+    ...(type === 'checkbox' ? {} : { type }),
+  };
+
+  return (
+    <div className={s.field}>
+      <Text view={'p-14'}>{label}</Text>
+      {type === 'checkbox' ? (
+        <CheckBox type={type} checked={value} onChange={onChange} {...inputProps} />
+      ) : (
+        <>
+          <Input type={type} value={value} onChange={onChange} {...inputProps} />
+          {errors[name] && (
+            <Text view={'p-14'} className={s.field__error}>
+              {errors[name]}
+            </Text>
+          )}
+        </>
+      )}
+    </div>
+  );
+};

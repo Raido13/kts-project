@@ -8,13 +8,13 @@ class UiStore {
     makeAutoObservable(this);
   }
 
-  openModal(modal: ModalType) {
+  openModal = (modal: ModalType) => {
     this.modal = modal;
-  }
+  };
 
-  closeModal() {
+  closeModal = () => {
     this.modal = null;
-  }
+  };
 }
 
 export const uiStore = new UiStore();

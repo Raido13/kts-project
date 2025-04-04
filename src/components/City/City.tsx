@@ -61,7 +61,7 @@ const City: React.FC<CityProps> = ({
       />
       <div className={s.city__body}>
         <div className={s['city__body-top']}>
-          {captionSlot && (
+          {(isLoading || captionSlot) && (
             <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
               {captionSlot}
             </Text>
@@ -75,7 +75,7 @@ const City: React.FC<CityProps> = ({
           <Like cityId={cityId} />
         </div>
         <div className={s['city__body-bottom']}>
-          {contentSlot && (
+          {(isLoading || contentSlot) && (
             <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.city__price}>
               {contentSlot}
             </Text>

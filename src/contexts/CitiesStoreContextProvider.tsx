@@ -7,5 +7,5 @@ export const CitiesStoreContextProvider: FC<PropsWithChildren> = ({ children }) 
     citiesStore.init();
   }, []);
 
-  return <CitiesStoreContext.Provider value={citiesStore}>{children}</CitiesStoreContext.Provider>;
+  return <CitiesStoreContext.Provider value={undefined as never}>{children}</CitiesStoreContext.Provider>;
 };
