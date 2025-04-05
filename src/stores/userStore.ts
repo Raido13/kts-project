@@ -2,7 +2,7 @@ import { logout as signOut } from '@shared/services/auth/logout';
 import { signIn } from '@shared/services/auth/signIn';
 import { signUp } from '@shared/services/auth/signUp';
 import { User } from 'firebase/auth';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 
 class UserStore {
   user: User | null = null;
@@ -17,8 +17,9 @@ class UserStore {
     if (typeof user === 'string') {
       return user;
     }
-
-    this.user = user;
+    runInAction(() => {
+      this.user = user;
+    });
   }
 
   async register(email: string, password: string) {

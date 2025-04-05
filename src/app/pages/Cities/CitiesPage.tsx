@@ -7,7 +7,6 @@ import Button from '@shared/components/Button';
 import s from './CitiesPage.module.scss';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
-import { useLocation } from 'react-router-dom';
 import { Slider } from '@shared/components/Slider';
 import { ListCity } from '@shared/components/ListCity';
 import { Range } from '@shared/types/slider';
@@ -67,21 +66,11 @@ const CitiesPageList: FC = observer(() => {
   );
 });
 
-export const CitiesPage: FC = observer(() => {
-  const { loadPaginatedCities, setSearchQuery } = citiesStore;
-  const initialQuery = new URLSearchParams(useLocation().search).get('query') ?? '';
-
-  useEffect(() => {
-    (async () => await loadPaginatedCities())();
-    setSearchQuery(initialQuery);
-  }, [loadPaginatedCities, setSearchQuery, initialQuery]);
-
-  return (
-    <div className={s.page}>
-      <CitiesPageHeader />
-      <CitiesPageActions />
-      <CitiesPageList />
-      <Pagination className={s.page__pagination} />
-    </div>
-  );
-});
+export const CitiesPage: FC = observer(() => (
+  <div className={s.page}>
+    <CitiesPageHeader />
+    <CitiesPageActions />
+    <CitiesPageList />
+    <Pagination className={s.page__pagination} />
+  </div>
+));

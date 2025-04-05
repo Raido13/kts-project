@@ -1,10 +1,11 @@
-import { HTMLAttributes, useState } from 'react';
+import { HTMLAttributes, useEffect, useState } from 'react';
 import Input from '@shared/components/Input';
 import Button from '@shared/components/Button';
 import s from './Search.module.scss';
 import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
+import { runInAction } from 'mobx';
 
 interface SearchProps extends HTMLAttributes<HTMLDivElement> {
   /** Коллбек после поиска */
@@ -19,24 +20,37 @@ interface SearchProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Search: React.FC<SearchProps> = observer(({ onSearchFilter, actionName, placeholder, className }) => {
   const { setSearchQuery, searchQuery } = citiesStore;
-  const [localSearchQuery, setLocalSearchQuery] = useState<string>(searchQuery);
+  const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
 
   const handleClearSearch = () => {
-    onSearchFilter?.(searchQuery);
-    setSearchQuery('');
+    onSearchFilter?.('');
+    runInAction(() => {
+      setSearchQuery('');
+    });
     setLocalSearchQuery('');
   };
+
+  const handleSetSearch = () => {
+    runInAction(() => {
+      setSearchQuery(localSearchQuery);
+    });
+    onSearchFilter?.(localSearchQuery);
+  };
+
+  useEffect(() => {
+    setLocalSearchQuery(searchQuery);
+  }, [searchQuery]);
 
   return (
     <div className={cn(s.search, className)}>
       <Input
         value={localSearchQuery}
         onChange={setLocalSearchQuery}
-        onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(localSearchQuery)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSetSearch()}
         placeholder={placeholder}
         className={s.search__input}
       />
-      <Button className={s.search__button} onClick={() => setSearchQuery(localSearchQuery)}>
+      <Button className={s.search__button} onClick={() => handleSetSearch()}>
         {actionName}
       </Button>
       <Button className={cn(s.search__button, s[`search__button-second`])} onClick={handleClearSearch}>

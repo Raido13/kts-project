@@ -17,8 +17,8 @@ interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'>
 const STEP = 1;
 const FILL_OFFSET = 8;
 
-export const Slider: FC<SliderProps> = observer(({ min = 3, max = 30, className, ...props }) => {
-  const { viewPerPage, setViewPerPage } = citiesStore;
+export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className, ...props }) => {
+  const { setViewPerPage } = citiesStore;
   const markList = [];
 
   for (let i = min; i <= max; i += STEP) {
@@ -26,7 +26,7 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 30, className,
   }
 
   const getPercentage = (n: number) => ((n - min) / (max - min)) * 100;
-  const percentage = getPercentage(viewPerPage);
+  const percentage = getPercentage(citiesStore.viewPerPage <= max ? citiesStore.viewPerPage : max);
 
   return (
     <div className={cn(s.slider, className)}>

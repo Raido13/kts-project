@@ -24,9 +24,10 @@ import { capitalizeFirst } from '@shared/utils/utils';
 
 interface FetchCitiesOptions {
   mode?: FetchModeType;
-  perPage?: number;
+  viewPerPage?: number;
   searchQuery?: string;
-  filters?: string[];
+  dropdownFilters?: string[];
+  currentPage?: number;
   lastDoc?: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
   relatedCities?: number;
   currentCityId?: string;
@@ -41,9 +42,10 @@ interface FetchCitiesPaginatedResult {
 
 export const fetchCities = async ({
   mode = 'all',
-  perPage = 3,
+  viewPerPage = 3,
   searchQuery = '',
-  filters = [],
+  dropdownFilters = [],
+  currentPage = 1,
   lastDoc = null,
   relatedCities,
   currentCityId,
@@ -66,45 +68,53 @@ export const fetchCities = async ({
     }
 
     if (mode === 'paginate') {
-      let q;
-      const conditions = [];
+      let q: Query<DocumentData> = collectionRef;
       let countQuery: Query<DocumentData> = collectionRef;
+      const conditions = [];
+      const orderField = dropdownFilters.length > 0 ? 'country' : 'name';
 
-      if (searchQuery) {
+      if (dropdownFilters.length > 0 && !searchQuery) {
+        conditions.push(where('country', 'in', dropdownFilters));
+      } else if (!dropdownFilters.length && searchQuery) {
         const capitalizedSearchQuery = capitalizeFirst(searchQuery);
-
         conditions.push(
           where('name', '>=', capitalizedSearchQuery),
           where('name', '<', capitalizedSearchQuery + '\uf8ff')
         );
-        countQuery = query(
-          countQuery,
-          where('name', '>=', capitalizedSearchQuery),
-          where('name', '<', capitalizedSearchQuery + '\uf8ff')
-        );
+      } else if (dropdownFilters.length > 0 && searchQuery) {
+        conditions.push(where('country', 'in', dropdownFilters));
       }
 
-      if (filters.length > 0) {
-        conditions.push(where('country', 'in', filters));
-        countQuery = query(countQuery, where('country', 'in', filters));
-      }
-
-      const orderField = filters.length > 0 ? 'country' : 'name';
-
-      q = query(collectionRef, ...conditions, orderBy(orderField), limit(perPage));
+      q = query(collectionRef, ...conditions, orderBy(orderField), limit(viewPerPage));
+      countQuery = query(countQuery, ...conditions);
 
       if (lastDoc) {
-        q = query(collectionRef, ...conditions, orderBy(orderField), startAfter(lastDoc), limit(perPage));
+        q = query(q, startAfter(lastDoc), limit(viewPerPage));
+      } else if (currentPage > 1) {
+        const tempQ = query(collectionRef, ...conditions, orderBy(orderField), limit((currentPage - 1) * viewPerPage));
+        const snapshot = await getDocs(tempQ);
+        const docs = snapshot.docs;
+        if (docs.length > 0) {
+          q = query(q, startAfter(docs[docs.length - 1]), limit(viewPerPage));
+        }
       }
+
+      q = query(q, limit(viewPerPage));
 
       const [snapshot, countSnapshot] = await Promise.all([getDocs(q), getCountFromServer(countQuery)]);
 
       const total = countSnapshot.data().count ?? 0;
+      const docs = snapshot.docs;
+      const lastVisibleDoc = docs.length ? docs[docs.length - 1] : null;
+      let data = fetchingCities(snapshot);
 
-      const lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
+      if (dropdownFilters.length > 0 && searchQuery) {
+        const normalizedQuery = searchQuery.toLowerCase();
+        data = data.filter((city) => city.name.toLowerCase().includes(normalizedQuery));
+      }
 
       return {
-        data: fetchingCities(snapshot),
+        data,
         lastRequest: searchQuery ? 'search' : 'filter',
         total,
         lastDoc: lastVisibleDoc,

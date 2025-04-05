@@ -2,13 +2,15 @@ import { fetchCities } from '@shared/services/cities/fetchCities';
 import { subscribeToCities } from '@shared/services/cities/subscribeToCity';
 import { updateCity } from '@shared/services/cities/updateCity';
 import { CityType } from '@shared/types/city';
-import { makeAutoObservable, runInAction, reaction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { Option } from '@shared/types/options';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Range } from '@shared/types/slider';
 import { getMostLikedCity } from '@shared/utils/utils';
 
 class CitiesStore {
+  isInit: boolean = false;
+
   cities: CityType[] = [];
   totalCities: number = 0;
 
@@ -24,7 +26,6 @@ class CitiesStore {
 
   dropdownOptions: Option[] = [];
   dropdownValue: Option[] = [];
-  filters: string[] = [];
   lastDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
   searchQuery: string = '';
   currentPage: number = 1;
@@ -32,38 +33,61 @@ class CitiesStore {
   private unsubscribeFn: (() => void) | null = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      initUrlSync: false,
+      initFromUrl: false,
+      setStateFromQuery: false,
+      fetchAllWithRetry: false,
+      subscribeToUpdates: false,
+      loadPaginatedCities: false,
+      fetchRelated: false,
+      fetchCurrent: false,
+      toggleLike: false,
+      loadDropdownOptions: false,
+    });
+  }
 
-    reaction(
-      () => [
-        this.dropdownValue.map(({ key }) => key).join(','),
-        this.searchQuery,
-        this.viewPerPage,
-        this.targetCursor,
-        this.currentPage,
-        this.filters.join(','),
-      ],
-      () => {
-        this.loadPaginatedCities();
+  initUrlSync = (navigate: (path: string) => void, pathname: string) => {
+    return reaction(
+      () => ({
+        searchQuery: this.searchQuery,
+        currentPage: this.currentPage,
+        viewPerPage: this.viewPerPage,
+        dropdownFilters: this.dropdownFilters,
+      }),
+      ({ searchQuery, currentPage, viewPerPage, dropdownFilters }) => {
+        const params = new URLSearchParams();
+        if (searchQuery) params.set('query', searchQuery);
+        if (currentPage > 1) params.set('page', String(currentPage));
+        if (viewPerPage !== 3) params.set('viewPerPage', String(viewPerPage));
+        dropdownFilters.forEach((f) => params.append('filter', f));
+
+        navigate(`${pathname}?${params.toString()}`);
       }
     );
-  }
+  };
 
-  init(query?: URLSearchParams) {
-    if (query) {
-      if (query) {
-        this.setSearchQuery(query.get('query') ?? '');
-        this.setCurrentPage(Number(query.get('page') ?? 1));
-        this.setViewPerPage(Number(query.get('perPage') ?? 3) as Range<3, 10>);
-        const filters = query.getAll('filter');
-        const matchedOptions = this.dropdownOptions.filter((o) => filters.includes(o.value));
-        this.setDropdownValue(matchedOptions);
+  initFromUrl = async (search: string) => {
+    try {
+      const query = new URLSearchParams(search);
+
+      if (!this.isInit) {
+        await runInAction(async () => {
+          await this.loadDropdownOptions();
+          await this.fetchAllWithRetry();
+          this.subscribeToUpdates();
+          this.isInit = true;
+        });
       }
-    }
 
-    this.fetchAllWithRetry();
-    this.subscribeToUpdates();
-  }
+      await runInAction(async () => {
+        await this.setStateFromQuery(query);
+        await this.loadPaginatedCities();
+      });
+    } catch (e) {
+      console.error('Error initializing from URL:', e);
+    }
+  };
 
   setError = (message: string | null) => {
     this.requestError = message;
@@ -178,13 +202,19 @@ class CitiesStore {
   };
 
   setDropdownValue = (value: Option[]) => {
-    this.dropdownValue = value;
-    this.filters = value.map(({ value }) => value);
+    runInAction(() => {
+      this.dropdownValue = value;
+    });
   };
 
-  get getDropdownTitle() {
+  get dropdownTitle() {
     if (!this.dropdownValue) return 'Choose Country';
     return this.dropdownValue.length === 0 ? 'Choose Country' : this.dropdownValue.map(({ value }) => value).join(', ');
+  }
+
+  get dropdownFilters() {
+    if (!this.dropdownValue) return [];
+    return this.dropdownValue.length === 0 ? [] : this.dropdownValue.map(({ value }) => value);
   }
 
   get targetCursor() {
@@ -197,27 +227,68 @@ class CitiesStore {
     this.searchQuery = value;
   };
 
+  setStateFromQuery = async (query: URLSearchParams) =>
+    runInAction(async () => {
+      const newQuery = query.get('query') ?? '';
+      const newPage = Number(query.get('page')) || 1;
+      const newPerPage = (Number(query.get('viewPerPage')) as Range<3, 10>) || 3;
+      const filters = query.getAll('filter');
+
+      const matchedOptions = this.dropdownOptions.filter(({ value }) => filters.includes(value));
+
+      let needsLoad = false;
+
+      if (this.searchQuery !== newQuery) {
+        this.setSearchQuery(newQuery);
+        needsLoad = true;
+      }
+
+      if (this.currentPage !== newPage) {
+        this.setCurrentPage(newPage);
+        needsLoad = true;
+      }
+
+      if (this.viewPerPage !== newPerPage) {
+        this.setViewPerPage(newPerPage);
+        needsLoad = true;
+      }
+
+      if (JSON.stringify(this.dropdownValue) !== JSON.stringify(matchedOptions)) {
+        this.setDropdownValue(matchedOptions);
+        needsLoad = true;
+      }
+
+      return needsLoad;
+    });
+
   setCurrentPage = (page: number) => {
-    this.currentPage = page;
+    if (this.currentPage !== page) {
+      this.currentPage = page;
+    }
   };
 
   setViewPerPage = (viewPerPage: Range<3, 10>) => {
     this.lastDocs = [];
-    this.setCurrentPage(1);
     this.viewPerPage = viewPerPage;
   };
 
   loadPaginatedCities = async () => {
+    const shouldReset = this.currentPage === 1 || this.searchQuery || this.dropdownFilters.length > 0;
+    const targetPage = shouldReset ? 1 : this.currentPage;
+    const filters = this.dropdownFilters;
+    const cursor = shouldReset ? null : this.targetCursor;
+
     runInAction(() => {
       this.isLoading = true;
     });
 
     const res = await fetchCities({
       mode: 'paginate',
-      perPage: this.viewPerPage,
+      viewPerPage: this.viewPerPage,
       searchQuery: this.searchQuery,
-      filters: this.filters,
-      lastDoc: this.targetCursor,
+      currentPage: this.currentPage,
+      dropdownFilters: filters,
+      lastDoc: cursor,
     });
 
     if (typeof res !== 'string' && 'data' in res) {
@@ -225,8 +296,12 @@ class CitiesStore {
         this.paginatedCities = res.data;
         this.totalCities = res.total;
 
-        if (this.currentPage > this.lastDocs.length && res.lastDoc) {
-          this.lastDocs.push(res.lastDoc);
+        if (res.lastDoc) {
+          if (targetPage > this.lastDocs.length) {
+            this.lastDocs.push(res.lastDoc);
+          } else {
+            this.lastDocs[targetPage - 1] = res.lastDoc;
+          }
         }
       });
     }

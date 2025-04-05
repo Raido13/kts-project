@@ -13,7 +13,7 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
 }
 
 export const Pagination: React.FC<PaginationProps> = observer(({ className }) => {
-  const { totalCities, viewPerPage, currentPage, setCurrentPage } = citiesStore;
+  const { totalCities, viewPerPage, currentPage, setCurrentPage, isLoading } = citiesStore;
   const totalPages = Math.ceil(totalCities / viewPerPage);
   const DOTS = '...';
 
@@ -38,7 +38,7 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
   return (
     <div className={cn(s.pagination, className)}>
       <button
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || isLoading}
         className={s.pagination__arrow}
         onClick={() => setCurrentPage(currentPage - 1)}
       >
@@ -52,7 +52,7 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
             [s.pagination__item_dots]: page === DOTS,
           })}
           onClick={() => setCurrentPage(Number(page))}
-          disabled={page === DOTS}
+          disabled={page === DOTS || isLoading}
         >
           <Text tag={'p'} view={'p-18'} color={page === currentPage ? 'secondary' : 'primary'}>
             {page}
@@ -60,7 +60,7 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
         </button>
       ))}
       <button
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || isLoading}
         className={cn(s.pagination__arrow, s.pagination__arrow_right)}
         onClick={() => setCurrentPage(currentPage + 1)}
       >
