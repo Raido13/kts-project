@@ -26,7 +26,7 @@ const CitiesPageHeader: FC = () => (
 );
 
 const CitiesPageActions: FC = observer(() => {
-  const { loadDropdownOptions, totalCities, paginatedCities } = citiesStore;
+  const { loadDropdownOptions, totalCities, paginatedCities, isLoading } = citiesStore;
 
   useEffect(() => {
     (async () => await loadDropdownOptions())();
@@ -35,7 +35,7 @@ const CitiesPageActions: FC = observer(() => {
   return (
     <div className={s.page__toolbar}>
       <div className={s['page__toolbar-container']}>
-        <Search actionName={'Find now'} placeholder={'Search City'} />
+        <Search actionName={'Find now'} placeholder={'Search City'} disabled={isLoading} />
         <MultiDropdown className={s.page__dropdown} />
         <Slider min={3} max={Math.min(totalCities, 10) as Range<4, 10>} />
       </div>
@@ -55,12 +55,12 @@ const CitiesPageActions: FC = observer(() => {
 
 const CitiesPageList: FC = observer(() => {
   const windowWidth = useWindowWidth();
-  const { paginatedCities, isLoading } = citiesStore;
+  const { paginatedCities } = citiesStore;
 
   return (
     <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
       {paginatedCities.map(({ id, ...city }) => (
-        <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} isLoading={isLoading} key={id} />
+        <ListCity city={{ ...city, id }} action={<Button skeletonLoading={true}>Find ticket</Button>} key={id} />
       ))}
     </ul>
   );

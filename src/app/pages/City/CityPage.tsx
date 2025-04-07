@@ -8,11 +8,13 @@ import { ListCity } from '@shared/components/ListCity';
 import { CityDetail } from '@shared/components/CityDetail';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
+import { useMinLoading } from '@shared/hooks';
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const { fetchRelated, fetchCurrent, relatedCities, currentCity, isLoading } = citiesStore;
+  const { fetchRelated, fetchCurrent, relatedCities, currentCity } = citiesStore;
   const relatedNumber = 3;
+  const { isLoading } = useMinLoading();
 
   useEffect(() => {
     (async () => await fetchRelated(relatedNumber))();
@@ -24,9 +26,10 @@ export const CityPage: FC = observer(() => {
       <BackButton className={s.page__back}>Back</BackButton>
       {
         <CityDetail
-          currentCity={currentCity ?? undefined}
-          action={<Button>Find ticket</Button>}
+          city={currentCity ?? undefined}
+          action={<Button skeletonLoading={true}>Find ticket</Button>}
           className={s.page__city}
+          variant={'single'}
         />
       }
       <section className={s.page__related}>
@@ -35,9 +38,13 @@ export const CityPage: FC = observer(() => {
         </Text>
         <ul className={s.page__gallery}>
           {isLoading
-            ? Array.from({ length: relatedNumber }).map((_, idx) => <ListCity isLoading={isLoading} key={idx} />)
+            ? Array.from({ length: relatedNumber }).map((_, idx) => <ListCity key={idx} />)
             : relatedCities.map(({ id, ...city }) => (
-                <ListCity currentCity={{ ...city, id }} action={<Button>Find ticket</Button>} key={id} />
+                <ListCity
+                  city={{ ...city, id }}
+                  action={<Button skeletonLoading={true}>Find ticket</Button>}
+                  key={id}
+                />
               ))}
         </ul>
       </section>

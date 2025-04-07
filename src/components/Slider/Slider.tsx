@@ -36,6 +36,7 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className,
         max={max}
         onChange={(e) => setViewPerPage(Number(e.target.value) as Range<3, 10>)}
         className={s.slider__range}
+        disabled={citiesStore.viewPerPage < min || citiesStore.viewPerPage > max}
         {...props}
       />
       <div className={s.slider__track}>
@@ -46,8 +47,20 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className,
             return <div key={m} className={s[`slider__marks-item`]} style={{ left: `${markPercentage}%` }} />;
           })}
         </div>
-        <div className={s.slider__fill} style={{ width: `calc(${percentage}% + ${FILL_OFFSET}px)` }} />
-        <div className={s.slider__thumb} style={{ left: `${percentage}%` }} />
+        <div
+          className={cn(
+            s.slider__fill,
+            citiesStore.viewPerPage < min || (citiesStore.viewPerPage > max && s.slider__fill_disabled)
+          )}
+          style={{ width: `calc(${percentage}% + ${FILL_OFFSET}px)` }}
+        />
+        <div
+          className={cn(
+            s.slider__thumb,
+            citiesStore.viewPerPage < min || (citiesStore.viewPerPage > max && s.slider__thumb_disabled)
+          )}
+          style={{ left: `${percentage}%` }}
+        />
       </div>
     </div>
   );

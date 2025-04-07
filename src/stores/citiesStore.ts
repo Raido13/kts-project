@@ -1,5 +1,5 @@
 import { fetchCities } from '@shared/services/cities/fetchCities';
-import { subscribeToCities } from '@shared/services/cities/subscribeToCity';
+import { subscribeToCities } from '@shared/services/cities/subscribeToCities';
 import { updateCity } from '@shared/services/cities/updateCity';
 import { CityType } from '@shared/types/city';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
@@ -77,13 +77,12 @@ class CitiesStore {
           await this.fetchAllWithRetry();
           this.subscribeToUpdates();
           this.isInit = true;
+          return;
         });
       }
 
-      await runInAction(async () => {
-        await this.setStateFromQuery(query);
-        await this.loadPaginatedCities();
-      });
+      await this.setStateFromQuery(query);
+      await this.loadPaginatedCities();
     } catch (e) {
       console.error('Error initializing from URL:', e);
     }
@@ -203,6 +202,8 @@ class CitiesStore {
 
   setDropdownValue = (value: Option[]) => {
     runInAction(() => {
+      this.setCurrentPage(1);
+      this.lastDocs = [];
       this.dropdownValue = value;
     });
   };
@@ -222,15 +223,17 @@ class CitiesStore {
   }
 
   setSearchQuery = (value: string) => {
-    this.setCurrentPage(1);
-    this.lastDocs = [];
-    this.searchQuery = value;
+    runInAction(() => {
+      this.setCurrentPage(1);
+      this.lastDocs = [];
+      this.searchQuery = value;
+    });
   };
 
   setStateFromQuery = async (query: URLSearchParams) =>
     runInAction(async () => {
       const newQuery = query.get('query') ?? '';
-      const newPage = Number(query.get('page')) || 1;
+      const newPage = Math.max(1, Number(query.get('page')) || 1);
       const newPerPage = (Number(query.get('viewPerPage')) as Range<3, 10>) || 3;
       const filters = query.getAll('filter');
 
