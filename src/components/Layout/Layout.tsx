@@ -20,7 +20,8 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
-  const { mostLikedCity, requestError } = citiesStore;
+  const { requestError, citiesDataStore } = citiesStore;
+  const { mostLikedCity } = citiesDataStore;
   const { pathname } = useLocation();
   const { openModal } = uiStore;
   const { user } = userStore;

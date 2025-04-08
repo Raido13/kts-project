@@ -3,7 +3,7 @@ import Text from '@shared/components/Text';
 import cn from 'classnames';
 import Loader from '@shared/components/Loader';
 import s from './Button.module.scss';
-import { useMinLoading } from '@shared/hooks';
+import { citiesStore } from '@shared/stores';
 import { observer } from 'mobx-react-lite';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -19,7 +19,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const Button: React.FC<ButtonProps> = observer(
   ({ loading, disabled, children, className, skeletonLoading, ...props }) => {
-    const { isLoading } = useMinLoading();
+    const { combinedLoading: isLoading } = citiesStore;
 
     return isLoading && skeletonLoading ? (
       <div className={cn(s.button__skeleton, className)} />
@@ -37,4 +37,5 @@ const Button: React.FC<ButtonProps> = observer(
     );
   }
 );
+
 export default Button;

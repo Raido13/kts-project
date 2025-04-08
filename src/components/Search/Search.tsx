@@ -22,14 +22,13 @@ interface SearchProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
 
 export const Search: React.FC<SearchProps> = observer(
   ({ onSearchFilter, actionName, placeholder, className, ...props }) => {
-    const { setSearchQuery, searchQuery } = citiesStore;
+    const { filterStore } = citiesStore;
+    const { setSearchQuery, searchQuery } = filterStore;
     const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
 
     const handleClearSearch = () => {
       onSearchFilter?.('');
-      runInAction(() => {
-        setSearchQuery('');
-      });
+      setSearchQuery('');
       setLocalSearchQuery('');
     };
 

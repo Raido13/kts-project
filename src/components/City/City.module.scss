@@ -3,12 +3,6 @@
   flex-direction: column;
   max-width: 360px;
 
-  &__image {
-    background-color: var(--city-image-bg);
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-
   &__body {
     padding: 24px 12px;
     display: flex;

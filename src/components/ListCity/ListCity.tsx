@@ -1,6 +1,6 @@
 import City from '@shared/components/City';
 import { CityType } from '@shared/types/city';
-import { FC, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { CityVariant } from '@shared/types/city';
 import { CITIES } from '@shared/constants/links';
 import { Link } from 'react-router-dom';
@@ -13,21 +13,25 @@ interface ListCityProps {
   variant?: CityVariant;
   action?: ReactNode;
   className?: string;
+  isLoading?: boolean;
 }
 
-export const ListCity: FC<ListCityProps> = observer(({ city, action, className, ...props }) => (
-  <li className={cn(s.city, className)}>
-    <Link to={`${CITIES}/${city?.id ?? ''}`} className={s.city__link}>
-      <City
-        cityId={city?.id ?? ''}
-        image={city?.image}
-        title={city?.name}
-        captionSlot={city?.country && `Country: ${city.country}`}
-        subtitle={city?.population && `Population: ${city.population}`}
-        contentSlot={city?.is_capital && 'Capital'}
-        actionSlot={action}
-        {...props}
-      />
-    </Link>
-  </li>
-));
+export const ListCity: FC<ListCityProps> = memo(
+  observer(({ city, action, className, isLoading = false, ...props }) => (
+    <li className={cn(s.city, className)}>
+      <Link to={`${CITIES}/${city?.id ?? ''}`} className={s.city__link}>
+        <City
+          cityId={city?.id ?? ''}
+          image={city?.image}
+          title={city?.name}
+          captionSlot={city?.country && `Country: ${city.country}`}
+          subtitle={city?.population && `Population: ${city.population}`}
+          contentSlot={city?.is_capital && 'Capital'}
+          actionSlot={action}
+          isLoading={isLoading}
+          {...props}
+        />
+      </Link>
+    </li>
+  ))
+);

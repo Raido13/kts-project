@@ -2,16 +2,15 @@ import Text from '@shared/components/Text';
 import { Search } from '@shared/components/Search';
 import { Pagination } from '@shared/components/Pagination';
 import MultiDropdown from '@shared/components/MultiDropdown';
-import { FC, useEffect } from 'react';
-import Button from '@shared/components/Button';
+import { FC, useEffect, useMemo } from 'react';
 import s from './CitiesPage.module.scss';
 import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { Slider } from '@shared/components/Slider';
-import { ListCity } from '@shared/components/ListCity';
 import { Range } from '@shared/types/slider';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
+import { CitiesList } from '@shared/components/CitiesList';
 
 const CitiesPageHeader: FC = () => (
   <section className={s.page__description}>
@@ -26,11 +25,17 @@ const CitiesPageHeader: FC = () => (
 );
 
 const CitiesPageActions: FC = observer(() => {
-  const { loadDropdownOptions, totalCities, paginatedCities, isLoading } = citiesStore;
+  const { paginationStore, filterStore, isLoading } = citiesStore;
+  const citiesDataStore = useMemo(() => citiesStore.citiesDataStore, []);
+  const { paginatedCities } = citiesDataStore;
+  const { totalCities } = paginationStore;
+  const { loadDropdownOptions, dropdownOptions } = filterStore;
 
   useEffect(() => {
-    (async () => await loadDropdownOptions())();
-  }, [loadDropdownOptions]);
+    if (dropdownOptions.length === 0) {
+      loadDropdownOptions();
+    }
+  }, [loadDropdownOptions, dropdownOptions.length]);
 
   return (
     <div className={s.page__toolbar}>
@@ -43,7 +48,7 @@ const CitiesPageActions: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Total Cities
         </Text>
-        {paginatedCities.length && (
+        {paginatedCities.length > 0 && (
           <Text tag={'p'} view={'p-20'} color={'accent'} weight={'bold'}>
             {paginatedCities.length}
           </Text>
@@ -55,13 +60,19 @@ const CitiesPageActions: FC = observer(() => {
 
 const CitiesPageList: FC = observer(() => {
   const windowWidth = useWindowWidth();
-  const { paginatedCities } = citiesStore;
+  const { citiesDataStore, paginationStore } = citiesStore;
+  const { paginatedCities, isLoading } = useMemo(
+    () => ({
+      paginatedCities: citiesDataStore.paginatedCities,
+      isLoading: citiesStore.combinedLoading,
+    }),
+    [citiesDataStore.paginatedCities]
+  );
+  const { viewPerPage } = paginationStore;
 
   return (
     <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-      {paginatedCities.map(({ id, ...city }) => (
-        <ListCity city={{ ...city, id }} action={<Button skeletonLoading={true}>Find ticket</Button>} key={id} />
-      ))}
+      <CitiesList loadingCities={viewPerPage} isLoading={isLoading} cities={paginatedCities} />
     </ul>
   );
 });

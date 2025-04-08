@@ -7,7 +7,6 @@ import { getTextFromReactNode } from '@shared/utils';
 import Button from '@shared/components/Button';
 import { Image } from '@shared/components/Image';
 import { Like } from '@shared/components/Like';
-import { useMinLoading } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 
 export type CityProps = {
@@ -31,6 +30,8 @@ export type CityProps = {
   onClick?: React.MouseEventHandler;
   /** Слот для действия */
   actionSlot?: React.ReactNode;
+  /** Лоадер скелетона */
+  isLoading?: boolean;
 };
 
 const City: React.FC<CityProps> = observer(
@@ -45,32 +46,43 @@ const City: React.FC<CityProps> = observer(
     contentSlot,
     onClick,
     actionSlot,
+    isLoading = false,
   }) => {
     const imageText = getTextFromReactNode(title);
     const isPreview = variant === 'preview';
-    const { isLoading } = useMinLoading();
+    const shouldShowSkeleton = isLoading;
 
     return (
       <div onClick={onClick} className={cn(s.city, { [s.city_single]: !isPreview }, className)}>
-        <Image isLoading={isLoading} src={image} alt={imageText} className={s.city__image} variant={variant} />
+        <Image
+          isLoading={shouldShowSkeleton}
+          src={shouldShowSkeleton ? undefined : image}
+          alt={imageText}
+          variant={variant}
+        />
         <div className={s.city__body}>
           <div className={s['city__body-top']}>
-            {(isLoading || captionSlot) && (
-              <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
+            {(shouldShowSkeleton || captionSlot) && (
+              <Text isLoading={shouldShowSkeleton} view={'p-14'} color={'secondary'}>
                 {captionSlot}
               </Text>
             )}
-            <Text isLoading={isLoading} view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
+            <Text isLoading={shouldShowSkeleton} view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
               {title}
             </Text>
-            <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
+            <Text isLoading={shouldShowSkeleton} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
               {subtitle}
             </Text>
             <Like cityId={cityId} />
           </div>
           <div className={s['city__body-bottom']}>
-            {(isLoading || contentSlot) && (
-              <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.city__price}>
+            {(shouldShowSkeleton || contentSlot) && (
+              <Text
+                isLoading={shouldShowSkeleton}
+                view={isPreview ? 'p-18' : 'title'}
+                weight={'bold'}
+                className={s.city__price}
+              >
                 {contentSlot}
               </Text>
             )}

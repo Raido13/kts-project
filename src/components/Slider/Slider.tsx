@@ -1,5 +1,5 @@
 import { Range } from '@shared/types/slider';
-import { FC, HTMLAttributes } from 'react';
+import { FC, HTMLAttributes, useMemo } from 'react';
 import cn from 'classnames';
 import s from './Slider.module.scss';
 import { observer } from 'mobx-react-lite';
@@ -18,7 +18,9 @@ const STEP = 1;
 const FILL_OFFSET = 8;
 
 export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className, ...props }) => {
-  const { setViewPerPage } = citiesStore;
+  const { paginationStore, citiesDataStore } = citiesStore;
+  const { setViewPerPage, viewPerPage } = paginationStore;
+  const { paginatedCities } = citiesDataStore;
   const markList = [];
 
   for (let i = min; i <= max; i += STEP) {
@@ -26,7 +28,11 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className,
   }
 
   const getPercentage = (n: number) => ((n - min) / (max - min)) * 100;
-  const percentage = getPercentage(citiesStore.viewPerPage <= max ? citiesStore.viewPerPage : max);
+  const percentage = getPercentage(viewPerPage <= max ? viewPerPage : max);
+  const isDisabled = useMemo(
+    () => paginatedCities.length < min || paginatedCities.length > max,
+    [max, min, paginatedCities]
+  );
 
   return (
     <div className={cn(s.slider, className)}>
@@ -36,7 +42,7 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className,
         max={max}
         onChange={(e) => setViewPerPage(Number(e.target.value) as Range<3, 10>)}
         className={s.slider__range}
-        disabled={citiesStore.viewPerPage < min || citiesStore.viewPerPage > max}
+        disabled={isDisabled}
         {...props}
       />
       <div className={s.slider__track}>
@@ -48,17 +54,11 @@ export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className,
           })}
         </div>
         <div
-          className={cn(
-            s.slider__fill,
-            citiesStore.viewPerPage < min || (citiesStore.viewPerPage > max && s.slider__fill_disabled)
-          )}
+          className={cn(s.slider__fill, isDisabled && s.slider__fill_disabled)}
           style={{ width: `calc(${percentage}% + ${FILL_OFFSET}px)` }}
         />
         <div
-          className={cn(
-            s.slider__thumb,
-            citiesStore.viewPerPage < min || (citiesStore.viewPerPage > max && s.slider__thumb_disabled)
-          )}
+          className={cn(s.slider__thumb, isDisabled && s.slider__thumb_disabled)}
           style={{ left: `${percentage}%` }}
         />
       </div>

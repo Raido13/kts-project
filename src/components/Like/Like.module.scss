@@ -2,5 +2,6 @@
   all: unset;
   display: flex;
   column-gap: 8px;
+  width: fit-content;
   cursor: pointer;
 }
