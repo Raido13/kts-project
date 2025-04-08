@@ -10,11 +10,10 @@ interface CitiesListProps {
   isLoading: boolean;
 }
 
-export const CitiesList: FC<CitiesListProps> = observer(({ loadingCities, cities, isLoading }) => {
-  console.log(isLoading);
-  return isLoading
+export const CitiesList: FC<CitiesListProps> = observer(({ loadingCities, cities, isLoading }) =>
+  isLoading
     ? Array(loadingCities)
         .fill(null)
         .map((_, idx) => <ListCity key={idx} action={<Button skeletonLoading={true}>Find ticket</Button>} />)
-    : cities.map((city) => <ListCity city={city} action={<Button>Find ticket</Button>} key={city.id} />);
-});
+    : cities.map((city) => <ListCity city={city} action={<Button>Find ticket</Button>} key={city.id} />)
+);
