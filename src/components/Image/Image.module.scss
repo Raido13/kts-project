@@ -1,17 +1,21 @@
 @use '@shared/styles/animations';
 
 .image {
+  background-color: var(--city-image-bg);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+
   &__preparation {
-    max-width: 360px;
-    max-height: 360px;
+    width: 360px;
+    height: 203px;
     border-radius: 2px;
     background: var(--animation-skeleton-color);
     background-size: 200% 100%;
     animation: pulse 1.5s infinite;
 
     &_single {
-      max-width: inherit;
-      max-height: 600px;
+      height: inherit;
+      width: 50%;
     }
   }
 }

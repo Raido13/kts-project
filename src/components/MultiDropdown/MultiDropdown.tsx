@@ -7,7 +7,7 @@ import cn from 'classnames';
 import { Option } from '@shared/types/options';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
-import { runInAction, untracked } from 'mobx';
+import { untracked } from 'mobx';
 
 /** Пропсы, которые принимает компонент Dropdown */
 export type MultiDropdownProps = {
@@ -21,27 +21,27 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const { setDropdownValue } = citiesStore;
+  const { filterStore } = citiesStore;
+  const { dropdownOptions, setDropdownValue, dropdownTitle } = filterStore;
+  const dropdownValue = filterStore.dropdownValue;
 
   const filteredOptions = Array.from(
     new Map(
-      citiesStore.dropdownOptions
+      dropdownOptions
         .filter((option) => option.value.toLowerCase().includes(localSearchQuery.toLowerCase()))
         .map((option) => [option.value.toLowerCase(), option])
     ).values()
   );
 
-  const checkSelect = (option: Option) => citiesStore.dropdownValue.some((v) => v.key === option.key);
+  const checkSelect = (option: Option) => dropdownValue.some((v) => v.key === option.key);
 
   const handleClick = (isSelected: boolean, key: string, value: string) => {
-    runInAction(() => {
-      if (isSelected) {
-        const updatedValues = citiesStore.dropdownValue.filter((v) => v.key !== key);
-        setDropdownValue([...updatedValues]);
-      } else {
-        setDropdownValue([...citiesStore.dropdownValue, { key, value }]);
-      }
-    });
+    if (isSelected) {
+      const updatedValues = dropdownValue.filter((v) => v.key !== key);
+      setDropdownValue([...updatedValues]);
+    } else {
+      setDropdownValue([...dropdownValue, { key, value }]);
+    }
   };
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -63,22 +63,22 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
     ? localSearchQuery
     : localSearchQuery !== ''
       ? localSearchQuery
-      : citiesStore.dropdownValue.length > 0
-        ? citiesStore.dropdownTitle
+      : dropdownValue.length > 0
+        ? dropdownTitle
         : '';
 
   return (
     <div className={cn(s.dropdown, className)} ref={dropdownRef}>
       <Input
         value={inputValue}
-        placeholder={citiesStore.dropdownTitle}
+        placeholder={dropdownTitle}
         onChange={(value) => {
           setLocalSearchQuery(value);
         }}
         afterSlot={<ArrowDownIcon color="secondary" />}
         onClick={() => setIsOpen(true)}
       />
-      {!disabled && citiesStore.dropdownOptions.length > 0 && isOpen && (
+      {!disabled && dropdownOptions.length > 0 && isOpen && (
         <ul className={cn(s.dropdown__list, s.dropdown__list_opened)}>
           {filteredOptions.map((option) => {
             const { key, value } = option;

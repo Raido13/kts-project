@@ -1,22 +1,28 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
-import { useMinLoading, useWindowWidth } from '@shared/hooks';
+import { useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { citiesStore } from '@shared/stores';
-import { ListCity } from '@shared/components/ListCity';
+import { CitiesList } from '@shared/components/CitiesList';
 
 export const HomePage: FC = observer(() => {
-  const { mostLikedCity, fetchRelated, relatedCities } = citiesStore;
+  const { fetchRelated, citiesDataStore, combinedLoading: isLoading } = citiesStore;
+  const { relatedCities, mostLikedCity } = useMemo(
+    () => ({
+      relatedCities: citiesDataStore.relatedCities,
+      mostLikedCity: citiesDataStore.mostLikedCity,
+    }),
+    [citiesDataStore.relatedCities, citiesDataStore.mostLikedCity]
+  );
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
   const relatedNumber = 6;
-  const { isLoading } = useMinLoading();
 
   useEffect(() => {
     (async () => await fetchRelated(relatedNumber))();
@@ -58,17 +64,7 @@ export const HomePage: FC = observer(() => {
           Related Cities
         </Text>
         <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-          {isLoading
-            ? Array.from({ length: relatedNumber }).map((_, idx) => (
-                <ListCity key={idx} action={<Button skeletonLoading={true}>Find ticket</Button>} />
-              ))
-            : relatedCities.map(({ id, ...city }) => (
-                <ListCity
-                  city={{ ...city, id }}
-                  action={<Button skeletonLoading={true}>Find ticket</Button>}
-                  key={id}
-                />
-              ))}
+          <CitiesList loadingCities={relatedNumber} isLoading={isLoading} cities={relatedCities} />
         </ul>
       </section>
       <div className={s.page__suggest}>
