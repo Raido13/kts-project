@@ -25,7 +25,7 @@ const CitiesPageHeader: FC = () => (
 );
 
 const CitiesPageActions: FC = observer(() => {
-  const { paginationStore, filterStore, isLoading } = citiesStore;
+  const { paginationStore, filterStore, combinedLoading: isLoading } = citiesStore;
   const citiesDataStore = useMemo(() => citiesStore.citiesDataStore, []);
   const { paginatedCities } = citiesDataStore;
   const { totalCities } = paginationStore;
@@ -60,14 +60,8 @@ const CitiesPageActions: FC = observer(() => {
 
 const CitiesPageList: FC = observer(() => {
   const windowWidth = useWindowWidth();
-  const { citiesDataStore, paginationStore } = citiesStore;
-  const { paginatedCities, isLoading } = useMemo(
-    () => ({
-      paginatedCities: citiesDataStore.paginatedCities,
-      isLoading: citiesStore.combinedLoading,
-    }),
-    [citiesDataStore.paginatedCities]
-  );
+  const { citiesDataStore, paginationStore, combinedLoading: isLoading } = citiesStore;
+  const { paginatedCities } = citiesDataStore;
   const { viewPerPage } = paginationStore;
 
   return (
