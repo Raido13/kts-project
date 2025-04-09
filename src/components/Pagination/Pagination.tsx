@@ -5,7 +5,7 @@ import ArrowPaginationIcon from '@shared/components/Icon/ArrowPaginationIcon';
 import Text from '@shared/components/Text';
 import { createRange } from '@shared/utils/utils';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
+import { useRootStore } from '@shared/hooks';
 
 interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Дополнительный classname */
@@ -13,12 +13,10 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
 }
 
 export const Pagination: React.FC<PaginationProps> = observer(({ className }) => {
-  const { isLoading, paginationStore } = citiesStore;
-  const totalCities = paginationStore.totalCities;
-  const viewPerPage = paginationStore.viewPerPage;
-  const currentPage = paginationStore.currentPage;
-  const setCurrentPage = paginationStore.setCurrentPage;
-  const totalPages = Math.ceil(totalCities / viewPerPage);
+  const rootStoreContext = useRootStore();
+  const { isLoading, paginationStore } = rootStoreContext.citiesStore;
+  const { totalPaginatedCities, viewPerPage, currentPage, setCurrentPage } = paginationStore;
+  const totalPages = Math.ceil(totalPaginatedCities / viewPerPage);
   const DOTS = '...';
 
   const generatePages = () => {

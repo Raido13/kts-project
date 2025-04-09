@@ -21,7 +21,7 @@ export const CityDetail: FC<CityDetailProps> = memo(
         image={city?.image}
         title={city?.name}
         subtitle={city?.population && `Population: ${city.population}`}
-        captionSlot={variant !== 'single' && `Country: ${city?.country}`}
+        captionSlot={city?.country && `Country: ${city?.country}`}
         contentSlot={city?.is_capital && 'Capital'}
         actionSlot={action}
         variant={variant}

@@ -3,13 +3,13 @@ import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './LogoutModal.module.scss';
 import { removeExtraEventActions } from '@shared/utils/utils';
-import { useRequestError } from '@shared/hooks';
+import { useRequestError, useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
-import { userStore } from '@shared/stores/userStore';
-import { uiStore } from '@shared/stores/uiStore';
 
 export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const { closeModal } = uiStore;
+  const rootStoreContext = useRootStore();
+  const { closeModal } = rootStoreContext.modalStore;
+  const userStore = rootStoreContext.userStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const handleLogout = useCallback(
@@ -25,7 +25,7 @@ export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
       clearError();
       closeModal();
     },
-    [closeModal, setRequestError, clearError]
+    [closeModal, setRequestError, clearError, userStore]
   );
 
   return (

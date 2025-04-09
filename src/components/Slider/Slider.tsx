@@ -3,7 +3,7 @@ import { FC, HTMLAttributes, useMemo } from 'react';
 import cn from 'classnames';
 import s from './Slider.module.scss';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
+import { useRootStore } from '@shared/hooks';
 
 interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   /** Минимальное значение карточек, от 3 до 30 */
@@ -18,7 +18,8 @@ const STEP = 1;
 const FILL_OFFSET = 8;
 
 export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className, ...props }) => {
-  const { paginationStore, citiesDataStore } = citiesStore;
+  const rootStoreContext = useRootStore();
+  const { paginationStore, citiesDataStore } = rootStoreContext.citiesStore;
   const { setViewPerPage, viewPerPage } = paginationStore;
   const { paginatedCities } = citiesDataStore;
   const markList = [];

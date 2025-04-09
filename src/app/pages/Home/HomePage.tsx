@@ -5,14 +5,16 @@ import s from './HomePage.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
-import { useWindowWidth } from '@shared/hooks';
+import { useRootStore, useWindowWidth } from '@shared/hooks';
 import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
 import { CitiesList } from '@shared/components/CitiesList';
 
+const RELATED_NUMBER = 6;
+
 export const HomePage: FC = observer(() => {
-  const { fetchRelated, citiesDataStore, combinedLoading: isLoading } = citiesStore;
+  const rootStoreContext = useRootStore();
+  const { fetchRelated, citiesDataStore, isLoading } = rootStoreContext.citiesStore;
   const { relatedCities, mostLikedCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,
@@ -22,10 +24,9 @@ export const HomePage: FC = observer(() => {
   );
   const navigation = useNavigate();
   const windowWidth = useWindowWidth();
-  const relatedNumber = 6;
 
   useEffect(() => {
-    (async () => await fetchRelated(relatedNumber))();
+    (async () => await fetchRelated(RELATED_NUMBER))();
   }, [fetchRelated]);
 
   const onSearchFilter = (value: string) => {
@@ -64,7 +65,7 @@ export const HomePage: FC = observer(() => {
           Related Cities
         </Text>
         <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-          <CitiesList loadingCities={relatedNumber} isLoading={isLoading} cities={relatedCities} />
+          <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
         </ul>
       </section>
       <div className={s.page__suggest}>

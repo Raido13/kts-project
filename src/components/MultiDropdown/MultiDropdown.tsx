@@ -6,8 +6,8 @@ import s from './MultiDropdown.module.scss';
 import cn from 'classnames';
 import { Option } from '@shared/types/options';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
 import { untracked } from 'mobx';
+import { useRootStore } from '@shared/hooks';
 
 /** Пропсы, которые принимает компонент Dropdown */
 export type MultiDropdownProps = {
@@ -21,7 +21,8 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const { filterStore } = citiesStore;
+  const rootStoreContext = useRootStore();
+  const { filterStore } = rootStoreContext.citiesStore;
   const { dropdownOptions, setDropdownValue, dropdownTitle } = filterStore;
   const dropdownValue = filterStore.dropdownValue;
 

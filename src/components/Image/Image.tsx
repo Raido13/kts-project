@@ -10,10 +10,10 @@ interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   variant?: CityVariant;
 }
 
-export const Image: React.FC<ImageProps> = memo(({ isLoading = false, src, className, variant, ...props }) =>
-  isLoading || !src ? (
+export const Image: React.FC<ImageProps> = memo(({ isLoading = false, className, variant, ...props }) =>
+  isLoading ? (
     <div className={cn(s.image__preparation, variant === 'single' && s.image__preparation_single, className)} />
   ) : (
-    <img {...props} src={src} className={s.image} />
+    <img {...props} className={cn(s.image, variant === 'single' && s.image_single)} />
   )
 );

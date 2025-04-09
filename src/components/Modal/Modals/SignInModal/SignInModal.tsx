@@ -2,17 +2,17 @@ import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect, useMemo } from 
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './SignInModal.module.scss';
-import { useForm } from '@shared/hooks';
+import { useForm, useRootStore } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { Form } from '@shared/components/Form';
 import { FieldType } from '@shared/types/field';
 import { useRequestError } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
-import { userStore } from '@shared/stores/userStore';
-import { uiStore } from '@shared/stores/uiStore';
 
 export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const { openModal, closeModal } = uiStore;
+  const rootStoreContext = useRootStore();
+  const { openModal, closeModal } = rootStoreContext.modalStore;
+  const userStore = rootStoreContext.userStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(
@@ -64,7 +64,16 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
     setIsSubmitting(false);
     clearError();
     closeModal();
-  }, [formState.email, formState.password, closeModal, validate, clearError, setRequestError, setIsSubmitting]);
+  }, [
+    formState.email,
+    formState.password,
+    closeModal,
+    validate,
+    clearError,
+    setRequestError,
+    setIsSubmitting,
+    userStore,
+  ]);
 
   const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);

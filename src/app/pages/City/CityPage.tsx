@@ -6,12 +6,15 @@ import { useParams } from 'react-router-dom';
 import { BackButton } from '@shared/components/BackButton';
 import { CityDetail } from '@shared/components/CityDetail';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
 import { CitiesList } from '@shared/components/CitiesList';
+import { useRootStore } from '@shared/hooks';
+
+const RELATED_NUMBER = 3;
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const { fetchRelated, fetchCurrent, combinedLoading: isLoading, citiesDataStore } = citiesStore;
+  const rootStoreContext = useRootStore();
+  const { fetchRelated, fetchCurrent, isLoading, citiesDataStore } = rootStoreContext.citiesStore;
   const { relatedCities, currentCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,
@@ -19,10 +22,9 @@ export const CityPage: FC = observer(() => {
     }),
     [citiesDataStore.relatedCities, citiesDataStore.currentCity]
   );
-  const relatedNumber = 3;
 
   useEffect(() => {
-    void fetchRelated(relatedNumber);
+    void fetchRelated(RELATED_NUMBER);
     if (currentCityId) {
       void fetchCurrent(currentCityId);
     }
@@ -43,7 +45,7 @@ export const CityPage: FC = observer(() => {
           Related Cities
         </Text>
         <ul className={s.page__gallery}>
-          <CitiesList loadingCities={relatedNumber} isLoading={isLoading} cities={relatedCities} />
+          <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
         </ul>
       </section>
     </div>

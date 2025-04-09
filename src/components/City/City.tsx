@@ -7,7 +7,6 @@ import { getTextFromReactNode } from '@shared/utils';
 import Button from '@shared/components/Button';
 import { Image } from '@shared/components/Image';
 import { Like } from '@shared/components/Like';
-import { observer } from 'mobx-react-lite';
 
 export type CityProps = {
   /** Дополнительный classname */
@@ -34,71 +33,59 @@ export type CityProps = {
   isLoading?: boolean;
 };
 
-const City: React.FC<CityProps> = observer(
-  ({
-    className,
-    variant = 'preview',
-    cityId,
-    image,
-    captionSlot,
-    title,
-    subtitle,
-    contentSlot,
-    onClick,
-    actionSlot,
-    isLoading = false,
-  }) => {
-    const imageText = getTextFromReactNode(title);
-    const isPreview = variant === 'preview';
-    const shouldShowSkeleton = isLoading;
+const City: React.FC<CityProps> = ({
+  className,
+  variant = 'preview',
+  cityId,
+  image,
+  captionSlot,
+  title,
+  subtitle,
+  contentSlot,
+  onClick,
+  actionSlot,
+  isLoading = false,
+}) => {
+  const imageText = getTextFromReactNode(title);
+  const isPreview = variant === 'preview';
 
-    return (
-      <div onClick={onClick} className={cn(s.city, { [s.city_single]: !isPreview }, className)}>
-        <Image
-          isLoading={shouldShowSkeleton}
-          src={shouldShowSkeleton ? undefined : image}
-          alt={imageText}
-          variant={variant}
-        />
-        <div className={s.city__body}>
-          <div className={s['city__body-top']}>
-            {(shouldShowSkeleton || captionSlot) && (
-              <Text isLoading={shouldShowSkeleton} view={'p-14'} color={'secondary'}>
+  return (
+    <div onClick={onClick} className={cn(s.city, { [s.city_single]: !isPreview }, className)}>
+      <Image isLoading={isLoading} src={isLoading ? undefined : image} alt={imageText} variant={variant} />
+      <div className={s.city__body}>
+        <div className={s['city__body-top']}>
+          {isLoading ||
+            (isPreview && (
+              <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
                 {captionSlot}
               </Text>
-            )}
-            <Text isLoading={shouldShowSkeleton} view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
-              {title}
+            ))}
+          <Text isLoading={isLoading} view={isPreview ? 'p-20' : 'title'} weight={'bold'} maxLines={2}>
+            {title}
+          </Text>
+          <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
+            {subtitle}
+          </Text>
+          <Like cityId={cityId} />
+        </div>
+        <div className={s['city__body-bottom']}>
+          {isPreview && (
+            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.city__price}>
+              {contentSlot}
             </Text>
-            <Text isLoading={shouldShowSkeleton} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
-              {subtitle}
-            </Text>
-            <Like cityId={cityId} />
-          </div>
-          <div className={s['city__body-bottom']}>
-            {(shouldShowSkeleton || contentSlot) && (
-              <Text
-                isLoading={shouldShowSkeleton}
-                view={isPreview ? 'p-18' : 'title'}
-                weight={'bold'}
-                className={s.city__price}
-              >
-                {contentSlot}
-              </Text>
+          )}
+          <div className={s.city__actions}>
+            {actionSlot}
+            {!isPreview && (
+              <Button className={s.city__button} skeletonLoading={true}>
+                More info
+              </Button>
             )}
-            <div className={s.city__actions}>
-              {actionSlot}
-              {!isPreview && (
-                <Button className={s.city__button} skeletonLoading={true}>
-                  More info
-                </Button>
-              )}
-            </div>
           </div>
         </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+};
 
 export default City;

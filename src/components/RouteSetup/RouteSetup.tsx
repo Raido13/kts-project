@@ -1,8 +1,8 @@
 import { FC, PropsWithChildren, useEffect } from 'react';
 import { Layout } from '../Layout';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { citiesStore } from '@shared/stores';
 import { runInAction } from 'mobx';
+import { useRootStore } from '@shared/hooks';
 
 interface RouterSetupProps extends PropsWithChildren {
   header: boolean;
@@ -11,6 +11,8 @@ interface RouterSetupProps extends PropsWithChildren {
 export const RouteSetup: FC<RouterSetupProps> = ({ children, header }) => {
   const navigate = useNavigate();
   const { search, pathname } = useLocation();
+  const rootStoreContext = useRootStore();
+  const citiesStore = rootStoreContext.citiesStore;
 
   useEffect(() => {
     const dispose = citiesStore.initUrlSync((path) => navigate(path, { replace: true }), pathname);
@@ -20,7 +22,7 @@ export const RouteSetup: FC<RouterSetupProps> = ({ children, header }) => {
     });
 
     return () => dispose();
-  }, [navigate, pathname, search]);
+  }, [navigate, pathname, search, citiesStore]);
 
   return <Layout header={header}>{children}</Layout>;
 };

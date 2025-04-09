@@ -4,8 +4,8 @@ import Button from '@shared/components/Button';
 import s from './Search.module.scss';
 import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { citiesStore } from '@shared/stores';
 import { runInAction } from 'mobx';
+import { useRootStore } from '@shared/hooks';
 
 interface SearchProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Коллбек после поиска */
@@ -22,7 +22,8 @@ interface SearchProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
 
 export const Search: React.FC<SearchProps> = observer(
   ({ onSearchFilter, actionName, placeholder, className, ...props }) => {
-    const { filterStore } = citiesStore;
+    const rootStoreContext = useRootStore();
+    const { filterStore } = rootStoreContext.citiesStore;
     const { setSearchQuery, searchQuery } = filterStore;
     const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
 

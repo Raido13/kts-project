@@ -5,6 +5,11 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
 
+  &_single {
+    height: inherit;
+    width: 50%;
+  }
+
   &__preparation {
     width: 360px;
     height: 203px;
@@ -14,6 +19,7 @@
     animation: pulse 1.5s infinite;
 
     &_single {
+      aspect-ratio: 16 / 9;
       height: inherit;
       width: 50%;
     }

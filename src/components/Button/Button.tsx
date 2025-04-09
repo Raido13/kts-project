@@ -3,8 +3,8 @@ import Text from '@shared/components/Text';
 import cn from 'classnames';
 import Loader from '@shared/components/Loader';
 import s from './Button.module.scss';
-import { citiesStore } from '@shared/stores';
 import { observer } from 'mobx-react-lite';
+import { useRootStore } from '@shared/hooks';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Состояние загрузки */
@@ -19,7 +19,8 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const Button: React.FC<ButtonProps> = observer(
   ({ loading, disabled, children, className, skeletonLoading, ...props }) => {
-    const { combinedLoading: isLoading } = citiesStore;
+    const rootStoreContext = useRootStore();
+    const { isLoading } = rootStoreContext.citiesStore;
 
     return isLoading && skeletonLoading ? (
       <div className={cn(s.button__skeleton, className)} />

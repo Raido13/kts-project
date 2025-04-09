@@ -4,17 +4,17 @@ import LikeIcon from '@shared/components/Icon/LikeIcon';
 import Text from '@shared/components/Text';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { observer } from 'mobx-react-lite';
-import { uiStore } from '@shared/stores/uiStore';
-import { userStore } from '@shared/stores/userStore';
-import { citiesStore } from '@shared/stores';
+import { useRootStore } from '@shared/hooks';
 
 interface LikeProps extends HTMLAttributes<HTMLDivElement> {
   cityId: string;
 }
 
 export const Like: FC<LikeProps> = observer(({ cityId }) => {
-  const { user } = userStore;
-  const { openModal } = uiStore;
+  const rootStoreContext = useRootStore();
+  const citiesStore = rootStoreContext.citiesStore;
+  const { user } = rootStoreContext.userStore;
+  const { openModal } = rootStoreContext.modalStore;
 
   const likes = citiesStore.citiesDataStore.citiesLikes[cityId] ?? [];
   const likesCount = likes.length;

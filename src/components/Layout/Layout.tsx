@@ -8,9 +8,7 @@ import { useLocation } from 'react-router-dom';
 import Text from '@shared/components/Text';
 import s from './Layout.module.scss';
 import { observer } from 'mobx-react-lite';
-import { uiStore } from '@shared/stores/uiStore';
-import { userStore } from '@shared/stores/userStore';
-import { citiesStore } from '@shared/stores';
+import { useRootStore } from '@shared/hooks';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -20,11 +18,12 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
-  const { requestError, citiesDataStore } = citiesStore;
+  const rootStoreContext = useRootStore();
+  const { requestError, citiesDataStore } = rootStoreContext.citiesStore;
   const { mostLikedCity } = citiesDataStore;
   const { pathname } = useLocation();
-  const { openModal } = uiStore;
-  const { user } = userStore;
+  const { openModal } = rootStoreContext.modalStore;
+  const { user } = rootStoreContext.userStore;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

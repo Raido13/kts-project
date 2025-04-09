@@ -2,18 +2,18 @@ import { HTMLAttributes, FC, MouseEvent, useCallback, useEffect, useMemo } from 
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './CreateCityModal.module.scss';
-import { useForm } from '@shared/hooks';
+import { useForm, useRootStore } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks';
 import { createCity } from '@shared/services/cities/createCity';
 import { CityType } from '@shared/types/city';
-import { uiStore } from '@shared/stores/uiStore';
 import { observer } from 'mobx-react-lite';
 
 export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const { closeModal } = uiStore;
+  const rootStoreContext = useRootStore();
+  const { closeModal } = rootStoreContext.modalStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(
