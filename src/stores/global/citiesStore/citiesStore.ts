@@ -176,8 +176,7 @@ export class CitiesStore {
   });
 
   toggleLike = action(async (cityId: string, userId: string) => {
-    this._startLoading();
-    const updatedLikes = await updateCity({ mode: 'like', userId });
+    const updatedLikes = await updateCity({ mode: 'like', cityId, userId });
 
     runInAction(() => {
       if (typeof updatedLikes === 'string') {
@@ -185,7 +184,6 @@ export class CitiesStore {
         return;
       }
       this.citiesDataStore.updateCityLikes(cityId, updatedLikes);
-      this._isLoading = false;
     });
   });
 

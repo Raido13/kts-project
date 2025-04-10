@@ -1,6 +1,6 @@
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect } from 'react';
 import { Search } from '../Search';
 import MultiDropdown from '../MultiDropdown';
 import { Slider } from '../Slider';
@@ -9,36 +9,29 @@ import s from './CitiesPageActions.module.scss';
 import { Range } from '@shared/types/slider';
 
 export const CitiesPageActions: FC = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { paginationStore, filterStore, isLoading } = rootStoreContext.citiesStore;
-  const citiesDataStore = useMemo(
-    () => rootStoreContext.citiesStore.citiesDataStore,
-    [rootStoreContext.citiesStore.citiesDataStore]
-  );
-  const { paginatedCities } = citiesDataStore;
-  const { totalPaginatedCities } = paginationStore;
-  const { loadDropdownOptions, dropdownOptions } = filterStore;
+  const { citiesStore } = useRootStore();
+  const { filterStore } = citiesStore;
 
   useEffect(() => {
-    if (dropdownOptions.length === 0) {
-      loadDropdownOptions();
+    if (filterStore.dropdownOptions.length === 0) {
+      filterStore.loadDropdownOptions();
     }
-  }, [loadDropdownOptions, dropdownOptions.length]);
+  }, [filterStore]);
 
   return (
     <div className={s.toolbar}>
       <div className={s['toolbar-container']}>
-        <Search actionName={'Find now'} placeholder={'Search City'} disabled={isLoading} />
+        <Search actionName={'Find now'} placeholder={'Search City'} disabled={citiesStore.isLoading} />
         <MultiDropdown className={s.dropdown} />
-        <Slider min={3} max={Math.min(totalPaginatedCities, 10) as Range<4, 10>} />
+        <Slider min={3} max={Math.min(citiesStore.paginationStore.totalPaginatedCities, 10) as Range<4, 10>} />
       </div>
       <div className={s.counter}>
         <Text tag={'p'} view={'title'} color={'primary'}>
           Total Cities
         </Text>
-        {paginatedCities.length > 0 && (
+        {citiesStore.citiesDataStore.paginatedCities.length > 0 && (
           <Text tag={'p'} view={'p-20'} color={'accent'} weight={'bold'}>
-            {paginatedCities.length}
+            {citiesStore.citiesDataStore.paginatedCities.length}
           </Text>
         )}
       </div>

@@ -18,7 +18,6 @@ interface ListCityProps {
 
 export const ListCity: FC<ListCityProps> = memo(
   observer(({ city, action, className, isLoading = false, ...props }) => {
-    console.log(city);
     const isSkeleton = isLoading || !city;
     return (
       <li className={cn(s.city, className)}>

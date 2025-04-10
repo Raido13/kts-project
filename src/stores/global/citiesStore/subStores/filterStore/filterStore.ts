@@ -1,6 +1,6 @@
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { Option } from '@shared/types/options';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore/paginationStore';
 
 export class FilterStore {
@@ -37,8 +37,7 @@ export class FilterStore {
   }
 
   get dropdownTitle(): string {
-    if (!this._dropdownValue) return 'Choose Country';
-    return this._dropdownValue.map(({ value }) => value).join(', ');
+    return this._dropdownValue.length === 0 ? 'Choose Country' : this.dropdownFilters.join(', ');
   }
 
   get dropdownFilters(): string[] {
@@ -55,10 +54,12 @@ export class FilterStore {
     this._paginationStore.resetPagination();
   });
 
-  loadDropdownOptions = async () => {
+  loadDropdownOptions = action(async () => {
     const res = await fetchCities({ mode: 'options' });
-    if (Array.isArray(res)) {
-      this._dropdownOptions = res as Option[];
-    }
-  };
+    runInAction(() => {
+      if (Array.isArray(res)) {
+        this._dropdownOptions = res as Option[];
+      }
+    });
+  });
 }
