@@ -1,12 +1,11 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
-import { useRootStore, useWindowWidth } from '@shared/hooks';
-import cn from 'classnames';
+import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { CitiesList } from '@shared/components/CitiesList';
 
@@ -14,7 +13,7 @@ const RELATED_NUMBER = 6;
 
 export const HomePage: FC = observer(() => {
   const rootStoreContext = useRootStore();
-  const { fetchRelated, citiesDataStore, isLoading } = rootStoreContext.citiesStore;
+  const { fetchRelated, clearRelated, citiesDataStore, isLoading } = rootStoreContext.citiesStore;
   const { relatedCities, mostLikedCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,
@@ -23,11 +22,15 @@ export const HomePage: FC = observer(() => {
     [citiesDataStore.relatedCities, citiesDataStore.mostLikedCity]
   );
   const navigation = useNavigate();
-  const windowWidth = useWindowWidth();
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     (async () => await fetchRelated(RELATED_NUMBER))();
-  }, [fetchRelated]);
+
+    return () => clearRelated();
+  }, [hasFetched, fetchRelated, clearRelated]);
 
   const onSearchFilter = (value: string) => {
     navigation({ pathname: CITIES, search: `?query=${value}` });
@@ -64,9 +67,7 @@ export const HomePage: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Related Cities
         </Text>
-        <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-          <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
-        </ul>
+        <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
       </section>
       <div className={s.page__suggest}>
         <Text tag={'p'} view={'title'} color={'primary'}>

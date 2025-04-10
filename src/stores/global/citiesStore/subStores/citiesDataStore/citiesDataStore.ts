@@ -66,7 +66,7 @@ export class CitiesDataStore {
     this._paginatedCities = cities;
   });
 
-  updateRelatedCities = action((cities: CityType[]): void => {
+  updateRelatedCities = action((cities: CityType[] | never[]): void => {
     this._relatedCities = cities;
   });
 

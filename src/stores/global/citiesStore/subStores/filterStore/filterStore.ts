@@ -55,10 +55,10 @@ export class FilterStore {
     this._paginationStore.resetPagination();
   });
 
-  loadDropdownOptions = action(async () => {
+  loadDropdownOptions = async () => {
     const res = await fetchCities({ mode: 'options' });
     if (Array.isArray(res)) {
       this._dropdownOptions = res as Option[];
     }
-  });
+  };
 }

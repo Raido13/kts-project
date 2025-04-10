@@ -123,11 +123,18 @@ export const fetchCities = async ({
 
     if (mode === 'options') {
       const snapshot = await getDocs(query(collectionRef, orderBy('name')));
-      const options: Option[] = snapshot.docs.map((doc) => ({
-        key: doc.id,
-        value: doc.data().country,
-      }));
-      return options;
+      const options = [
+        ...new Map(
+          snapshot.docs.map((doc) => [
+            doc.data().country,
+            {
+              key: doc.id,
+              value: doc.data().country,
+            },
+          ])
+        ).values(),
+      ];
+      return options as Option[];
     }
 
     if (mode === 'related' && relatedCities) {

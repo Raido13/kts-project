@@ -2,7 +2,7 @@ import { fetchCities } from '@shared/services/cities/fetchCities';
 import { subscribeToCities } from '@shared/services/cities/subscribeToCities';
 import { updateCity } from '@shared/services/cities/updateCity';
 import { CityType } from '@shared/types/city';
-import { action, computed, makeAutoObservable, observable } from 'mobx';
+import { action, computed, makeAutoObservable, observable, runInAction } from 'mobx';
 import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore';
 import { FilterStore } from '@shared/stores/global/citiesStore/subStores/filterStore';
 import { CitiesDataStore } from '@shared/stores/global/citiesStore/subStores/citiesDataStore';
@@ -94,36 +94,46 @@ export class CitiesStore {
 
   private _fetchAllWithRetry = action(async (retries = 3, delay = 2000) => {
     this._startLoading();
-    this._isLoading = true;
     const res = (await fetchCities({ mode: 'all' })) as CityType[];
 
     if (typeof res === 'string') {
       if (retries > 0) {
         setTimeout(() => this._fetchAllWithRetry(retries - 1, delay), delay);
       } else {
-        this.setError(res);
-        this._isLoading = false;
+        runInAction(() => {
+          this.setError(res);
+          this._isLoading = false;
+        });
       }
       return;
     }
 
-    this.setError(null);
-    this.citiesDataStore.updateCities(res);
-    this._isLoading = false;
+    runInAction(() => {
+      this.setError(null);
+      this.citiesDataStore.updateCities(res);
+      this._isLoading = false;
+    });
   });
 
   fetchRelated = action(async (citiesNumber: number) => {
     this._startLoading();
-    this._isLoading = true;
     await fetchCities({ mode: 'related', relatedCities: citiesNumber })
       .then((res) => {
-        if (Array.isArray(res)) {
-          this.citiesDataStore.updateRelatedCities(res as CityType[]);
-        }
+        runInAction(() => {
+          if (Array.isArray(res)) {
+            this.citiesDataStore.updateRelatedCities(res as CityType[]);
+          }
+        });
       })
       .finally(() => {
-        this._isLoading = false;
+        runInAction(() => {
+          this._isLoading = false;
+        });
       });
+  });
+
+  clearRelated = action(() => {
+    this.citiesDataStore.updateRelatedCities([]);
   });
 
   fetchCurrent = action(async (currentCityId: string) => {
@@ -133,12 +143,16 @@ export class CitiesStore {
       currentCityId,
     })
       .then((res) => {
-        if (typeof res !== 'string') {
-          this.citiesDataStore.updateCurrentCity(res as CityType);
-        }
+        runInAction(() => {
+          if (typeof res !== 'string') {
+            this.citiesDataStore.updateCurrentCity(res as CityType);
+          }
+        });
       })
       .finally(() => {
-        this._isLoading = false;
+        runInAction(() => {
+          this._isLoading = false;
+        });
       });
   });
 
@@ -146,29 +160,38 @@ export class CitiesStore {
     this._unsubscribeFn = subscribeToCities({
       mode: 'all',
       onUpdate: (data) => {
-        this._isLoading = true;
+        this._startLoading();
         if (typeof data === 'string') {
-          this.setError(data);
+          runInAction(() => {
+            this.setError(data);
+          });
           return;
         }
-        this.citiesDataStore.updateCities(data as CityType[]);
-        this._isLoading = false;
+        runInAction(() => {
+          this.citiesDataStore.updateCities(data as CityType[]);
+          this._isLoading = false;
+        });
       },
     });
   });
 
   toggleLike = action(async (cityId: string, userId: string) => {
+    this._startLoading();
     const updatedLikes = await updateCity({ mode: 'like', userId });
 
-    if (typeof updatedLikes === 'string') {
-      this.setError(updatedLikes);
-      return;
-    }
-
-    this.citiesDataStore.updateCityLikes(cityId, updatedLikes);
+    runInAction(() => {
+      if (typeof updatedLikes === 'string') {
+        this.setError(updatedLikes);
+        return;
+      }
+      this.citiesDataStore.updateCityLikes(cityId, updatedLikes);
+      this._isLoading = false;
+    });
   });
 
   private _loadPaginatedCities = action(async () => {
+    this._startLoading();
+
     const shouldReset =
       this.paginationStore.currentPage === 1 ||
       this.filterStore.searchQuery ||
@@ -176,9 +199,6 @@ export class CitiesStore {
     const targetPage = shouldReset ? 1 : this.paginationStore.currentPage;
     const filters = this.filterStore.dropdownFilters;
     const cursor = shouldReset ? null : this.paginationStore.targetCursor;
-
-    this._startMinLoading();
-    this._isLoading = true;
 
     const res = await fetchCities({
       mode: 'paginate',
@@ -189,16 +209,20 @@ export class CitiesStore {
       lastDoc: cursor,
     });
 
-    if (typeof res !== 'string' && 'data' in res) {
-      this.citiesDataStore.updatePaginatedCities(res.data);
-      this.paginationStore.setTotalPaginationCities(res.total);
+    runInAction(() => {
+      if (typeof res !== 'string' && 'data' in res) {
+        this.citiesDataStore.updatePaginatedCities(res.data);
+        this.paginationStore.setTotalPaginationCities(res.total);
 
-      if (res.lastDoc) {
-        this.paginationStore.updateLastDoc(res.lastDoc, targetPage);
+        if (res.lastDoc) {
+          this.paginationStore.updateLastDoc(res.lastDoc, targetPage);
+        }
       }
-    }
+    });
 
-    this._isLoading = false;
+    runInAction(() => {
+      this._isLoading = false;
+    });
   });
 
   private _startLoading = action(() => {
@@ -209,7 +233,9 @@ export class CitiesStore {
 
   private _startMinLoading = action(() => {
     setTimeout(() => {
-      this._minLoading = false;
+      runInAction(() => {
+        this._minLoading = false;
+      });
     }, MIN_LOADING_TIME);
   });
 

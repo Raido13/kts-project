@@ -8,6 +8,10 @@
   &_single {
     height: inherit;
     width: 50%;
+
+    @media (max-width: 830px) {
+      width: inherit;
+    }
   }
 
   &__preparation {
@@ -22,6 +26,10 @@
       aspect-ratio: 16 / 9;
       height: inherit;
       width: 50%;
+
+      @media (max-width: 830px) {
+        width: inherit;
+      }
     }
   }
 }

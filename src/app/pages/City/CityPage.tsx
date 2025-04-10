@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 import s from './CityPage.module.scss';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
@@ -14,7 +14,7 @@ const RELATED_NUMBER = 3;
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
   const rootStoreContext = useRootStore();
-  const { fetchRelated, fetchCurrent, isLoading, citiesDataStore } = rootStoreContext.citiesStore;
+  const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = rootStoreContext.citiesStore;
   const { relatedCities, currentCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,
@@ -22,13 +22,21 @@ export const CityPage: FC = observer(() => {
     }),
     [citiesDataStore.relatedCities, citiesDataStore.currentCity]
   );
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    void fetchRelated(RELATED_NUMBER);
     if (currentCityId) {
-      void fetchCurrent(currentCityId);
+      (async () => await fetchCurrent(currentCityId))();
     }
-  }, [currentCityId, fetchRelated, fetchCurrent]);
+  }, [currentCityId, fetchCurrent]);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    (async () => await fetchRelated(RELATED_NUMBER))();
+
+    return () => clearRelated();
+  }, [hasFetched, fetchRelated, clearRelated]);
 
   return (
     <div className={s.page}>
@@ -44,9 +52,7 @@ export const CityPage: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Related Cities
         </Text>
-        <ul className={s.page__gallery}>
-          <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
-        </ul>
+        <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
       </section>
     </div>
   );
