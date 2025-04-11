@@ -19,8 +19,8 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const Button: React.FC<ButtonProps> = observer(
   ({ loading, disabled, children, className, skeletonLoading, ...props }) => {
-    const rootStoreContext = useRootStore();
-    const { isLoading } = rootStoreContext.citiesStore;
+    const { citiesStore } = useRootStore();
+    const { isLoading } = citiesStore;
 
     return isLoading && skeletonLoading ? (
       <div className={cn(s.button__skeleton, className)} />

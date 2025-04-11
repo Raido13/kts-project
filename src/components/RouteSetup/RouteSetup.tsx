@@ -12,8 +12,7 @@ interface RouterSetupProps extends PropsWithChildren {
 export const RouteSetup: FC<RouterSetupProps> = observer(({ children, header }) => {
   const navigate = useNavigate();
   const { search, pathname } = useLocation();
-  const rootStoreContext = useRootStore();
-  const citiesStore = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
 
   useEffect(() => {
     const dispose = citiesStore.initUrlSync((path) => navigate(path, { replace: true }), pathname);

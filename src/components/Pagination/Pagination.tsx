@@ -13,8 +13,8 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
 }
 
 export const Pagination: React.FC<PaginationProps> = observer(({ className }) => {
-  const rootStoreContext = useRootStore();
-  const { isLoading, paginationStore } = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
+  const { isLoading, paginationStore } = citiesStore;
   const { totalPaginatedCities, viewPerPage, currentPage, setCurrentPage } = paginationStore;
   const totalPages = Math.ceil(totalPaginatedCities / viewPerPage);
   const DOTS = '...';

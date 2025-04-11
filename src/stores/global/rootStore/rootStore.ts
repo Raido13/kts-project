@@ -1,7 +1,7 @@
 import { CitiesStore } from '@shared/stores/global/citiesStore';
 import { ModalStore } from '@shared/stores/global/modalStore';
 import { UserStore } from '@shared/stores/global/userStore';
-import { makeObservable, observable } from 'mobx';
+import { computed, makeObservable, observable } from 'mobx';
 import { ToastStore } from '../toastStore';
 
 export class RootStore {
@@ -21,7 +21,12 @@ export class RootStore {
       modalStore: observable,
       citiesStore: observable,
       toastStore: observable,
+      isAppReady: computed,
     });
+  }
+
+  get isAppReady() {
+    return this.citiesStore.isInit;
   }
 
   dispose = () => {

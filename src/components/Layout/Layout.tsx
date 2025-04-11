@@ -9,6 +9,7 @@ import Text from '@shared/components/Text';
 import s from './Layout.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@shared/hooks';
+import Loader from '../Loader';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -18,12 +19,13 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
-  const rootStoreContext = useRootStore();
-  const { requestError, citiesDataStore } = rootStoreContext.citiesStore;
+  const rootStore = useRootStore();
+  const { isAppReady } = rootStore;
+  const { requestError, citiesDataStore } = rootStore.citiesStore;
   const { mostLikedCity } = citiesDataStore;
   const { pathname } = useLocation();
-  const { openModal } = rootStoreContext.modalStore;
-  const { user } = rootStoreContext.userStore;
+  const { openModal } = rootStore.modalStore;
+  const { user } = rootStore.userStore;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -44,7 +46,11 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
 
   const nextAuthModal = user === null ? 'sign-in' : 'log-out';
 
-  return (
+  return !isAppReady ? (
+    <div className={s.loading}>
+      <Loader size={'l'} />
+    </div>
+  ) : (
     <>
       {header && (
         <Header
@@ -53,7 +59,7 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
           links={[
             { label: 'Home', path: HOME },
             { label: 'Cities', path: CITIES },
-            { label: 'Good Choice', path: mostLikedCity ? `${CITIES}/${mostLikedCity.id}` : '' },
+            { label: 'Good Choice', path: `${CITIES}/${mostLikedCity?.id}` },
           ]}
           menuItems={[
             { icon: <UserIcon />, onClick: () => openModal(nextAuthModal) },

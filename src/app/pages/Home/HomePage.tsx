@@ -12,8 +12,8 @@ import { CitiesList } from '@shared/components/CitiesList';
 const RELATED_NUMBER = 6;
 
 export const HomePage: FC = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { fetchRelated, clearRelated, citiesDataStore, isLoading } = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
+  const { fetchRelated, clearRelated, citiesDataStore, isLoading } = citiesStore;
   const { relatedCities, mostLikedCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,

@@ -5,8 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@shared/hooks';
 
 export const ModalRoot: FC = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { modal, closeModal } = rootStoreContext.modalStore;
+  const { modalStore } = useRootStore();
+  const { modal, closeModal } = modalStore;
 
   if (!modal) return null;
 

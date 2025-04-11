@@ -4,8 +4,8 @@ import { CitiesList } from '../CitiesList';
 import { observer } from 'mobx-react-lite';
 
 export const CitiesPageList: FC = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { citiesDataStore, paginationStore, isLoading } = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
+  const { citiesDataStore, paginationStore, isLoading } = citiesStore;
   const { paginatedCities } = citiesDataStore;
   const { viewPerPage } = paginationStore;
 

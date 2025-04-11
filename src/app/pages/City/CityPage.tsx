@@ -13,8 +13,8 @@ const RELATED_NUMBER = 3;
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const rootStoreContext = useRootStore();
-  const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
+  const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = citiesStore;
   const { relatedCities, currentCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,

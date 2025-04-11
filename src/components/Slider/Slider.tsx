@@ -18,8 +18,8 @@ const STEP = 1;
 const FILL_OFFSET = 8;
 
 export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className, ...props }) => {
-  const rootStoreContext = useRootStore();
-  const { paginationStore, citiesDataStore } = rootStoreContext.citiesStore;
+  const { citiesStore } = useRootStore();
+  const { paginationStore, citiesDataStore } = citiesStore;
   const { setViewPerPage, viewPerPage } = paginationStore;
   const { paginatedCities } = citiesDataStore;
   const markList = [];

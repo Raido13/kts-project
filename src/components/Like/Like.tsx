@@ -11,16 +11,15 @@ interface LikeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Like: FC<LikeProps> = observer(({ cityId }) => {
-  const rootStoreContext = useRootStore();
-  const citiesStore = rootStoreContext.citiesStore;
-  const { user } = rootStoreContext.userStore;
-  const { openModal } = rootStoreContext.modalStore;
+  const { userStore, modalStore, citiesStore, toastStore } = useRootStore();
+  const { user } = userStore;
+  const { openModal } = modalStore;
 
   const likes = citiesStore.citiesDataStore.citiesLikes[cityId] ?? [];
   const likesCount = likes.length;
   const liked = user ? likes.includes(user.uid) : false;
 
-  const handleToggleLike = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleToggleLike = async (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);
 
     if (!user) {
@@ -28,7 +27,8 @@ export const Like: FC<LikeProps> = observer(({ cityId }) => {
       return;
     }
 
-    citiesStore.toggleLike(cityId, user.uid);
+    await citiesStore.toggleLike(cityId, user.uid);
+    toastStore.showToast(`Successfully ${!liked ? 'Liked' : 'unLiked'}!`, 'success');
   };
 
   return (

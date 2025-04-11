@@ -10,7 +10,7 @@ import { URLSyncStore } from '@shared/stores/global/citiesStore/subStores/urlSyn
 import { MIN_LOADING_TIME } from '@shared/constants/constants';
 
 export class CitiesStore {
-  private _isInit: boolean = false;
+  isInit: boolean = false;
   private _isLoading: boolean = true;
   private _minLoading: boolean = true;
   private _requestError: string | null = null;
@@ -29,7 +29,6 @@ export class CitiesStore {
 
     makeAutoObservable<
       CitiesStore,
-      | '_isInit'
       | '_isLoading'
       | '_minLoading'
       | '_requestError'
@@ -40,7 +39,7 @@ export class CitiesStore {
       | '_loadPaginatedCities'
       | '_subscribeToUpdates'
     >(this, {
-      _isInit: observable,
+      isInit: observable,
       _isLoading: observable,
       _minLoading: observable,
       _requestError: observable,
@@ -74,11 +73,11 @@ export class CitiesStore {
 
   initFromUrl = action(async (search: string) => {
     try {
-      if (!this._isInit) {
+      if (!this.isInit) {
         await this.filterStore.loadDropdownOptions();
         await this._fetchAllWithRetry();
         this._subscribeToUpdates();
-        this._isInit = true;
+        this.isInit = true;
       }
 
       await this.urlSyncStore.initFromUrl(search);
