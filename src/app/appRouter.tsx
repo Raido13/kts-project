@@ -1,10 +1,10 @@
 import { routes } from '@shared/config/routes';
 import { RouteSetup } from '@shared/components/RouteSetup';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
-import { HomePage } from '@shared/app/pages/Home';
-import { CitiesPage } from '@shared/app/pages/Cities';
-import { CityPage } from '@shared/app/pages/City';
-import { NotFoundPage } from '@shared/app/pages/NotFound';
+import { HomePage } from '@shared/App/pages/Home';
+import { CitiesPage } from '@shared/App/pages/Cities';
+import { CityPage } from '@shared/App/pages/City';
+import { NotFoundPage } from '@shared/App/pages/NotFound';
 
 const router = createHashRouter([
   {

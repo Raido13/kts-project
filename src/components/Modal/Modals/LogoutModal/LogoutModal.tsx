@@ -7,9 +7,9 @@ import { useRequestError, useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 
 export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { closeModal } = rootStoreContext.modalStore;
-  const userStore = rootStoreContext.userStore;
+  const { modalStore, userStore, toastStore } = useRootStore();
+  const { closeModal } = modalStore;
+  const { showToast } = toastStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const handleLogout = useCallback(
@@ -23,9 +23,10 @@ export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
       }
 
       clearError();
+      showToast('Successfully Logout!', 'success');
       closeModal();
     },
-    [closeModal, setRequestError, clearError, userStore]
+    [closeModal, setRequestError, clearError, userStore, showToast]
   );
 
   return (

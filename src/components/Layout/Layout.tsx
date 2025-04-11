@@ -45,7 +45,7 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
   const nextAuthModal = user === null ? 'sign-in' : 'log-out';
 
   return (
-    <div>
+    <>
       {header && (
         <Header
           logoIcon={<LogoIcon />}
@@ -65,6 +65,6 @@ export const Layout: React.FC<LayoutProps> = observer(({ header = true, children
         />
       )}
       {children}
-    </div>
+    </>
   );
 });

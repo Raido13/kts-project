@@ -6,3 +6,13 @@
     background-position: -200% 0;
   }
 }
+
+@keyframes loader {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0;
+  }
+}

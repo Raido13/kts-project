@@ -12,8 +12,9 @@ import { CityType } from '@shared/types/city';
 import { observer } from 'mobx-react-lite';
 
 export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { closeModal } = rootStoreContext.modalStore;
+  const { modalStore, toastStore } = useRootStore();
+  const { closeModal } = modalStore;
+  const { showToast } = toastStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(
@@ -102,8 +103,9 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() =
 
     setIsSubmitting(false);
     clearError();
+    showToast('City Successfully Added!', 'success');
     closeModal();
-  }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate]);
+  }, [formState, closeModal, setIsSubmitting, setRequestError, clearError, validate, showToast]);
 
   const handleButtonCreateCity = (e: MouseEvent<HTMLButtonElement>) => {
     removeExtraEventActions(e);

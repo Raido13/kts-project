@@ -10,9 +10,9 @@ import { useRequestError } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 
 export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const rootStoreContext = useRootStore();
-  const { openModal, closeModal } = rootStoreContext.modalStore;
-  const userStore = rootStoreContext.userStore;
+  const { modalStore, userStore, toastStore } = useRootStore();
+  const { openModal, closeModal } = modalStore;
+  const { showToast } = toastStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(
@@ -63,6 +63,7 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
 
     setIsSubmitting(false);
     clearError();
+    showToast('Successfully Login!', 'success');
     closeModal();
   }, [
     formState.email,
@@ -73,6 +74,7 @@ export const SignInModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
     setRequestError,
     setIsSubmitting,
     userStore,
+    showToast,
   ]);
 
   const handleButtonSignIn = (e: MouseEvent<HTMLButtonElement>) => {
