@@ -1,4 +1,4 @@
-import { CityType } from '@shared/types/city';
+import { CityDetailType, CityType } from '@shared/types/city';
 import { getMostLikedCity } from '@shared/utils/utils';
 import { action, computed, makeObservable, observable } from 'mobx';
 
@@ -6,7 +6,7 @@ export class CitiesDataStore {
   private _cities: CityType[] = [];
   private _relatedCities: CityType[] = [];
   private _paginatedCities: CityType[] = [];
-  private _currentCity: CityType | null = null;
+  private _currentCity: CityDetailType | null = null;
   private _citiesLikes: Record<string, string[]> = {};
 
   constructor() {
@@ -49,7 +49,7 @@ export class CitiesDataStore {
     return getMostLikedCity(this._cities);
   }
 
-  get currentCity(): CityType | null {
+  get currentCity(): CityDetailType | null {
     return this._currentCity;
   }
 
@@ -70,7 +70,7 @@ export class CitiesDataStore {
     this._relatedCities = cities;
   });
 
-  updateCurrentCity = action((city: CityType): void => {
+  updateCurrentCity = action((city: CityDetailType): void => {
     this._currentCity = city;
   });
 

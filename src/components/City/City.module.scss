@@ -24,6 +24,12 @@
     }
   }
 
+  &__info {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
   &__price {
     max-width: 203px;
   }

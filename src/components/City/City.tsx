@@ -31,6 +31,10 @@ export type CityProps = {
   actionSlot?: React.ReactNode;
   /** Лоадер скелетона */
   isLoading?: boolean;
+  /** Температура в цельсии */
+  temp?: string;
+  /** Время в городе */
+  localTime?: string;
 };
 
 const City: React.FC<CityProps> = ({
@@ -45,6 +49,8 @@ const City: React.FC<CityProps> = ({
   onClick,
   actionSlot,
   isLoading = false,
+  temp,
+  localTime,
 }) => {
   const imageText = getTextFromReactNode(title);
   const isPreview = variant === 'preview';
@@ -67,6 +73,20 @@ const City: React.FC<CityProps> = ({
             {subtitle}
           </Text>
           <Like cityId={cityId} />
+          {(temp || localTime) && (
+            <div className={s.city__info}>
+              {temp && (
+                <Text isLoading={isLoading} view={'p-18'} weight={'bold'}>
+                  {temp}
+                </Text>
+              )}
+              {localTime && (
+                <Text isLoading={isLoading} view={'p-18'} weight={'bold'}>
+                  {localTime}
+                </Text>
+              )}
+            </div>
+          )}
         </div>
         <div className={s['city__body-bottom']}>
           {isPreview && (

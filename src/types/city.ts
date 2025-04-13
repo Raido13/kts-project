@@ -9,3 +9,10 @@ export interface CityType {
 }
 
 export type CityVariant = 'preview' | 'single';
+
+export type CityInfo = {
+  temp?: number;
+  localTime?: string;
+};
+
+export interface CityDetailType extends CityType, CityInfo {}

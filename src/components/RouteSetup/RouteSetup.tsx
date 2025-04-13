@@ -17,8 +17,8 @@ export const RouteSetup: FC<RouterSetupProps> = observer(({ children, header }) 
   useEffect(() => {
     const dispose = citiesStore.initUrlSync((path) => navigate(path, { replace: true }), pathname);
 
-    runInAction(() => {
-      citiesStore.initFromUrl(search);
+    runInAction(async () => {
+      await citiesStore.initFromUrl(search);
     });
 
     return () => dispose();

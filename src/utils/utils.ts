@@ -26,3 +26,9 @@ export const capitalizeFirst = (str: string) =>
 
 export const getMostLikedCity = (cities: CityType[]) =>
   cities.reduce((max, city) => ((city.likes?.length || 0) > (max.likes?.length || 0) ? city : max), cities[0]);
+
+export const getLocalTime = (timezoneOffset: number) => {
+  const utc = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
+  const localDate = new Date(utc + timezoneOffset * 1000);
+  return localDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+};

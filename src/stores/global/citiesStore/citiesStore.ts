@@ -8,6 +8,7 @@ import { FilterStore } from '@shared/stores/global/citiesStore/subStores/filterS
 import { CitiesDataStore } from '@shared/stores/global/citiesStore/subStores/citiesDataStore';
 import { URLSyncStore } from '@shared/stores/global/citiesStore/subStores/urlSyncStore';
 import { MIN_LOADING_TIME } from '@shared/constants/constants';
+import { fetchCityInfo } from '@shared/services/cities/fetchCityInfo';
 
 export class CitiesStore {
   isInit: boolean = false;
@@ -77,10 +78,15 @@ export class CitiesStore {
         await this.filterStore.loadDropdownOptions();
         await this._fetchAllWithRetry();
         this._subscribeToUpdates();
-        this.isInit = true;
+
+        runInAction(() => {
+          this.isInit = true;
+        });
       }
 
-      await this.urlSyncStore.initFromUrl(search);
+      runInAction(async () => {
+        await this.urlSyncStore.initFromUrl(search);
+      });
       await this._loadPaginatedCities();
     } catch (e) {
       console.error('Error initializing from URL:', e);
@@ -114,9 +120,9 @@ export class CitiesStore {
     });
   });
 
-  fetchRelated = action(async (citiesNumber: number) => {
+  fetchRelated = action(async (citiesNumber: number, currentCityId?: string) => {
     this._startLoading();
-    await fetchCities({ mode: 'related', relatedCities: citiesNumber })
+    await fetchCities({ mode: 'related', relatedCities: citiesNumber, currentCityId })
       .then((res) => {
         runInAction(() => {
           if (Array.isArray(res)) {
@@ -137,22 +143,19 @@ export class CitiesStore {
 
   fetchCurrent = action(async (currentCityId: string) => {
     this._startLoading();
-    await fetchCities({
+    const currentCity = (await fetchCities({
       mode: 'single',
       currentCityId,
-    })
-      .then((res) => {
-        runInAction(() => {
-          if (typeof res !== 'string') {
-            this.citiesDataStore.updateCurrentCity(res as CityType);
-          }
-        });
-      })
-      .finally(() => {
-        runInAction(() => {
-          this._isLoading = false;
-        });
-      });
+    })) as CityType;
+    runInAction(async () => {
+      if (typeof currentCity !== 'string') {
+        const cityInfo = await fetchCityInfo(currentCity.name);
+        this.citiesDataStore.updateCurrentCity({ ...currentCity, ...cityInfo });
+      }
+    });
+    runInAction(() => {
+      this._isLoading = false;
+    });
   });
 
   private _subscribeToUpdates = action(() => {

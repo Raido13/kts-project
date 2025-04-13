@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import s from './CityPage.module.scss';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
@@ -15,28 +15,16 @@ export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
   const { citiesStore } = useRootStore();
   const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = citiesStore;
-  const { relatedCities, currentCity } = useMemo(
-    () => ({
-      relatedCities: citiesDataStore.relatedCities,
-      currentCity: citiesDataStore.currentCity,
-    }),
-    [citiesDataStore.relatedCities, citiesDataStore.currentCity]
-  );
-  const hasFetched = useRef(false);
+  const { relatedCities, currentCity } = citiesDataStore;
 
   useEffect(() => {
     if (currentCityId) {
       (async () => await fetchCurrent(currentCityId))();
+      (async () => await fetchRelated(RELATED_NUMBER, currentCityId))();
     }
-  }, [currentCityId, fetchCurrent]);
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    (async () => await fetchRelated(RELATED_NUMBER))();
 
     return () => clearRelated();
-  }, [hasFetched, fetchRelated, clearRelated]);
+  }, [currentCityId, fetchCurrent, fetchRelated, clearRelated]);
 
   return (
     <div className={s.page}>
