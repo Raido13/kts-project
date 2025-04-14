@@ -89,7 +89,7 @@ export const fetchCities = async ({
       countQuery = query(countQuery, ...conditions);
 
       if (lastDoc) {
-        q = query(q, startAfter(lastDoc), limit(viewPerPage));
+        q = query(collectionRef, ...conditions, orderBy(orderField), startAfter(lastDoc), limit(viewPerPage));
       } else if (currentPage > 1) {
         const tempQ = query(collectionRef, ...conditions, orderBy(orderField), limit((currentPage - 1) * viewPerPage));
         const snapshot = await getDocs(tempQ);
