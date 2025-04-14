@@ -2,7 +2,7 @@ import { CityInfo } from '@shared/types/city';
 import { getLocalTime } from '@shared/utils/utils';
 import axios from 'axios';
 
-const API_KEY = '676134b682142225bf54ca5441fe069a';
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 export const fetchCityInfo = async (city: string): Promise<CityInfo | undefined> => {
