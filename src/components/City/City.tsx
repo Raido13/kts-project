@@ -7,6 +7,7 @@ import { getTextFromReactNode } from '@shared/utils';
 import Button from '@shared/components/Button';
 import { Image } from '@shared/components/Image';
 import { Like } from '@shared/components/Like';
+import { Comment } from '../Comment';
 
 export type CityProps = {
   /** Дополнительный classname */
@@ -73,6 +74,7 @@ const City: React.FC<CityProps> = ({
             {subtitle}
           </Text>
           <Like cityId={cityId} />
+          {!isPreview && <Comment cityId={cityId} />}
           {(temp || localTime) && (
             <div className={s.city__info}>
               {temp && (

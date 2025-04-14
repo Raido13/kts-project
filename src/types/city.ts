@@ -6,6 +6,7 @@ export interface CityType {
   is_capital: boolean;
   image: string;
   likes: string[];
+  comments?: CityComment[];
 }
 
 export type CityVariant = 'preview' | 'single';
@@ -16,3 +17,9 @@ export type CityInfo = {
 };
 
 export interface CityDetailType extends CityType, CityInfo {}
+
+export interface CityComment {
+  date: Date;
+  message: string;
+  owner: string;
+}

@@ -8,7 +8,7 @@ import { FieldType } from '@shared/types/field';
 import { Form } from '@shared/components/Form';
 import { useRequestError } from '@shared/hooks';
 import { createCity } from '@shared/services/cities/createCity';
-import { CityType } from '@shared/types/city';
+import { CityComment, CityType } from '@shared/types/city';
 import { observer } from 'mobx-react-lite';
 
 export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
@@ -91,6 +91,7 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() =
     const newCity = {
       ...formState,
       likes: [] as string[],
+      comments: [] as CityComment[],
     } as CityType;
 
     const creatingCity = await createCity(newCity);
@@ -137,7 +138,7 @@ export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() =
         handleCheckboxChange={handleCheckboxChange}
         actionButton={
           <Button disabled={isSubmitting} onClick={handleButtonCreateCity}>
-            {isSubmitting ? 'Creating' : 'Create'}
+            {isSubmitting ? 'Creating...' : 'Create'}
           </Button>
         }
         errors={errors}

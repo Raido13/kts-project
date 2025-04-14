@@ -15,7 +15,7 @@ export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
   const { citiesStore } = useRootStore();
   const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = citiesStore;
-  const { relatedCities, currentCity } = citiesDataStore;
+  const { relatedCities, currentCity, updateCurrentCity } = citiesDataStore;
 
   useEffect(() => {
     if (currentCityId) {
@@ -23,8 +23,11 @@ export const CityPage: FC = observer(() => {
       (async () => await fetchRelated(RELATED_NUMBER, currentCityId))();
     }
 
-    return () => clearRelated();
-  }, [currentCityId, fetchCurrent, fetchRelated, clearRelated]);
+    return () => {
+      clearRelated();
+      updateCurrentCity(null);
+    };
+  }, [currentCityId, fetchCurrent, fetchRelated, clearRelated, updateCurrentCity]);
 
   return (
     <div className={s.page}>

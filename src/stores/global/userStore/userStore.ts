@@ -5,7 +5,7 @@ import { User } from 'firebase/auth';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 
 export class UserStore {
-  _user: User | null = null;
+  private _user: User | null = null;
 
   constructor() {
     makeObservable<UserStore, '_user'>(this, {

@@ -1,7 +1,7 @@
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { subscribeToCities } from '@shared/services/cities/subscribeToCities';
 import { updateCity } from '@shared/services/cities/updateCity';
-import { CityType } from '@shared/types/city';
+import { CityComment, CityType } from '@shared/types/city';
 import { action, computed, makeAutoObservable, observable, runInAction } from 'mobx';
 import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore';
 import { FilterStore } from '@shared/stores/global/citiesStore/subStores/filterStore';
@@ -185,7 +185,18 @@ export class CitiesStore {
         this.setError(updatedLikes);
         return;
       }
-      this.citiesDataStore.updateCityLikes(cityId, updatedLikes);
+      this.citiesDataStore.updateCityLikes(cityId, updatedLikes as string[]);
+    });
+  });
+
+  addComment = action(async (cityId: string, userId: string, message: string) => {
+    const updatedComments = await updateCity({ mode: 'comment', cityId, userId, message });
+
+    runInAction(() => {
+      if (typeof updatedComments === 'string') {
+        return updatedComments;
+      }
+      this.citiesDataStore.updateCityComments(cityId, updatedComments as CityComment[]);
     });
   });
 
