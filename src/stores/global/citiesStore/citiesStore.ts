@@ -147,12 +147,15 @@ export class CitiesStore {
       mode: 'single',
       currentCityId,
     })) as CityType;
-    runInAction(async () => {
-      if (typeof currentCity !== 'string') {
-        const cityInfo = await fetchCityInfo(currentCity.name);
+
+    if (typeof currentCity !== 'string') {
+      const cityInfo = await fetchCityInfo(currentCity.name);
+
+      runInAction(async () => {
         this.citiesDataStore.updateCurrentCity({ ...currentCity, ...cityInfo });
-      }
-    });
+      });
+    }
+
     runInAction(() => {
       this._isLoading = false;
     });
@@ -163,12 +166,14 @@ export class CitiesStore {
       mode: 'all',
       onUpdate: (data) => {
         this._startLoading();
+
         if (typeof data === 'string') {
           runInAction(() => {
             this.setError(data);
           });
           return;
         }
+
         runInAction(() => {
           this.citiesDataStore.updateCities(data as CityType[]);
           this._isLoading = false;

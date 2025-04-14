@@ -1,6 +1,6 @@
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Search } from '../Search';
 import MultiDropdown from '../MultiDropdown';
 import { Slider } from '../Slider';
@@ -10,28 +10,24 @@ import { Range } from '@shared/types/slider';
 
 export const CitiesPageActions: FC = observer(() => {
   const { citiesStore } = useRootStore();
-  const { filterStore } = citiesStore;
-
-  useEffect(() => {
-    if (filterStore.dropdownOptions.length === 0) {
-      filterStore.loadDropdownOptions();
-    }
-  }, [filterStore]);
+  const isLoading = citiesStore.isLoading;
+  const total = citiesStore.paginationStore.totalPaginatedCities;
+  const cities = citiesStore.citiesDataStore.paginatedCities;
 
   return (
     <div className={s.toolbar}>
       <div className={s['toolbar-container']}>
-        <Search actionName={'Find now'} placeholder={'Search City'} disabled={citiesStore.isLoading} />
+        <Search actionName={'Find now'} placeholder={'Search City'} disabled={isLoading} />
         <MultiDropdown className={s.dropdown} />
-        <Slider min={3} max={Math.min(citiesStore.paginationStore.totalPaginatedCities, 10) as Range<4, 10>} />
+        <Slider min={3} max={Math.min(total, 10) as Range<4, 10>} />
       </div>
       <div className={s.counter}>
         <Text tag={'p'} view={'title'} color={'primary'}>
           Total Cities
         </Text>
-        {citiesStore.citiesDataStore.paginatedCities.length > 0 && (
+        {cities.length > 0 && (
           <Text tag={'p'} view={'p-20'} color={'accent'} weight={'bold'}>
-            {citiesStore.citiesDataStore.paginatedCities.length}
+            {cities.length}
           </Text>
         )}
       </div>
