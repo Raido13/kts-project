@@ -1,28 +1,22 @@
 import { FC, PropsWithChildren, useEffect } from 'react';
 import { Layout } from '@shared/components/Layout';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { runInAction } from 'mobx';
 import { useRootStore } from '@shared/hooks';
-import { observer } from 'mobx-react-lite';
 
 interface RouterSetupProps extends PropsWithChildren {
   header: boolean;
 }
 
-export const RouteSetup: FC<RouterSetupProps> = observer(({ children, header }) => {
+export const RouteSetup: FC<RouterSetupProps> = ({ children, header }) => {
   const navigate = useNavigate();
   const { search, pathname } = useLocation();
-  const { citiesStore } = useRootStore();
+  const rootStore = useRootStore();
 
   useEffect(() => {
-    const dispose = citiesStore.initUrlSync((path) => navigate(path, { replace: true }), pathname);
-
-    runInAction(async () => {
-      await citiesStore.initFromUrl(search);
-    });
-
-    return () => dispose();
-  }, [navigate, pathname, search, citiesStore]);
+    rootStore.setNavigate(navigate);
+    rootStore.routerStore.setLocation(pathname, search);
+    return () => rootStore.dispose();
+  }, [navigate, pathname, search, rootStore]);
 
   return <Layout header={header}>{children}</Layout>;
-});
+};

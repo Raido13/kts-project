@@ -8,6 +8,7 @@ import { CardDetail } from '@shared/components/CardDetail';
 import { observer } from 'mobx-react-lite';
 import { ListContainer } from '@shared/components/ListContainer';
 import { useRootStore } from '@shared/hooks';
+import { runInAction } from 'mobx';
 
 const RELATED_NUMBER = 3;
 
@@ -25,7 +26,9 @@ export const CityPage: FC = observer(() => {
 
     return () => {
       clearRelated();
-      updateCurrentCity(null);
+      runInAction(() => {
+        updateCurrentCity(null);
+      });
     };
   }, [currentCityId, fetchCurrent, fetchRelated, clearRelated, updateCurrentCity]);
 
@@ -33,7 +36,21 @@ export const CityPage: FC = observer(() => {
     <div className={s.page}>
       <BackButton className={s.page__back}>Back</BackButton>
       <CardDetail
-        city={currentCity ?? undefined}
+        city={
+          currentCity
+            ? {
+                id: currentCity.id,
+                image: currentCity.image,
+                name: currentCity.name,
+                country: currentCity.country,
+                population: currentCity.population,
+                is_capital: currentCity.is_capital,
+                likes: currentCity.likes,
+                temp: currentCity.temp,
+                localTime: currentCity.localTime,
+              }
+            : undefined
+        }
         action={<Button skeletonLoading={true}>Find ticket</Button>}
         className={s.page__city}
         variant={'single'}

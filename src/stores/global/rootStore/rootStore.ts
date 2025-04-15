@@ -2,13 +2,15 @@ import { CitiesStore } from '@shared/stores/global/citiesStore';
 import { ModalStore } from '@shared/stores/global/modalStore';
 import { UserStore } from '@shared/stores/global/userStore';
 import { ToastStore } from '@shared/stores/global/toastStore';
-import { computed, makeObservable, observable } from 'mobx';
+import { RouterStore } from '@shared/stores/global/routerStore';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { CitiesDataStore, FilterStore, PaginationStore, URLSyncStore } from '@shared/stores/local';
 
 export class RootStore {
   readonly userStore = new UserStore();
   readonly modalStore = new ModalStore();
   readonly toastStore = new ToastStore();
+  readonly routerStore = new RouterStore();
 
   readonly citiesDataStore = new CitiesDataStore();
   readonly paginationStore = new PaginationStore();
@@ -23,14 +25,33 @@ export class RootStore {
   );
 
   constructor() {
-    makeObservable(this, {
+    makeObservable<RootStore, '_navigate'>(this, {
       userStore: observable,
       modalStore: observable,
       citiesStore: observable,
       toastStore: observable,
       isAppReady: computed,
+      setNavigate: action,
+      _navigate: observable,
     });
+
+    reaction(
+      () => ({
+        pathname: this.routerStore.pathname,
+        search: this.routerStore.search,
+      }),
+      async ({ pathname, search }) => {
+        this.citiesStore.initUrlSync(this._navigate, pathname);
+        await this.citiesStore.initFromUrl(search);
+      }
+    );
   }
+
+  private _navigate: (path: string) => void = () => {};
+
+  setNavigate = (navigate: (path: string) => void) => {
+    this._navigate = navigate;
+  };
 
   get isAppReady() {
     return this.citiesStore.isInit;
