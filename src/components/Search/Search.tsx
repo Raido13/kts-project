@@ -22,8 +22,7 @@ interface SearchProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
 
 export const Search: React.FC<SearchProps> = observer(
   ({ onSearchFilter, actionName, placeholder, className, ...props }) => {
-    const { citiesStore } = useRootStore();
-    const { filterStore } = citiesStore;
+    const { filterStore } = useRootStore();
     const { setSearchQuery, searchQuery } = filterStore;
     const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
 

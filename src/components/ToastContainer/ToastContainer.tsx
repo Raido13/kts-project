@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import s from './ToastContainer.module.scss';
 import { useRootStore } from '@shared/hooks';
-import { Toast } from '../Toast';
+import { Toast } from '@shared/components/Toast';
 import { observer } from 'mobx-react-lite';
 
 export const ToastContainer: FC = observer(() => {

@@ -5,7 +5,7 @@ import cn from 'classnames';
 import Text from '@shared/components/Text';
 import { SuccessIcon } from '@shared/components/Icon/SuccessIcon';
 import { ErrorIcon } from '@shared/components/Icon/ErrorIcon';
-import CloseIcon from '../Icon/CloseIcon';
+import CloseIcon from '@shared/components/Icon/CloseIcon';
 
 interface ToastProps {
   variant: ToastVariant;

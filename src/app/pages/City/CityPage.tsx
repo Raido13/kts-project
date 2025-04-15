@@ -4,17 +4,17 @@ import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import { useParams } from 'react-router-dom';
 import { BackButton } from '@shared/components/BackButton';
-import { CityDetail } from '@shared/components/CityDetail';
+import { CardDetail } from '@shared/components/CardDetail';
 import { observer } from 'mobx-react-lite';
-import { CitiesList } from '@shared/components/CitiesList';
+import { ListContainer } from '@shared/components/ListContainer';
 import { useRootStore } from '@shared/hooks';
 
 const RELATED_NUMBER = 3;
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const { citiesStore } = useRootStore();
-  const { fetchRelated, clearRelated, fetchCurrent, isLoading, citiesDataStore } = citiesStore;
+  const { citiesStore, citiesDataStore } = useRootStore();
+  const { fetchRelated, clearRelated, fetchCurrent, isLoading } = citiesStore;
   const { relatedCities, currentCity, updateCurrentCity } = citiesDataStore;
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const CityPage: FC = observer(() => {
   return (
     <div className={s.page}>
       <BackButton className={s.page__back}>Back</BackButton>
-      <CityDetail
+      <CardDetail
         city={currentCity ?? undefined}
         action={<Button skeletonLoading={true}>Find ticket</Button>}
         className={s.page__city}
@@ -43,7 +43,7 @@ export const CityPage: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Related Cities
         </Text>
-        <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
+        <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} items={relatedCities} />
       </section>
     </div>
   );

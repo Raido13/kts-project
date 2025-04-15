@@ -9,7 +9,7 @@ import Text from '@shared/components/Text';
 import s from './Layout.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@shared/hooks';
-import Loader from '../Loader';
+import Loader from '@shared/components/Loader';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   /** Хедер компонент */
@@ -20,8 +20,8 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Layout: React.FC<LayoutProps> = observer(({ header = true, children }) => {
   const rootStore = useRootStore();
-  const { isAppReady } = rootStore;
-  const { requestError, citiesDataStore } = rootStore.citiesStore;
+  const { isAppReady, citiesDataStore } = rootStore;
+  const { requestError } = rootStore.citiesStore;
   const { mostLikedCity } = citiesDataStore;
   const { pathname } = useLocation();
   const { openModal } = rootStore.modalStore;

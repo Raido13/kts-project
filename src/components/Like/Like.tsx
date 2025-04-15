@@ -11,11 +11,11 @@ interface LikeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Like: FC<LikeProps> = observer(({ cityId }) => {
-  const { userStore, modalStore, citiesStore, toastStore } = useRootStore();
+  const { userStore, modalStore, citiesStore, citiesDataStore, toastStore } = useRootStore();
   const { user } = userStore;
   const { openModal } = modalStore;
 
-  const likes = citiesStore.citiesDataStore.citiesLikes[cityId] ?? [];
+  const likes = citiesDataStore.citiesLikes[cityId] ?? [];
   const likesCount = likes.length;
   const liked = user ? likes.includes(user.uid) : false;
 

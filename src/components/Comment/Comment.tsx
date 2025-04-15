@@ -1,7 +1,7 @@
 import { useRootStore } from '@shared/hooks';
 import { FC, HTMLAttributes, MouseEvent } from 'react';
 import Text from '@shared/components/Text';
-import { CommentIcon } from '../Icon/CommentIcon/CommentIcon';
+import { CommentIcon } from '@shared/components/Icon/CommentIcon/CommentIcon';
 import { removeExtraEventActions } from '@shared/utils/utils';
 import s from './Comment.module.scss';
 import { observer } from 'mobx-react-lite';
@@ -11,10 +11,10 @@ interface CommentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Comment: FC<CommentProps> = observer(({ cityId }) => {
-  const { userStore, modalStore, citiesStore } = useRootStore();
+  const { userStore, modalStore, citiesDataStore } = useRootStore();
   const { openModal } = modalStore;
 
-  const rawCityComments = citiesStore.citiesDataStore.citiesComments[cityId];
+  const rawCityComments = citiesDataStore.citiesComments[cityId];
   const comments = rawCityComments ? Object.values(rawCityComments).flat() : [];
   const commentsCount = comments.length;
   const commented = userStore.user ? comments.some((comment) => comment.owner === userStore.user!.uid) : false;

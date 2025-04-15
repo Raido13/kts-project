@@ -7,13 +7,13 @@ import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
-import { CitiesList } from '@shared/components/CitiesList';
+import { ListContainer } from '@shared/components/ListContainer';
 
 const RELATED_NUMBER = 6;
 
 export const HomePage: FC = observer(() => {
-  const { citiesStore } = useRootStore();
-  const { fetchRelated, clearRelated, citiesDataStore, isLoading } = citiesStore;
+  const { citiesStore, citiesDataStore } = useRootStore();
+  const { fetchRelated, clearRelated, isLoading } = citiesStore;
   const { relatedCities, mostLikedCity } = useMemo(
     () => ({
       relatedCities: citiesDataStore.relatedCities,
@@ -67,7 +67,7 @@ export const HomePage: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Related Cities
         </Text>
-        <CitiesList loadingCities={RELATED_NUMBER} isLoading={isLoading} cities={relatedCities} />
+        <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} items={relatedCities} />
       </section>
       <div className={s.page__suggest}>
         <Text tag={'p'} view={'title'} color={'primary'}>

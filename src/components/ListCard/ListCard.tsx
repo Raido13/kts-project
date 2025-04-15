@@ -1,14 +1,14 @@
-import City from '@shared/components/City';
+import Card from '@shared/components/Card';
 import { CityType } from '@shared/types/city';
 import { FC, memo, ReactNode } from 'react';
 import { CityVariant } from '@shared/types/city';
 import { CITIES } from '@shared/constants/links';
 import { Link } from 'react-router-dom';
-import s from './ListCity.module.scss';
+import s from './ListCard.module.scss';
 import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
 
-interface ListCityProps {
+interface ListCardProps {
   city?: CityType;
   variant?: CityVariant;
   action?: ReactNode;
@@ -16,13 +16,13 @@ interface ListCityProps {
   isLoading?: boolean;
 }
 
-export const ListCity: FC<ListCityProps> = memo(
+export const ListCard: FC<ListCardProps> = memo(
   observer(({ city, action, className, isLoading = false, ...props }) => {
     const isSkeleton = isLoading || !city;
     return (
       <li className={cn(s.city, className)}>
         <Link to={`${CITIES}/${city?.id ?? ''}`} className={s.city__link}>
-          <City
+          <Card
             cityId={city?.id ?? ''}
             image={city?.image}
             title={city?.name}

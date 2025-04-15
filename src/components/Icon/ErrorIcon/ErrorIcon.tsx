@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Icon, { IconProps } from '../Icon';
+import Icon, { IconProps } from '@shared/components/Icon';
 
 export const ErrorIcon: FC<IconProps> = (props) => (
   <Icon viewBox={'0 0 24 24'} {...props}>

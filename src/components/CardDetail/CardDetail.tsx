@@ -1,9 +1,9 @@
 import { CityDetailType, CityVariant } from '@shared/types/city';
 import { FC, memo, ReactNode } from 'react';
-import City from '@shared/components/City';
+import Card from '@shared/components/Card';
 import { observer } from 'mobx-react-lite';
 
-interface CityDetailProps {
+interface CardDetailProps {
   city?: CityDetailType;
   variant?: CityVariant;
   action?: ReactNode;
@@ -11,12 +11,12 @@ interface CityDetailProps {
   isLoading?: boolean;
 }
 
-export const CityDetail: FC<CityDetailProps> = memo(
+export const CardDetail: FC<CardDetailProps> = memo(
   observer(({ city, action, variant, isLoading = false, ...props }) => {
     const isSkeleton = isLoading || !city;
 
     return (
-      <City
+      <Card
         cityId={city?.id ?? ''}
         image={city?.image}
         title={city?.name}

@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import Text from '@shared/components/Text';
-import s from './CitiesPageHeader.module.scss';
+import s from './PageHeader.module.scss';
 
-export const CitiesPageHeader: FC = () => (
+export const PageHeader: FC = () => (
   <section className={s.description}>
     <Text tag={'h2'} view={'title'} color={'primary'}>
       Citypedia

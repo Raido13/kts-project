@@ -3,10 +3,10 @@ import { subscribeToCities } from '@shared/services/cities/subscribeToCities';
 import { updateCity } from '@shared/services/cities/updateCity';
 import { CityComment, CityType } from '@shared/types/city';
 import { action, computed, makeAutoObservable, observable, runInAction } from 'mobx';
-import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore';
-import { FilterStore } from '@shared/stores/global/citiesStore/subStores/filterStore';
-import { CitiesDataStore } from '@shared/stores/global/citiesStore/subStores/citiesDataStore';
-import { URLSyncStore } from '@shared/stores/global/citiesStore/subStores/urlSyncStore';
+import { PaginationStore } from '@shared/stores/local/paginationStore';
+import { FilterStore } from '@shared/stores/local/filterStore';
+import { CitiesDataStore } from '@shared/stores/local/citiesDataStore';
+import { URLSyncStore } from '@shared/stores/local/urlSyncStore';
 import { MIN_LOADING_TIME } from '@shared/constants/constants';
 import { fetchCityInfo } from '@shared/services/cities/fetchCityInfo';
 
@@ -17,17 +17,12 @@ export class CitiesStore {
   private _requestError: string | null = null;
   private _unsubscribeFn: (() => void) | null = null;
 
-  paginationStore: PaginationStore;
-  filterStore: FilterStore;
-  citiesDataStore: CitiesDataStore;
-  urlSyncStore: URLSyncStore;
-
-  constructor() {
-    this.paginationStore = new PaginationStore();
-    this.filterStore = new FilterStore(this.paginationStore);
-    this.citiesDataStore = new CitiesDataStore();
-    this.urlSyncStore = new URLSyncStore(this.filterStore, this.paginationStore);
-
+  constructor(
+    private _urlSyncStore: URLSyncStore,
+    private _citiesDataStore: CitiesDataStore,
+    private _paginationStore: PaginationStore,
+    private _filterStore: FilterStore
+  ) {
     makeAutoObservable<
       CitiesStore,
       | '_isLoading'
@@ -69,13 +64,13 @@ export class CitiesStore {
   }
 
   initUrlSync = action((navigate: (path: string) => void, pathname: string) =>
-    this.urlSyncStore.initUrlSync(navigate, pathname)
+    this._urlSyncStore.initUrlSync(navigate, pathname)
   );
 
   initFromUrl = action(async (search: string) => {
     try {
       if (!this.isInit) {
-        await this.filterStore.loadDropdownOptions();
+        await this._filterStore.loadDropdownOptions();
         await this._fetchAllWithRetry();
         this._subscribeToUpdates();
 
@@ -85,7 +80,7 @@ export class CitiesStore {
       }
 
       runInAction(async () => {
-        await this.urlSyncStore.initFromUrl(search);
+        await this._urlSyncStore.initFromUrl(search);
       });
       await this._loadPaginatedCities();
     } catch (e) {
@@ -115,7 +110,7 @@ export class CitiesStore {
 
     runInAction(() => {
       this.setError(null);
-      this.citiesDataStore.updateCities(res);
+      this._citiesDataStore.updateCities(res);
       this._isLoading = false;
     });
   });
@@ -126,7 +121,7 @@ export class CitiesStore {
       .then((res) => {
         runInAction(() => {
           if (Array.isArray(res)) {
-            this.citiesDataStore.updateRelatedCities(res as CityType[]);
+            this._citiesDataStore.updateRelatedCities(res as CityType[]);
           }
         });
       })
@@ -138,7 +133,7 @@ export class CitiesStore {
   });
 
   clearRelated = action(() => {
-    this.citiesDataStore.updateRelatedCities([]);
+    this._citiesDataStore.updateRelatedCities([]);
   });
 
   fetchCurrent = action(async (currentCityId: string) => {
@@ -152,7 +147,7 @@ export class CitiesStore {
       const cityInfo = await fetchCityInfo(currentCity.name);
 
       runInAction(async () => {
-        this.citiesDataStore.updateCurrentCity({ ...currentCity, ...cityInfo });
+        this._citiesDataStore.updateCurrentCity({ ...currentCity, ...cityInfo });
       });
     }
 
@@ -175,7 +170,7 @@ export class CitiesStore {
         }
 
         runInAction(() => {
-          this.citiesDataStore.updateCities(data as CityType[]);
+          this._citiesDataStore.updateCities(data as CityType[]);
           this._isLoading = false;
         });
       },
@@ -190,7 +185,7 @@ export class CitiesStore {
         this.setError(updatedLikes);
         return;
       }
-      this.citiesDataStore.updateCityLikes(cityId, updatedLikes as string[]);
+      this._citiesDataStore.updateCityLikes(cityId, updatedLikes as string[]);
     });
   });
 
@@ -201,7 +196,7 @@ export class CitiesStore {
       if (typeof updatedComments === 'string') {
         return updatedComments;
       }
-      this.citiesDataStore.updateCityComments(cityId, updatedComments as CityComment[]);
+      this._citiesDataStore.updateCityComments(cityId, updatedComments as CityComment[]);
     });
   });
 
@@ -209,29 +204,29 @@ export class CitiesStore {
     this._startLoading();
 
     const shouldReset =
-      this.paginationStore.currentPage === 1 ||
-      this.filterStore.searchQuery ||
-      this.filterStore.dropdownFilters.length > 0;
-    const targetPage = shouldReset ? 1 : this.paginationStore.currentPage;
-    const filters = this.filterStore.dropdownFilters;
-    const cursor = shouldReset ? null : this.paginationStore.targetCursor;
+      this._paginationStore.currentPage === 1 ||
+      this._filterStore.searchQuery ||
+      this._filterStore.dropdownFilters.length > 0;
+    const targetPage = shouldReset ? 1 : this._paginationStore.currentPage;
+    const filters = this._filterStore.dropdownFilters;
+    const cursor = shouldReset ? null : this._paginationStore.targetCursor;
 
     const res = await fetchCities({
       mode: 'paginate',
-      viewPerPage: this.paginationStore.viewPerPage,
-      searchQuery: this.filterStore.searchQuery,
-      currentPage: this.paginationStore.currentPage,
+      viewPerPage: this._paginationStore.viewPerPage,
+      searchQuery: this._filterStore.searchQuery,
+      currentPage: this._paginationStore.currentPage,
       dropdownFilters: filters,
       lastDoc: cursor,
     });
 
     runInAction(() => {
       if (typeof res !== 'string' && 'data' in res) {
-        this.citiesDataStore.updatePaginatedCities(res.data);
-        this.paginationStore.setTotalPaginationCities(res.total);
+        this._citiesDataStore.updatePaginatedCities(res.data);
+        this._paginationStore.setTotalPaginationCities(res.total);
 
         if (res.lastDoc) {
-          this.paginationStore.updateLastDoc(res.lastDoc, targetPage);
+          this._paginationStore.updateLastDoc(res.lastDoc, targetPage);
         }
       }
     });

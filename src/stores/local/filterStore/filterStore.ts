@@ -1,7 +1,7 @@
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { Option } from '@shared/types/options';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore/paginationStore';
+import { PaginationStore } from '@shared/stores/local/paginationStore/paginationStore';
 
 export class FilterStore {
   private _searchQuery: string = '';

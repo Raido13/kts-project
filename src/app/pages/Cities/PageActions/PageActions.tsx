@@ -1,18 +1,18 @@
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
-import { Search } from '../Search';
-import MultiDropdown from '../MultiDropdown';
-import { Slider } from '../Slider';
+import { Search } from '@shared/components/Search';
+import MultiDropdown from '@shared/components/MultiDropdown';
+import { Slider } from '@shared/components/Slider';
 import Text from '@shared/components/Text';
-import s from './CitiesPageActions.module.scss';
+import s from './PageActions.module.scss';
 import { Range } from '@shared/types/slider';
 
-export const CitiesPageActions: FC = observer(() => {
-  const { citiesStore } = useRootStore();
+export const PageActions: FC = observer(() => {
+  const { citiesStore, citiesDataStore, paginationStore } = useRootStore();
   const isLoading = citiesStore.isLoading;
-  const total = citiesStore.paginationStore.totalPaginatedCities;
-  const cities = citiesStore.citiesDataStore.paginatedCities;
+  const total = paginationStore.totalPaginatedCities;
+  const cities = citiesDataStore.paginatedCities;
 
   return (
     <div className={s.toolbar}>

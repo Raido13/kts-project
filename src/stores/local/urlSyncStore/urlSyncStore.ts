@@ -1,6 +1,6 @@
 import { action, makeObservable, reaction } from 'mobx';
-import { FilterStore } from '@shared/stores/global/citiesStore/subStores/filterStore/filterStore';
-import { PaginationStore } from '@shared/stores/global/citiesStore/subStores/paginationStore/paginationStore';
+import { FilterStore } from '@shared/stores/local/filterStore/filterStore';
+import { PaginationStore } from '@shared/stores/local/paginationStore/paginationStore';
 import { Range } from '@shared/types/slider';
 
 export class URLSyncStore {

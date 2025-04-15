@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useEffect } from 'react';
-import { Layout } from '../Layout';
+import { Layout } from '@shared/components/Layout';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { runInAction } from 'mobx';
 import { useRootStore } from '@shared/hooks';

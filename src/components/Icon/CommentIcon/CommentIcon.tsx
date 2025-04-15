@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Icon, { IconProps } from '../Icon';
+import Icon, { IconProps } from '@shared/components/Icon';
 
 export const CommentIcon: FC<IconProps> = (props) => (
   <Icon viewBox={'0 0 121.86 122.88'} {...props}>

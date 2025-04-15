@@ -1,4 +1,4 @@
-import { RootStoreContext } from '@shared/contexts/RootStoreContext';
+import { RootStoreContext } from '@shared/stores/global/rootStore/RootStoreContext';
 import { useContext } from 'react';
 
 export const useRootStore = () => {

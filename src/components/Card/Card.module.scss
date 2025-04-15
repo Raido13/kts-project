@@ -1,4 +1,4 @@
-.city {
+.card {
   display: flex;
   flex-direction: column;
   max-width: 360px;
@@ -68,7 +68,7 @@
       column-gap: 0;
     }
 
-    .city__image {
+    .card__image {
       width: 50%;
 
       @media (max-width: 830px) {
@@ -76,7 +76,7 @@
       }
     }
 
-    .city__body {
+    .card__body {
       padding: 0;
       row-gap: 48px;
       width: 50%;

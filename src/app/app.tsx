@@ -1,7 +1,7 @@
 import { AppRouter } from '@shared/App/appRouter';
 import { ModalRoot } from '@shared/components/Modal';
 import { ToastContainer } from '@shared/components/ToastContainer';
-import { RootStoreProvider } from '@shared/contexts/RootStoreProvider';
+import { RootStoreProvider } from '@shared/stores/global/rootStore/RootStoreProvider';
 
 export const App = () => (
   <RootStoreProvider>

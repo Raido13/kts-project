@@ -1,15 +1,15 @@
 import React from 'react';
 import cn from 'classnames';
 import Text from '@shared/components/Text';
-import s from './City.module.scss';
+import s from './Card.module.scss';
 import { CityVariant } from '@shared/types/city';
 import { getTextFromReactNode } from '@shared/utils';
 import Button from '@shared/components/Button';
 import { Image } from '@shared/components/Image';
 import { Like } from '@shared/components/Like';
-import { Comment } from '../Comment';
+import { Comment } from '@shared/components/Comment';
 
-export type CityProps = {
+export type CardProps = {
   /** Дополнительный classname */
   className?: string;
   /** Вариант отображения */
@@ -38,7 +38,7 @@ export type CityProps = {
   localTime?: string;
 };
 
-const City: React.FC<CityProps> = ({
+const Card: React.FC<CardProps> = ({
   className,
   variant = 'preview',
   cityId,
@@ -57,10 +57,10 @@ const City: React.FC<CityProps> = ({
   const isPreview = variant === 'preview';
 
   return (
-    <div onClick={onClick} className={cn(s.city, { [s.city_single]: !isPreview }, className)}>
+    <div onClick={onClick} className={cn(s.card, { [s.card_single]: !isPreview }, className)}>
       <Image isLoading={isLoading} src={isLoading ? undefined : image} alt={imageText} variant={variant} />
-      <div className={s.city__body}>
-        <div className={s['city__body-top']}>
+      <div className={s.card__body}>
+        <div className={s['card__body-top']}>
           {isLoading ||
             (isPreview && (
               <Text isLoading={isLoading} view={'p-14'} color={'secondary'}>
@@ -76,7 +76,7 @@ const City: React.FC<CityProps> = ({
           <Like cityId={cityId} />
           {!isPreview && <Comment cityId={cityId} />}
           {(temp || localTime) && (
-            <div className={s.city__info}>
+            <div className={s.card__info}>
               {temp && (
                 <Text isLoading={isLoading} view={'p-18'} weight={'bold'}>
                   {temp}
@@ -90,16 +90,16 @@ const City: React.FC<CityProps> = ({
             </div>
           )}
         </div>
-        <div className={s['city__body-bottom']}>
+        <div className={s['card__body-bottom']}>
           {isPreview && (
-            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.city__price}>
+            <Text isLoading={isLoading} view={isPreview ? 'p-18' : 'title'} weight={'bold'} className={s.card__price}>
               {contentSlot}
             </Text>
           )}
-          <div className={s.city__actions}>
+          <div className={s.card__actions}>
             {actionSlot}
             {!isPreview && (
-              <Button className={s.city__button} skeletonLoading={true}>
+              <Button className={s.card__button} skeletonLoading={true}>
                 More info
               </Button>
             )}
@@ -110,4 +110,4 @@ const City: React.FC<CityProps> = ({
   );
 };
 
-export default City;
+export default Card;

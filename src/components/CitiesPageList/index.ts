@@ -1,1 +1,0 @@
-export { CitiesPageList } from './CitiesPageList';

@@ -12,8 +12,8 @@ import { Timestamp } from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
 
 export const CommentsModal = observer(() => {
-  const { citiesStore, toastStore, userStore } = useRootStore();
-  const { addComment, citiesDataStore } = citiesStore;
+  const { citiesDataStore, citiesStore, toastStore, userStore } = useRootStore();
+  const { addComment } = citiesStore;
   const { currentCity, citiesComments } = citiesDataStore;
   const { user } = userStore;
   const { showToast } = toastStore;
