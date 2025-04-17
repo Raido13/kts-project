@@ -21,9 +21,11 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const { filterStore } = useRootStore();
-  const { dropdownOptions, setDropdownValue, dropdownTitle } = filterStore;
-  const dropdownValue = filterStore.dropdownValue;
+  const rootStore = useRootStore();
+  const { setDropdownValue } = rootStore.filterStore;
+  const dropdownOptions = rootStore.filterStore.dropdownOptions;
+  const dropdownTitle = rootStore.filterStore.dropdownTitle;
+  const dropdownValue = rootStore.filterStore.dropdownValue;
 
   const filteredOptions = Array.from(
     new Map(

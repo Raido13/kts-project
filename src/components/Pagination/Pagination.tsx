@@ -3,9 +3,10 @@ import cn from 'classnames';
 import s from './Pagination.module.scss';
 import ArrowPaginationIcon from '@shared/components/Icon/ArrowPaginationIcon';
 import Text from '@shared/components/Text';
-import { createRange } from '@shared/utils/utils';
+import { generatePages } from '@shared/utils/utils';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@shared/hooks';
+import { DOTS } from '@shared/constants/constants';
 
 interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Дополнительный classname */
@@ -13,29 +14,15 @@ interface PaginationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange
 }
 
 export const Pagination: React.FC<PaginationProps> = observer(({ className }) => {
-  const { citiesStore, paginationStore } = useRootStore();
-  const { isLoading } = citiesStore;
-  const { totalPaginatedCities, viewPerPage, currentPage, setCurrentPage } = paginationStore;
+  const rootStore = useRootStore();
+  const { setCurrentPage } = rootStore.paginationStore;
+  const isLoading = rootStore.citiesStore.isLoading;
+  const totalPaginatedCities = rootStore.paginationStore.totalPaginatedCities;
+  const viewPerPage = rootStore.paginationStore.viewPerPage;
+  const currentPage = rootStore.paginationStore.currentPage;
   const totalPages = Math.ceil(totalPaginatedCities / viewPerPage);
-  const DOTS = '...';
 
-  const generatePages = () => {
-    if (totalPages <= 4) {
-      return createRange(1, totalPages);
-    }
-
-    if (currentPage <= 3) {
-      return [1, 2, 3, 4, DOTS, totalPages];
-    }
-
-    if (currentPage >= totalPages - 2) {
-      return [1, DOTS, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-    }
-
-    return [1, DOTS, currentPage - 1, currentPage, currentPage + 1, DOTS, totalPages];
-  };
-
-  const pages = generatePages();
+  const pages = generatePages(viewPerPage, currentPage);
 
   return (
     <div className={cn(s.pagination, className)}>

@@ -5,11 +5,12 @@ import { Toast } from '@shared/components/Toast';
 import { observer } from 'mobx-react-lite';
 
 export const ToastContainer: FC = observer(() => {
-  const { toastStore } = useRootStore();
+  const rootStore = useRootStore();
+  const toasts = rootStore.toastStore.toasts;
 
   return (
     <div className={s.container}>
-      {toastStore.toasts.map(({ id, ...toast }) => (
+      {toasts.map(({ id, ...toast }) => (
         <Toast key={id} {...toast} />
       ))}
     </div>

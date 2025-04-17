@@ -12,9 +12,11 @@ import { CityComment, CityType } from '@shared/types/city';
 import { observer } from 'mobx-react-lite';
 
 export const CreateCityModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
-  const { modalStore, toastStore } = useRootStore();
-  const { closeModal } = modalStore;
-  const { showToast } = toastStore;
+  const rootStore = useRootStore();
+  const {
+    modalStore: { closeModal },
+    toastStore: { showToast },
+  } = rootStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(

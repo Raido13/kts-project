@@ -12,11 +12,14 @@ import { Timestamp } from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
 
 export const CommentsModal = observer(() => {
-  const { citiesDataStore, citiesStore, toastStore, userStore } = useRootStore();
-  const { addComment } = citiesStore;
-  const { currentCity, citiesComments } = citiesDataStore;
-  const { user } = userStore;
-  const { showToast } = toastStore;
+  const rootStore = useRootStore();
+  const {
+    citiesStore: { addComment },
+    toastStore: { showToast },
+  } = rootStore;
+  const currentCity = rootStore.citiesDataStore.currentCity;
+  const citiesComments = rootStore.citiesDataStore.citiesComments;
+  const user = rootStore.userStore.user;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const fieldSet: FieldType[] = useMemo(

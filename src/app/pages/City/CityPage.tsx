@@ -14,9 +14,14 @@ const RELATED_NUMBER = 3;
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
-  const { citiesStore, citiesDataStore } = useRootStore();
-  const { fetchRelated, clearRelated, fetchCurrent, isLoading } = citiesStore;
-  const { relatedCities, currentCity, updateCurrentCity } = citiesDataStore;
+  const rootStore = useRootStore();
+  const {
+    citiesStore: { fetchRelated, clearRelated, fetchCurrent },
+    citiesDataStore: { updateCurrentCity },
+  } = rootStore;
+  const isLoading = rootStore.citiesStore.isLoading;
+  const relatedCities = rootStore.citiesDataStore.relatedCities;
+  const currentCity = rootStore.citiesDataStore.currentCity;
 
   useEffect(() => {
     if (currentCityId) {
@@ -51,7 +56,7 @@ export const CityPage: FC = observer(() => {
               }
             : undefined
         }
-        action={<Button skeletonLoading={true}>Find ticket</Button>}
+        action={<Button isLoading={isLoading}>Find ticket</Button>}
         className={s.page__city}
         variant={'single'}
         isLoading={isLoading}

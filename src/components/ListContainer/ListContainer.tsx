@@ -20,7 +20,7 @@ export const ListContainer: FC<ListContainerProps> = observer(({ loadingItems, i
       {isLoading
         ? Array(loadingItems)
             .fill(null)
-            .map((_, idx) => <ListCard key={idx} action={<Button skeletonLoading={true}>Find ticket</Button>} />)
+            .map((_, idx) => <ListCard key={idx} action={<Button isLoading={isLoading}>Find ticket</Button>} />)
         : items.map((item) => (
             <ListCard
               city={

@@ -57,14 +57,21 @@ const Card: React.FC<CardProps> = observer(
     temp,
     localTime,
   }) => {
-    const { userStore, citiesStore, modalStore, toastStore, citiesDataStore } = useRootStore();
-    const { openModal } = modalStore;
+    const rootStore = useRootStore();
+    const {
+      modalStore: { openModal },
+      citiesStore: { toggleLike },
+      toastStore: { showToast },
+    } = rootStore;
+    const user = rootStore.userStore.user;
+    const citiesLikes = rootStore.citiesDataStore.citiesLikes;
+    const citiesComments = rootStore.citiesDataStore.citiesComments;
 
-    const isLoggedIn = !!userStore.user;
+    const isLoggedIn = !!user;
 
-    const likes = citiesDataStore.citiesLikes[cityId] ?? [];
+    const likes = citiesLikes[cityId] ?? [];
     const likesCount = likes.length;
-    const liked = isLoggedIn ? likes.includes(userStore.user.uid) : false;
+    const liked = isLoggedIn ? likes.includes(user.uid) : false;
 
     const handleToggleLike = async (e: MouseEvent<HTMLButtonElement>) => {
       removeExtraEventActions(e);
@@ -74,14 +81,14 @@ const Card: React.FC<CardProps> = observer(
         return;
       }
 
-      await citiesStore.toggleLike(cityId, userStore.user.uid);
-      toastStore.showToast(`Successfully ${!liked ? 'Liked' : 'unLiked'}!`, 'success');
+      await toggleLike(cityId, user.uid);
+      showToast(`Successfully ${!liked ? 'Liked' : 'unLiked'}!`, 'success');
     };
 
-    const rawCityComments = citiesDataStore.citiesComments[cityId];
+    const rawCityComments = citiesComments[cityId];
     const comments = rawCityComments ? Object.values(rawCityComments).flat() : [];
     const commentsCount = comments.length;
-    const commented = isLoggedIn ? comments.some((comment) => comment.owner === userStore.user!.uid) : false;
+    const commented = isLoggedIn ? comments.some((comment) => comment.owner === user!.uid) : false;
 
     const imageText = getTextFromReactNode(title);
     const isPreview = variant === 'preview';
@@ -147,7 +154,7 @@ const Card: React.FC<CardProps> = observer(
             <div className={s.card__actions}>
               {actionSlot}
               {!isPreview && (
-                <Button className={s.card__button} skeletonLoading={true}>
+                <Button className={s.card__button} isLoading={isLoading}>
                   More info
                 </Button>
               )}

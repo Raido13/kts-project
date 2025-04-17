@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
@@ -12,17 +12,13 @@ import { ListContainer } from '@shared/components/ListContainer';
 const RELATED_NUMBER = 6;
 
 export const HomePage: FC = observer(() => {
-  const { citiesStore, citiesDataStore } = useRootStore();
-  const { fetchRelated, clearRelated, isLoading } = citiesStore;
-  const { relatedCities, mostLikedCity } = useMemo(
-    () => ({
-      relatedCities: citiesDataStore.relatedCities,
-      mostLikedCity: citiesDataStore.mostLikedCity,
-    }),
-    [citiesDataStore.relatedCities, citiesDataStore.mostLikedCity]
-  );
   const navigation = useNavigate();
   const hasFetched = useRef(false);
+  const rootStore = useRootStore();
+  const { fetchRelated, clearRelated } = rootStore.citiesStore;
+  const isLoading = rootStore.citiesStore.isLoading;
+  const relatedCities = rootStore.citiesDataStore.relatedCities;
+  const mostLikedCity = rootStore.citiesDataStore.mostLikedCity;
 
   useEffect(() => {
     if (hasFetched.current) return;

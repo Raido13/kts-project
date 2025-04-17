@@ -3,8 +3,6 @@ import Text from '@shared/components/Text';
 import cn from 'classnames';
 import Loader from '@shared/components/Loader';
 import s from './Button.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useRootStore } from '@shared/hooks';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Состояние загрузки */
@@ -14,29 +12,23 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Дополнительный класс */
   className?: string;
   /** Стейт для скелетона */
-  skeletonLoading?: boolean;
+  isLoading?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = observer(
-  ({ loading, disabled, children, className, skeletonLoading, ...props }) => {
-    const { citiesStore } = useRootStore();
-    const { isLoading } = citiesStore;
-
-    return isLoading && skeletonLoading ? (
-      <div className={cn(s.button__skeleton, className)} />
-    ) : (
-      <button
-        className={cn(s.button, loading && s.button_loading, disabled && s.button_disabled, className)}
-        disabled={loading || disabled}
-        {...props}
-      >
-        {loading && <Loader className={s.button__loader} size={'s'} />}
-        <Text className={s.button__text} view={'button'} tag={'p'}>
-          {children}
-        </Text>
-      </button>
-    );
-  }
-);
+const Button: React.FC<ButtonProps> = ({ loading, disabled, children, className, isLoading, ...props }) =>
+  isLoading ? (
+    <div className={cn(s.button__skeleton, className)} />
+  ) : (
+    <button
+      className={cn(s.button, loading && s.button_loading, disabled && s.button_disabled, className)}
+      disabled={loading || disabled}
+      {...props}
+    >
+      {loading && <Loader className={s.button__loader} size={'s'} />}
+      <Text className={s.button__text} view={'button'} tag={'p'}>
+        {children}
+      </Text>
+    </button>
+  );
 
 export default Button;

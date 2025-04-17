@@ -2,7 +2,7 @@ import { ModalType } from '@shared/types/modal';
 import { action, computed, makeObservable, observable } from 'mobx';
 
 export class ModalStore {
-  _modal: ModalType = null;
+  private _modal: ModalType = null;
 
   constructor() {
     makeObservable<this, '_modal'>(this, {

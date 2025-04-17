@@ -24,7 +24,7 @@ interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Layout: React.FC<LayoutProps> = ({
-  header = true,
+  header = false,
   isAppReady,
   requestError,
   mostLikedCityId,

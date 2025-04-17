@@ -9,10 +9,10 @@ import s from './PageActions.module.scss';
 import { Range } from '@shared/types/slider';
 
 export const PageActions: FC = observer(() => {
-  const { citiesStore, citiesDataStore, paginationStore } = useRootStore();
-  const isLoading = citiesStore.isLoading;
-  const total = paginationStore.totalPaginatedCities;
-  const cities = citiesDataStore.paginatedCities;
+  const rootStore = useRootStore();
+  const isLoading = rootStore.citiesStore.isLoading;
+  const total = rootStore.paginationStore.totalPaginatedCities;
+  const cities = rootStore.citiesDataStore.paginatedCities;
 
   return (
     <div className={s.toolbar}>
