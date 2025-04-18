@@ -9,4 +9,5 @@ export default defineConfig({
       '@shared': resolve(__dirname, 'src')
     },
   },
+  base: '/kts-project/'
 })
