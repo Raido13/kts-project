@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { ListCard } from '@shared/components/ListCard';
 import Button from '@shared/components/Button';
 import { CityType } from '@shared/types/city';
-import { observer } from 'mobx-react-lite';
 import cn from 'classnames';
 import { useWindowWidth } from '@shared/hooks';
 import s from './ListContainer.module.scss';
@@ -13,7 +12,7 @@ interface ListContainerProps {
   isLoading: boolean;
 }
 
-export const ListContainer: FC<ListContainerProps> = observer(({ loadingItems, items, isLoading }) => {
+export const ListContainer: FC<ListContainerProps> = ({ loadingItems, items, isLoading }) => {
   const windowWidth = useWindowWidth();
   return (
     <ul className={cn(s.gallery, windowWidth <= 1440 && s.gallery_resize)}>
@@ -42,4 +41,4 @@ export const ListContainer: FC<ListContainerProps> = observer(({ loadingItems, i
           ))}
     </ul>
   );
-});
+};

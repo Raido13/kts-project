@@ -65,10 +65,10 @@ export class CitiesDataStore {
     return this._citiesComments;
   }
 
-  updateCities = action((data: CityType[]): void => {
-    this._cities = data;
-    this._citiesLikes = Object.fromEntries(data.map((city) => [city.id, city.likes || []]));
-    this._citiesComments = Object.fromEntries(data.map((city) => [city.id, city.comments || []]));
+  updateCities = action((cities: CityType[]): void => {
+    this._cities = cities;
+    this._citiesLikes = Object.fromEntries(this._cities.map((city) => [city.id, city.likes || []]));
+    this._citiesComments = Object.fromEntries(this._cities.map((city) => [city.id, city.comments || []]));
   });
 
   updatePaginatedCities = action((cities: CityType[]): void => {

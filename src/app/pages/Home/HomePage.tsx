@@ -8,6 +8,7 @@ import Button from '@shared/components/Button';
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { ListContainer } from '@shared/components/ListContainer';
+import { toJS } from 'mobx';
 
 const RELATED_NUMBER = 6;
 
@@ -17,7 +18,7 @@ export const HomePage: FC = observer(() => {
   const rootStore = useRootStore();
   const { fetchRelated, clearRelated } = rootStore.citiesStore;
   const isLoading = rootStore.citiesStore.isLoading;
-  const relatedCities = rootStore.citiesDataStore.relatedCities;
+  const relatedCities = toJS(rootStore.citiesDataStore.relatedCities);
   const mostLikedCity = rootStore.citiesDataStore.mostLikedCity;
 
   useEffect(() => {

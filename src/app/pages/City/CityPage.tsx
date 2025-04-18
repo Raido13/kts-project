@@ -8,7 +8,7 @@ import { CardDetail } from '@shared/components/CardDetail';
 import { observer } from 'mobx-react-lite';
 import { ListContainer } from '@shared/components/ListContainer';
 import { useRootStore } from '@shared/hooks';
-import { runInAction } from 'mobx';
+import { runInAction, toJS } from 'mobx';
 
 const RELATED_NUMBER = 3;
 
@@ -20,7 +20,7 @@ export const CityPage: FC = observer(() => {
     citiesDataStore: { updateCurrentCity },
   } = rootStore;
   const isLoading = rootStore.citiesStore.isLoading;
-  const relatedCities = rootStore.citiesDataStore.relatedCities;
+  const relatedCities = toJS(rootStore.citiesDataStore.relatedCities);
   const currentCity = rootStore.citiesDataStore.currentCity;
 
   useEffect(() => {
