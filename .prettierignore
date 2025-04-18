@@ -1,0 +1,11 @@
+dist/
+build/
+public/
+
+*.config.js
+*.config.ts
+.yarnrc.yml
+.eslintrc.js
+
+README.md
+tsconfig.json
