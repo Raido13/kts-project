@@ -22,7 +22,7 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
   const currentPage = rootStore.paginationStore.currentPage;
   const totalPages = Math.ceil(totalPaginatedCities / viewPerPage);
 
-  const pages = generatePages(viewPerPage, currentPage);
+  const pages = generatePages(totalPages, currentPage);
 
   return (
     <div className={cn(s.pagination, className)}>

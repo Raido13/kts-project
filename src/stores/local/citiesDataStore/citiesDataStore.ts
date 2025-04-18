@@ -1,6 +1,6 @@
 import { CityComment, CityDetailType, CityType } from '@shared/types/city';
 import { getMostLikedCity } from '@shared/utils/utils';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, toJS } from 'mobx';
 
 export class CitiesDataStore {
   private _cities: CityType[] = [];
@@ -38,15 +38,15 @@ export class CitiesDataStore {
   }
 
   get cities(): CityType[] {
-    return this._cities;
+    return toJS(this._cities);
   }
 
   get relatedCities(): CityType[] {
-    return this._relatedCities;
+    return toJS(this._relatedCities);
   }
 
   get paginatedCities(): CityType[] {
-    return this._paginatedCities;
+    return toJS(this._paginatedCities);
   }
 
   get mostLikedCity(): CityType | null {
