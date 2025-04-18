@@ -1,4 +1,4 @@
-import { AppRouter } from '@shared/App/appRouter';
+import { AppRouter } from '@shared/app/appRouter';
 import { ModalRoot } from '@shared/components/Modal';
 import { ToastContainer } from '@shared/components/ToastContainer';
 import { RootStoreProvider } from '@shared/stores/global/rootStore/RootStoreProvider';
