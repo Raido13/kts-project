@@ -63,9 +63,9 @@ export class CitiesStore {
     return this._isLoading || this._minLoading;
   }
 
-  initUrlSync = action((navigate: (path: string) => void, pathname: string) =>
-    this._urlSyncStore.initUrlSync(navigate, pathname)
-  );
+  initUrlSync = action((navigate: (path: string) => void, pathname: string) => {
+    this._urlSyncStore.initUrlSync(navigate, pathname);
+  });
 
   initFromUrl = action(async (search: string) => {
     try {

@@ -5,6 +5,7 @@ import { ToastStore } from '@shared/stores/global/toastStore';
 import { RouterStore } from '@shared/stores/global/routerStore';
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { CitiesDataStore, FilterStore, PaginationStore, URLSyncStore } from '@shared/stores/local';
+import { CITIES } from '@shared/constants/links';
 
 export class RootStore {
   readonly userStore = new UserStore();
@@ -41,8 +42,12 @@ export class RootStore {
         search: this.routerStore.search,
       }),
       async ({ pathname, search }) => {
-        this.citiesStore.initUrlSync(this._navigate, pathname);
-        await this.citiesStore.initFromUrl(search);
+        if (pathname === CITIES) {
+          if (!this.citiesStore.isInit) {
+            this.citiesStore.initUrlSync(this._navigate, pathname);
+          }
+          await this.citiesStore.initFromUrl(search);
+        }
       }
     );
   }

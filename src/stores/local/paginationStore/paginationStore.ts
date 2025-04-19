@@ -53,8 +53,10 @@ export class PaginationStore {
   });
 
   setViewPerPage = action((viewPerPage: Range<3, 10>) => {
-    this.resetPagination();
-    this._viewPerPage = viewPerPage;
+    if (this._viewPerPage !== viewPerPage) {
+      this.resetPagination();
+      this._viewPerPage = viewPerPage;
+    }
   });
 
   resetPagination = action(() => {
