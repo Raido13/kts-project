@@ -66,6 +66,7 @@ const Card: React.FC<CardProps> = observer(
     const user = rootStore.userStore.user;
     const citiesLikes = rootStore.citiesDataStore.citiesLikes;
     const citiesComments = rootStore.citiesDataStore.citiesComments;
+    const isLikeLoading = rootStore.citiesStore.isLikeLoading;
 
     const isLoggedIn = !!user;
 
@@ -121,7 +122,13 @@ const Card: React.FC<CardProps> = observer(
             <Text isLoading={isLoading} view={isPreview ? 'p-16' : 'p-20'} color={'secondary'} maxLines={3}>
               {subtitle}
             </Text>
-            <Like likesCount={likesCount} liked={liked} handleToggleLike={handleToggleLike} isLoggedIn={isLoggedIn} />
+            <Like
+              likesCount={likesCount}
+              liked={liked}
+              handleToggleLike={handleToggleLike}
+              isLoggedIn={isLoggedIn}
+              isLikeLoading={isLikeLoading}
+            />
             {!isPreview && (
               <Comment
                 commentsCount={commentsCount}

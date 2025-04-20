@@ -14,6 +14,7 @@ export class CitiesStore {
   private _isInit: boolean = false;
   private _isInitFromUrl: boolean = false;
   private _isLoading: boolean = true;
+  private _isLikeLoading: boolean = false;
   private _minLoading: boolean = true;
   private _requestError: string | null = null;
   private _unsubscribeFn: (() => void) | null = null;
@@ -29,6 +30,7 @@ export class CitiesStore {
       | '_isInit'
       | '_isInitFromUrl'
       | '_isLoading'
+      | '_isLikeLoading'
       | '_minLoading'
       | '_requestError'
       | '_unsubscribeFn'
@@ -41,6 +43,7 @@ export class CitiesStore {
       _isInit: observable,
       _isInitFromUrl: observable,
       _isLoading: observable,
+      _isLikeLoading: observable,
       _minLoading: observable,
       _requestError: observable,
       _unsubscribeFn: observable,
@@ -68,6 +71,10 @@ export class CitiesStore {
 
   get isLoading(): boolean {
     return this._isLoading || this._minLoading;
+  }
+
+  get isLikeLoading(): boolean {
+    return this._isLikeLoading;
   }
 
   get isInit(): boolean {
@@ -198,14 +205,17 @@ export class CitiesStore {
   });
 
   toggleLike = action(async (cityId: string, userId: string) => {
+    this._isLikeLoading = true;
     const updatedLikes = await updateCity({ mode: 'like', cityId, userId });
 
     runInAction(() => {
       if (typeof updatedLikes === 'string') {
         this.setError(updatedLikes);
+        this._isLikeLoading = false;
         return;
       }
       this._citiesDataStore.updateCityLikes(cityId, updatedLikes as string[]);
+      this._isLikeLoading = false;
     });
   });
 
