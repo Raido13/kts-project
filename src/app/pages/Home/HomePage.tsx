@@ -1,5 +1,4 @@
 import { FC, useEffect, useRef } from 'react';
-import { Search } from '@shared/components/Search';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +7,9 @@ import Button from '@shared/components/Button';
 import { useRootStore } from '@shared/hooks';
 import { observer } from 'mobx-react-lite';
 import { ListContainer } from '@shared/components/ListContainer';
+import { FeatureCard } from '@shared/components/FeatureCard';
 
-const RELATED_NUMBER = 6;
+const RELATED_NUMBER = 3;
 
 export const HomePage: FC = observer(() => {
   const navigation = useNavigate();
@@ -28,49 +28,70 @@ export const HomePage: FC = observer(() => {
     return () => clearRelated();
   }, [hasFetched, fetchRelated, clearRelated]);
 
-  const onSearchFilter = (value: string) => {
-    navigation({ pathname: CITIES, search: `?query=${value}` });
+  const handleSimilarButtons = () => {
+    navigation({ pathname: CITIES });
   };
 
-  const handleSuggest = () => {
+  const handleSuggestButton = () => {
     navigation({ pathname: `${CITIES}/${mostLikedCity?.id}` });
   };
+
+  const features: string[] = [
+    `Find places you've never seen before`,
+    `Unique facts about each city`,
+    `Find available tickets in one click`,
+    `See which city people like most`,
+  ];
 
   return (
     <div className={s.page}>
       <section className={s.page__description}>
-        <Text tag={'h2'} view={'title'} color={'primary'}>
-          Discover Cities Around the World with Citypedia
+        <Text tag={'h1'} view={'title'} color={'primary'}>
+          Explore the World with Citypedia
         </Text>
-        <Text tag={'p'} view={'p-20'} color={'secondary'}>
-          Dive into a collection of global cities — their culture, population, and stories waiting to be explored
-        </Text>
+        <div>
+          <Text tag={'p'} view={'p-20'} color={'secondary'}>
+            Find your next destination and pack your suitcases.
+          </Text>
+          <Text tag={'p'} view={'p-20'} color={'secondary'}>
+            Here is where the journey begins.
+          </Text>
+        </div>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>Choose city</Button>
+        </div>
       </section>
-      <div className={s.page__toolbar}>
-        <Text tag={'p'} view={'title'} color={'primary'}>
-          Start your journey
+      <div className={s.page__features}>
+        <Text tag={'h2'} view={'title'} color={'primary'}>
+          How can Citypedia help you?
         </Text>
-        <div className={s['page__toolbar-container']}>
-          <Search
-            onSearchFilter={onSearchFilter}
-            actionName={'Find now'}
-            placeholder={'Search City'}
-            disabled={isLoading}
-          />
+        <div className={s['page__features-container']}>
+          {features.map((f, idx) => (
+            <FeatureCard text={f} key={idx} />
+          ))}
+        </div>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>Explore</Button>
         </div>
       </div>
       <section className={s.page__related}>
         <Text tag={'p'} view={'title'} color={'primary'}>
-          Related Cities
+          Let your journey begin!
         </Text>
         <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} items={relatedCities} />
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>More cities</Button>
+        </div>
       </section>
       <div className={s.page__suggest}>
         <Text tag={'p'} view={'title'} color={'primary'}>
           Not sure where to go?
         </Text>
-        <div className={s.page__suggest__container}>
-          <Button onClick={() => handleSuggest()}>Suggest me a city</Button>
+        <Text tag={'p'} view={'p-20'} color={'primary'}>
+          Let Citypedia choose for you!
+        </Text>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSuggestButton}>Choose for me</Button>
         </div>
       </div>
     </div>

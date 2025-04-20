@@ -10,7 +10,7 @@ import { ListContainer } from '@shared/components/ListContainer';
 import { useRootStore } from '@shared/hooks';
 import { runInAction } from 'mobx';
 
-const RELATED_NUMBER = 3;
+const RELATED_NUMBER = 6;
 
 export const CityPage: FC = observer(() => {
   const { id: currentCityId } = useParams();
