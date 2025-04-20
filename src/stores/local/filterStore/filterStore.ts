@@ -1,6 +1,6 @@
 import { fetchCities } from '@shared/services/cities/fetchCities';
 import { Option } from '@shared/types/options';
-import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction, toJS } from 'mobx';
 import { PaginationStore } from '@shared/stores/local/paginationStore/paginationStore';
 
 export class FilterStore {
@@ -25,7 +25,7 @@ export class FilterStore {
   }
 
   get dropdownValue(): Option[] {
-    return this._dropdownValue;
+    return toJS(this._dropdownValue);
   }
 
   get dropdownOptions(): Option[] {
@@ -44,8 +44,9 @@ export class FilterStore {
     return this._dropdownValue.map(({ value }) => value);
   }
 
-  setDropdownValue = action((value: Option[]) => {
+  setDropdownValue = action((value: Option[], init?: boolean) => {
     this._dropdownValue = value;
+    if (init) return;
     this._paginationStore.resetPagination();
   });
 

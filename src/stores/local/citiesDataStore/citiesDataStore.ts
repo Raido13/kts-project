@@ -54,7 +54,7 @@ export class CitiesDataStore {
   }
 
   get currentCity(): CityDetailType | null {
-    return this._currentCity;
+    return toJS(this._currentCity);
   }
 
   get citiesLikes(): Record<string, string[]> {

@@ -21,6 +21,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const rootStore = useRootStore();
   const { setDropdownValue } = rootStore.filterStore;
   const dropdownOptions = rootStore.filterStore.dropdownOptions;
@@ -37,7 +38,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
 
   const checkSelect = (option: Option) => dropdownValue.some((v) => v.key === option.key);
 
-  const handleClick = (isSelected: boolean, key: string, value: string) => {
+  const handleClickOption = (isSelected: boolean, key: string, value: string) => {
     if (isSelected) {
       const updatedValues = dropdownValue.filter((v) => v.key !== key);
       setDropdownValue([...updatedValues]);
@@ -50,6 +51,11 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
     if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
       setIsOpen(false);
     }
+  };
+
+  const onContainerClick = () => {
+    inputRef.current?.focus();
+    setIsOpen(true);
   };
 
   useEffect(() => {
@@ -70,15 +76,16 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
         : '';
 
   return (
-    <div className={cn(s.dropdown, className)} ref={dropdownRef}>
+    <div className={cn(s.dropdown, className)} ref={dropdownRef} onClick={onContainerClick}>
       <Input
         value={inputValue}
         placeholder={dropdownTitle}
         onChange={(value) => {
           setLocalSearchQuery(value);
         }}
-        afterSlot={<ArrowDownIcon color="secondary" />}
-        onClick={() => setIsOpen(true)}
+        afterSlot={<ArrowDownIcon color="secondary" className={s.dropdown__icon} />}
+        className={s.dropdown__field}
+        ref={inputRef}
       />
       {!disabled && dropdownOptions.length > 0 && isOpen && (
         <ul className={cn(s.dropdown__list, s.dropdown__list_opened)}>
@@ -91,7 +98,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = observer(({ disabled, classN
             return (
               <li
                 className={s.dropdown__item}
-                onClick={() => handleClick(isSelected, key, value)}
+                onClick={() => handleClickOption(isSelected, key, value)}
                 onMouseEnter={() => {
                   untracked(() => {
                     setHoveredKey(key);

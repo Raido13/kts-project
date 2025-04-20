@@ -73,16 +73,14 @@ export const fetchCities = async ({
       const conditions = [];
       const orderField = dropdownFilters.length > 0 ? 'country' : 'name';
 
-      if (dropdownFilters.length > 0 && !searchQuery) {
+      if (dropdownFilters.length > 0) {
         conditions.push(where('country', 'in', dropdownFilters));
-      } else if (!dropdownFilters.length && searchQuery) {
+      } else if (searchQuery) {
         const capitalizedSearchQuery = capitalizeFirst(searchQuery);
         conditions.push(
           where('name', '>=', capitalizedSearchQuery),
           where('name', '<', capitalizedSearchQuery + '\uf8ff')
         );
-      } else if (dropdownFilters.length > 0 && searchQuery) {
-        conditions.push(where('country', 'in', dropdownFilters));
       }
 
       q = query(collectionRef, ...conditions, orderBy(orderField), limit(viewPerPage));
@@ -103,7 +101,7 @@ export const fetchCities = async ({
 
       const [snapshot, countSnapshot] = await Promise.all([getDocs(q), getCountFromServer(countQuery)]);
 
-      const total = countSnapshot.data().count ?? 0;
+      let total = countSnapshot.data().count ?? 0;
       const docs = snapshot.docs;
       const lastVisibleDoc = docs.length ? docs[docs.length - 1] : null;
       let data = fetchingCities(snapshot);
@@ -111,6 +109,7 @@ export const fetchCities = async ({
       if (dropdownFilters.length > 0 && searchQuery) {
         const normalizedQuery = searchQuery.toLowerCase();
         data = data.filter((city) => city.name.toLowerCase().includes(normalizedQuery));
+        total = data.length;
       }
 
       return {

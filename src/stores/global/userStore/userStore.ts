@@ -28,7 +28,9 @@ export class UserStore {
       return user;
     }
 
-    this._user = user;
+    runInAction(() => {
+      this._user = user;
+    });
   });
 
   login = action(async (email: string, password: string) => {
@@ -37,6 +39,7 @@ export class UserStore {
     if (typeof user === 'string') {
       return user;
     }
+
     runInAction(() => {
       this._user = user;
     });
@@ -49,6 +52,8 @@ export class UserStore {
       return isLoggedOut;
     }
 
-    this._user = null;
+    runInAction(() => {
+      this._user = null;
+    });
   });
 }

@@ -42,8 +42,9 @@ export class RootStore {
         search: this.routerStore.search,
       }),
       async ({ pathname, search }) => {
+        this.citiesStore.init();
         if (pathname === CITIES) {
-          if (!this.citiesStore.isInit) {
+          if (!this.citiesStore.isInitFromUrl) {
             this.citiesStore.initUrlSync(this._navigate, pathname);
           }
           await this.citiesStore.initFromUrl(search);

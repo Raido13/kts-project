@@ -24,14 +24,17 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
 
   const pages = generatePages(totalPages, currentPage);
 
+  const isLeftArrowDisabled = totalPages === 0 || currentPage === 1 || isLoading;
+  const isRightArrowDisabled = totalPages === 0 || currentPage === totalPages || isLoading;
+
   return (
     <div className={cn(s.pagination, className)}>
       <button
-        disabled={currentPage === 1 || isLoading}
+        disabled={isLeftArrowDisabled}
         className={s.pagination__arrow}
         onClick={() => setCurrentPage(currentPage - 1)}
       >
-        <ArrowPaginationIcon width={35} height={35} color={currentPage === 1 ? 'secondary' : 'primary'} />
+        <ArrowPaginationIcon width={35} height={35} color={isLeftArrowDisabled ? 'secondary' : 'primary'} />
       </button>
       {pages.map((page, idx) => (
         <button
@@ -49,11 +52,11 @@ export const Pagination: React.FC<PaginationProps> = observer(({ className }) =>
         </button>
       ))}
       <button
-        disabled={currentPage === totalPages || isLoading}
+        disabled={isRightArrowDisabled}
         className={cn(s.pagination__arrow, s.pagination__arrow_right)}
         onClick={() => setCurrentPage(currentPage + 1)}
       >
-        <ArrowPaginationIcon width={35} height={35} color={currentPage === totalPages ? 'secondary' : 'primary'} />
+        <ArrowPaginationIcon width={35} height={35} color={isRightArrowDisabled ? 'secondary' : 'primary'} />
       </button>
     </div>
   );

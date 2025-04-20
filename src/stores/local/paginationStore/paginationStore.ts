@@ -1,12 +1,12 @@
 import { Range } from '@shared/types/slider';
-import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { action, computed, makeObservable, observable } from 'mobx';
 
 export class PaginationStore {
   private _currentPage: number = 1;
   private _viewPerPage: Range<3, 10> = 3;
   private _totalPaginatedCities: number = 0;
-  private _lastDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
+  private _lastDocs: Record<number, QueryDocumentSnapshot> = {};
 
   constructor() {
     makeObservable<PaginationStore, '_currentPage' | '_viewPerPage' | '_totalPaginatedCities' | '_lastDocs'>(this, {
@@ -22,7 +22,7 @@ export class PaginationStore {
       setCurrentPage: action,
       setViewPerPage: action,
       resetPagination: action,
-      updateLastDoc: action,
+      setLastDoc: action,
     });
   }
 
@@ -38,8 +38,8 @@ export class PaginationStore {
     return this._totalPaginatedCities;
   }
 
-  get targetCursor(): QueryDocumentSnapshot<DocumentData, DocumentData> | null {
-    return this._currentPage === 1 ? null : (this._lastDocs[this._currentPage - 2] ?? null);
+  get targetCursor(): QueryDocumentSnapshot | null {
+    return this._currentPage === 1 ? null : (this._lastDocs[this._currentPage - 1] ?? null);
   }
 
   setTotalPaginationCities = action((totalCities: number) => {
@@ -52,23 +52,20 @@ export class PaginationStore {
     }
   });
 
-  setViewPerPage = action((viewPerPage: Range<3, 10>) => {
+  setViewPerPage = action((viewPerPage: Range<3, 10>, init?: boolean) => {
     if (this._viewPerPage !== viewPerPage) {
-      this.resetPagination();
       this._viewPerPage = viewPerPage;
+      if (init) return;
+      this.resetPagination();
     }
   });
 
   resetPagination = action(() => {
-    this._lastDocs = [];
+    this._lastDocs = {};
     this._currentPage = 1;
   });
 
-  updateLastDoc = action((doc: QueryDocumentSnapshot<DocumentData, DocumentData>, index: number) => {
-    if (index > this._lastDocs.length) {
-      this._lastDocs.push(doc);
-    } else {
-      this._lastDocs[index - 1] = doc;
-    }
+  setLastDoc = action((doc: QueryDocumentSnapshot) => {
+    this._lastDocs[this._currentPage] = doc;
   });
 }

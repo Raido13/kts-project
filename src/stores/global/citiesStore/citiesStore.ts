@@ -11,7 +11,8 @@ import { MIN_LOADING_TIME } from '@shared/constants/constants';
 import { fetchCityInfo } from '@shared/services/cities/fetchCityInfo';
 
 export class CitiesStore {
-  isInit: boolean = false;
+  private _isInit: boolean = false;
+  private _isInitFromUrl: boolean = false;
   private _isLoading: boolean = true;
   private _minLoading: boolean = true;
   private _requestError: string | null = null;
@@ -25,6 +26,8 @@ export class CitiesStore {
   ) {
     makeAutoObservable<
       CitiesStore,
+      | '_isInit'
+      | '_isInitFromUrl'
       | '_isLoading'
       | '_minLoading'
       | '_requestError'
@@ -35,12 +38,16 @@ export class CitiesStore {
       | '_loadPaginatedCities'
       | '_subscribeToUpdates'
     >(this, {
-      isInit: observable,
+      _isInit: observable,
+      _isInitFromUrl: observable,
       _isLoading: observable,
       _minLoading: observable,
       _requestError: observable,
       _unsubscribeFn: observable,
+      isInit: computed,
+      isInitFromUrl: computed,
       requestError: computed,
+      init: action,
       initUrlSync: action,
       initFromUrl: action,
       setError: action,
@@ -63,20 +70,33 @@ export class CitiesStore {
     return this._isLoading || this._minLoading;
   }
 
+  get isInit(): boolean {
+    return this._isInit;
+  }
+
+  get isInitFromUrl(): boolean {
+    return this._isInitFromUrl;
+  }
+
+  init = action(async () => {
+    if (!this._isInit) {
+      await this._fetchAllWithRetry();
+      this._subscribeToUpdates();
+
+      runInAction(() => (this._isInit = true));
+    }
+  });
+
   initUrlSync = action((navigate: (path: string) => void, pathname: string) => {
     this._urlSyncStore.initUrlSync(navigate, pathname);
   });
 
   initFromUrl = action(async (search: string) => {
     try {
-      if (!this.isInit) {
+      if (!this._isInitFromUrl) {
         await this._filterStore.loadDropdownOptions();
-        await this._fetchAllWithRetry();
-        this._subscribeToUpdates();
 
-        runInAction(() => {
-          this.isInit = true;
-        });
+        runInAction(() => (this._isInitFromUrl = true));
       }
 
       runInAction(async () => {
@@ -207,7 +227,6 @@ export class CitiesStore {
       this._paginationStore.currentPage === 1 ||
       this._filterStore.searchQuery ||
       this._filterStore.dropdownFilters.length > 0;
-    const targetPage = shouldReset ? 1 : this._paginationStore.currentPage;
     const filters = this._filterStore.dropdownFilters;
     const cursor = shouldReset ? null : this._paginationStore.targetCursor;
 
@@ -226,7 +245,7 @@ export class CitiesStore {
         this._paginationStore.setTotalPaginationCities(res.total);
 
         if (res.lastDoc) {
-          this._paginationStore.updateLastDoc(res.lastDoc, targetPage);
+          this._paginationStore.setLastDoc(res.lastDoc);
         }
       }
     });

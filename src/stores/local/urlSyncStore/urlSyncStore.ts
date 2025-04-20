@@ -24,8 +24,8 @@ export class URLSyncStore {
       }),
       ({ searchQuery, currentPage, viewPerPage, dropdownFilters }) => {
         const params = new URLSearchParams();
-        if (searchQuery) params.set('query', searchQuery);
-        if (currentPage > 1) params.set('page', String(currentPage));
+        if (searchQuery) params.set('searchQuery', searchQuery);
+        if (currentPage > 1) params.set('currentPage', String(currentPage));
         if (viewPerPage !== 3) params.set('viewPerPage', String(viewPerPage));
         dropdownFilters.forEach((f) => params.append('filter', f));
 
@@ -40,8 +40,8 @@ export class URLSyncStore {
   });
 
   private _setStateFromQuery = action(async (query: URLSearchParams) => {
-    const newQuery = query.get('query') ?? '';
-    const newPage = Math.max(1, Number(query.get('page')) || 1);
+    const newQuery = query.get('searchQuery') ?? '';
+    const newPage = Math.max(1, Number(query.get('currentPage')) || 1);
     const newPerPage = (Number(query.get('viewPerPage')) as Range<3, 10>) || 3;
     const filters = query.getAll('filter');
 
@@ -60,12 +60,12 @@ export class URLSyncStore {
     }
 
     if (this._paginationStore.viewPerPage !== newPerPage) {
-      this._paginationStore.setViewPerPage(newPerPage);
+      this._paginationStore.setViewPerPage(newPerPage, true);
       needsLoad = true;
     }
 
     if (JSON.stringify(this._filterStore.dropdownValue) !== JSON.stringify(matchedOptions)) {
-      this._filterStore.setDropdownValue(matchedOptions);
+      this._filterStore.setDropdownValue(matchedOptions, true);
       needsLoad = true;
     }
 
