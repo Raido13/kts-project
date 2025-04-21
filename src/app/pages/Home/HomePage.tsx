@@ -78,7 +78,7 @@ export const HomePage: FC = observer(() => {
         <Text tag={'p'} view={'title'} color={'primary'}>
           Let your journey begin!
         </Text>
-        <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} items={relatedCities} />
+        <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} isSecond items={relatedCities} />
         <div className={s['page__button-container']}>
           <Button onClick={handleSimilarButtons}>More cities</Button>
         </div>

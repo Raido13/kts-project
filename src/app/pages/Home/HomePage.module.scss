@@ -1,7 +1,7 @@
 .page {
   padding: 100px 100px 113px;
   display: grid;
-  grid-template-rows: auto 80px auto 80px auto 100px auto;
+  grid-template-rows: auto 160px auto 160px auto 160px auto;
   background-color: var(--page-bg);
   text-align: center;
 
@@ -17,7 +17,6 @@
     justify-content: center;
     max-width: 650px;
     row-gap: 24px;
-    text-align: center;
   }
 
   &__features {
@@ -30,7 +29,7 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 60px;
+      gap: 36px;
     }
   }
 
@@ -53,6 +52,7 @@
 
   &__button {
     &-container {
+      margin-top: 24px;
       display: flex;
       justify-content: center;
     }

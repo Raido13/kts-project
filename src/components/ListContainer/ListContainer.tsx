@@ -9,10 +9,11 @@ import s from './ListContainer.module.scss';
 interface ListContainerProps {
   loadingItems: number;
   items: CityType[];
+  isSecond?: boolean;
   isLoading: boolean;
 }
 
-export const ListContainer: FC<ListContainerProps> = ({ loadingItems, items, isLoading }) => {
+export const ListContainer: FC<ListContainerProps> = ({ loadingItems, items, isSecond, isLoading }) => {
   const windowWidth = useWindowWidth();
   return (
     <ul className={cn(s.gallery, windowWidth <= 1440 && s.gallery_resize)}>
@@ -35,7 +36,7 @@ export const ListContainer: FC<ListContainerProps> = ({ loadingItems, items, isL
                     }
                   : undefined
               }
-              action={<Button>Find ticket</Button>}
+              action={<Button isSecond={isSecond}>{isSecond ? 'More info' : 'Find ticket'}</Button>}
               key={item.id}
             />
           ))}

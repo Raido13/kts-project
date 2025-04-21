@@ -161,7 +161,7 @@ const Card: React.FC<CardProps> = observer(
             <div className={s.card__actions}>
               {actionSlot}
               {!isPreview && (
-                <Button className={s.card__button} isLoading={isLoading}>
+                <Button isSecond isLoading={isLoading}>
                   More info
                 </Button>
               )}
