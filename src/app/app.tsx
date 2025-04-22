@@ -1,17 +1,12 @@
-import Button from '@shared/ui/Button';
-import Card from '@shared/ui/Card';
+import { AppRouter } from '@shared/app/appRouter';
+import { ModalRoot } from '@shared/components/Modal';
+import { ToastContainer } from '@shared/components/ToastContainer';
+import { RootStoreProvider } from '@shared/stores/global/rootStore/RootStoreProvider';
 
-function App() {
-  return (
-    <Card
-      captionSlot={'test'}
-      title={'test'}
-      subtitle={'test'}
-      image={'https://avatars.githubusercontent.com/u/45487711?s=280&v=4'}
-      contentSlot={'test'}
-      actionSlot={<Button>test</Button>}
-    />
-  );
-}
-
-export default App;
+export const App = () => (
+  <RootStoreProvider>
+    <ToastContainer />
+    <AppRouter />
+    <ModalRoot />
+  </RootStoreProvider>
+);

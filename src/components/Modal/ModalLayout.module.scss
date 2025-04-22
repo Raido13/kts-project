@@ -1,0 +1,31 @@
+.modal {
+  position: relative;
+  padding: 32px;
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--modal-bg);
+
+  &-overlay {
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-ol-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}

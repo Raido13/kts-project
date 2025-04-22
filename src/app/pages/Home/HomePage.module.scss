@@ -1,0 +1,60 @@
+.page {
+  padding: 100px 100px 113px;
+  display: grid;
+  grid-template-rows: auto 160px auto 160px auto 160px auto;
+  background-color: var(--page-bg);
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 50px 10px;
+  }
+
+  &__description {
+    grid-row: 1;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 650px;
+    row-gap: 24px;
+  }
+
+  &__features {
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    row-gap: 36px;
+
+    &-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 36px;
+    }
+  }
+
+  &__related {
+    grid-row: 5;
+    display: flex;
+    flex-direction: column;
+    row-gap: 36px;
+  }
+
+  &__suggest {
+    grid-row: 7;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 24px;
+    text-align: center;
+  }
+
+  &__button {
+    &-container {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+    }
+  }
+}

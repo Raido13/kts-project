@@ -1,7 +1,8 @@
+import '@shared/config/configureMobX';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@shared/ui/styles/_global.scss';
-import App from './app';
+import '@shared/styles/_global.scss';
+import { App } from '@shared/app';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

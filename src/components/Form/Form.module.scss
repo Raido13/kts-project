@@ -1,0 +1,14 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+
+  &__action {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__error {
+    color: var(--field-error);
+  }
+}

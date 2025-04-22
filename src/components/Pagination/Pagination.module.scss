@@ -1,0 +1,46 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__arrow {
+    all: unset;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+
+    &_right {
+      transform: rotate(180deg);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__item {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 42px;
+    cursor: pointer;
+
+    @media (max-width: 400px) {
+      display: none;
+    }
+
+    &_active {
+      background-color: var(--pagination-bg-active);
+    }
+
+    &_dots {
+      cursor: default;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+}

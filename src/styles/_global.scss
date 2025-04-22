@@ -1,0 +1,132 @@
+@use './fonts';
+
+:root {
+  --brand: #518581;
+  --brand-hover: #86aaa7;
+  --brand-active: #487773;
+
+  --page-bg: rgb(250, 250, 250);
+
+  --button-primary-bg: var(--brand);
+  --button-primary-bg-hover: var(--brand-hover);
+  --button-primary-bg-active: var(var(--brand-active));
+  --button-primary-bg-disabled: #d9d9d9;
+  --button-primary-text: #fff;
+  --button-primary-text-hover: #fff;
+  --button-primary-text-disabled: #fff;
+  --button-secondary-text: #000;
+
+  --text-primary: #000;
+  --text-secondary: #afadb5;
+  --text-accent: var(--brand);
+
+  --input-text: var(--text-primary);
+  --input-text-focus: var(--text-primary);
+  --input-text-disabled: rgba(0, 0, 0, 0.2);
+  --input-placeholder: var(--text-secondary);
+  --input-border: #fff;
+  --input-border-disabled: #fff;
+  --input-bg: #fff;
+  --input-bg-focus: var(--input-border);
+  --input-bg-disabled: #fff;
+  --input-border-focus: var(--brand);
+
+  --checkbox-bg: #fff;
+  --checkbox-border: #fff;
+  --checkbox-bg-hover: #fff;
+  --checkbox-border-hover: var(--brand);
+  --checkbox-bg-disabled: rgba(255, 255, 255, 0.5);
+  --checkbox-border-disabled: #fff;
+  --checkbox-checked: var(--brand);
+  --checkbox-checked-hover: var(--brand);
+  --checkbox-check-disabled: rgba(0, 0, 0, 0.2);
+
+  --city-image-bg: #d9d9d9;
+  --city-bg: #fff;
+  --city-button-border: #000;
+
+  --dropdown-options-bg: #fff;
+
+  --header-bg: #fff;
+  --header-border: rgba(243, 243, 243, 1);
+
+  --pagination-bg-active: var(--brand);
+
+  --slider-bg: rgba(243, 243, 243, 1);
+  --slider-fill: var(--brand);
+  --slider-fill-disabled: #afadb5;
+  --slider-mark: #afadb5;
+  --slider-thumb: var(--brand-active);
+
+  --modal-bg: rgba(243, 243, 243, 1);
+  --modal-ol-bg: rgba(0, 0, 0, 0.5);
+
+  --chat-bg: #fff;
+
+  --feature-card-bg: #fff;
+  --feature-card-border: rgba(243, 243, 243, 1);
+
+  --like-fill: var(--brand);
+
+  --field-error: red;
+
+  --toast-bg: rgba(243, 243, 243, 1);
+  --toast-fill-success: var(--brand);
+  --toast-fill-error: red;
+
+  --animation-skeleton-color: linear-gradient(
+    90deg,
+    rgba(80, 80, 80, 0.1) 0%,
+    rgba(80, 80, 80, 0.3) 50%,
+    rgba(80, 80, 80, 0.1) 100%
+  );
+
+  --space-xl: 24px;
+  --space-l: 20px;
+  --space-m: 16px;
+  --space-s: 14px;
+  --space-xs: 12px;
+  --space-xxs: 8px;
+
+  --text-button-size: 18px;
+  --text-button-lh: 18px;
+
+  --text-title-size: 44px;
+  --text-title-lh: 48px;
+
+  --text-p-20-size: 20px;
+  --text-p-20-lh: 24px;
+
+  --text-p-18-size: 18px;
+  --text-p-18-lh: 22px;
+
+  --text-p-16-size: 16px;
+  --text-p-16-lh: 20px;
+
+  --text-p-14-size: 14px;
+  --text-p-14-lh: 18px;
+}
+
+html,
+body {
+  font-family: 'Roboto';
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+pre {
+  margin: 0;
+}

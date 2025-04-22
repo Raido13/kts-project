@@ -23,7 +23,7 @@
     /* alias */
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/*"]
     }
   },
   "include": ["src"]

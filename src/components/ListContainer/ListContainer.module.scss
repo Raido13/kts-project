@@ -1,0 +1,17 @@
+.gallery {
+  grid-row: 5;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+  max-width: calc(360px * 3 + 80px * 2);
+  margin: 0 auto;
+  column-gap: 80px;
+  row-gap: 30px;
+  list-style-type: none;
+
+  &_resize {
+    max-width: unset;
+    margin: unset;
+    justify-content: center;
+  }
+}

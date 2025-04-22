@@ -1,0 +1,28 @@
+.link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+
+  &__container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    column-gap: 25px;
+
+    &_after {
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -35px;
+        height: 2px;
+        width: 100%;
+        background-color: transparent;
+      }
+    }
+
+    &_active::after {
+      background-color: var(--brand);
+    }
+  }
+}

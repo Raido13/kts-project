@@ -1,0 +1,26 @@
+.page {
+  padding: 60px 39px 146px 100px;
+  display: grid;
+  grid-template-rows: auto 32px auto 48px auto;
+  background-color: var(--page-bg);
+
+  @media (max-width: 830px) {
+    padding: 50px 10px;
+  }
+
+  &__back {
+    grid-row: 1;
+    width: fit-content;
+  }
+
+  &__city {
+    grid-row: 3;
+  }
+
+  &__related {
+    grid-row: 5;
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+}

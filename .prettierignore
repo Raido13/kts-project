@@ -1,11 +1,27 @@
+# Build
 dist/
 build/
-public/
 
+# Yarn
+.yarn/
+.yarnrc.yml
+
+# Configs
 *.config.js
 *.config.ts
-.yarnrc.yml
-.eslintrc.js
+.eslintrc.cjs
+.prettierrc
+package.json
+src/vite-env.d.ts
 
+# HTML, markdown
+index.html
 README.md
+
+# TypeScript configs
 tsconfig.json
+tsconfig.*.json
+
+# Optional - UI styles and icons
+src/shared/ui/styles/
+src/shared/ui/Icon/
