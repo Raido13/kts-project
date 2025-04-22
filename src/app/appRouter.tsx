@@ -1,34 +1,34 @@
 import { routes } from '@shared/config/routes';
-import { Layout } from '@shared/components/Layout';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouteSetup } from '@shared/components/RouteSetup';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { HomePage } from '@shared/app/pages/Home';
 import { CitiesPage } from '@shared/app/pages/Cities';
 import { CityPage } from '@shared/app/pages/City';
 import { NotFoundPage } from '@shared/app/pages/NotFound';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: routes.home,
     element: (
-      <Layout header>
+      <RouteSetup header>
         <HomePage />
-      </Layout>
+      </RouteSetup>
     ),
   },
   {
     path: routes.cities,
     element: (
-      <Layout header>
+      <RouteSetup header>
         <CitiesPage />
-      </Layout>
+      </RouteSetup>
     ),
   },
   {
     path: '/cities/:id',
     element: (
-      <Layout header>
+      <RouteSetup header>
         <CityPage />
-      </Layout>
+      </RouteSetup>
     ),
   },
   {

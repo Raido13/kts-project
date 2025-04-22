@@ -34,10 +34,15 @@ export const useForm = (fields: FieldType[]) => {
     setFormState((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const handleClearForm = () => {
+    setFormState(initialState);
+  };
+
   return {
     formState,
     handleCheckboxChange,
     handleTextChange,
+    handleClearForm,
     validate,
     errors,
     isSubmitting,

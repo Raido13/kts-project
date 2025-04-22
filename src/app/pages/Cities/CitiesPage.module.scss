@@ -8,67 +8,6 @@
     padding: 50px 10px;
   }
 
-  &__description {
-    grid-row: 1;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: 650px;
-    row-gap: 24px;
-    text-align: center;
-  }
-
-  &__toolbar {
-    grid-row: 3;
-    display: flex;
-    flex-direction: column;
-    row-gap: 48px;
-
-    &-container {
-      display: flex;
-      flex-direction: column;
-      row-gap: 24px;
-    }
-  }
-
-  &__dropdown {
-    max-width: 300px;
-    z-index: 3;
-  }
-
-  &__counter {
-    display: flex;
-    align-items: center;
-    column-gap: 24px;
-  }
-
-  &__gallery {
-    grid-row: 5;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
-    max-width: calc(360px * 3 + 80px * 2);
-    margin: 0 auto;
-    column-gap: 80px;
-    row-gap: 30px;
-    list-style-type: none;
-
-    &_resize {
-      max-width: unset;
-      margin: unset;
-      justify-content: center;
-    }
-  }
-
-  &__city {
-    padding: 0;
-  }
-
-  &__link {
-    text-decoration: none;
-  }
-
   &__pagination {
     grid-row: 7;
   }

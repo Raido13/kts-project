@@ -1,111 +1,99 @@
-import { FC, useEffect, useState } from 'react';
-import { Search } from '@shared/components/Search';
+import { FC, useEffect, useRef } from 'react';
 import Text from '@shared/components/Text';
 import s from './HomePage.module.scss';
-import { useCitiesContext } from '@shared/hooks';
-import { Link, useNavigate } from 'react-router-dom';
-import City from '@shared/components/City';
+import { useNavigate } from 'react-router-dom';
 import { CITIES } from '@shared/constants/links';
 import Button from '@shared/components/Button';
-import { useWindowWidth } from '@shared/hooks';
-import cn from 'classnames';
-import { fetchCities } from '@shared/services/cities/fetchCities';
-import { CityType } from '@shared/types/city';
+import { useRootStore } from '@shared/hooks';
+import { observer } from 'mobx-react-lite';
+import { ListContainer } from '@shared/components/ListContainer';
+import { FeatureCard } from '@shared/components/FeatureCard';
 
-export const HomePage: FC = () => {
-  const { randomCity } = useCitiesContext();
+const RELATED_NUMBER = 3;
+
+export const HomePage: FC = observer(() => {
   const navigation = useNavigate();
-  const windowWidth = useWindowWidth();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [relatedCities, setRelatedCities] = useState<CityType[]>([]);
+  const hasFetched = useRef(false);
+  const rootStore = useRootStore();
+  const { fetchRelated, clearRelated } = rootStore.citiesStore;
+  const isLoading = rootStore.citiesStore.isLoading;
+  const relatedCities = rootStore.citiesDataStore.relatedCities;
+  const mostLikedCity = rootStore.citiesDataStore.mostLikedCity;
 
   useEffect(() => {
-    setIsLoading(true);
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    (async () => await fetchRelated(RELATED_NUMBER))();
 
-    fetchCities({
-      mode: 'related',
-      relatedCities: 6,
-    })
-      .then((res) => {
-        if (Array.isArray(res)) {
-          setRelatedCities(res as CityType[]);
-        }
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
+    return () => clearRelated();
+  }, [hasFetched, fetchRelated, clearRelated]);
 
-  const onSearchFilter = (value: string) => {
-    navigation({ pathname: CITIES, search: `?query=${value}` });
+  const handleSimilarButtons = () => {
+    navigation({ pathname: CITIES });
   };
 
-  const handleSuggest = () => {
-    navigation({ pathname: `${CITIES}/${randomCity?.id}` });
+  const handleSuggestButton = () => {
+    navigation({ pathname: `${CITIES}/${mostLikedCity?.id}` });
   };
+
+  const features: string[] = [
+    `Find places you've never seen before`,
+    `Unique facts about each city`,
+    `Find available tickets in one click`,
+    `See which city people like most`,
+  ];
 
   return (
     <div className={s.page}>
       <section className={s.page__description}>
-        <Text tag={'h2'} view={'title'} color={'primary'}>
-          Discover Cities Around the World with Citypedia
+        <Text tag={'h1'} view={'title'} color={'primary'}>
+          Explore the World with Citypedia
         </Text>
-        <Text tag={'p'} view={'p-20'} color={'secondary'}>
-          Dive into a collection of global cities — their culture, population, and stories waiting to be explored
-        </Text>
+        <div>
+          <Text tag={'p'} view={'p-20'} color={'secondary'}>
+            Find your next destination and pack your suitcases.
+          </Text>
+          <Text tag={'p'} view={'p-20'} color={'secondary'}>
+            Here is where the journey begins.
+          </Text>
+        </div>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>Choose city</Button>
+        </div>
       </section>
-      <div className={s.page__toolbar}>
-        <Text tag={'p'} view={'title'} color={'primary'}>
-          Start your journey
+      <div className={s.page__features}>
+        <Text tag={'h2'} view={'title'} color={'primary'}>
+          How can Citypedia help you?
         </Text>
-        <div className={s['page__toolbar-container']}>
-          <Search onSearchFilter={onSearchFilter} actionName={'Find now'} placeholder={'Search City'} />
+        <div className={s['page__features-container']}>
+          {features.map((f, idx) => (
+            <FeatureCard text={f} key={idx} />
+          ))}
+        </div>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>Explore</Button>
         </div>
       </div>
       <section className={s.page__related}>
         <Text tag={'p'} view={'title'} color={'primary'}>
-          Related Cities
+          Let your journey begin!
         </Text>
-        <ul className={cn(s.page__gallery, windowWidth <= 1440 && s.page__gallery_resize)}>
-          {isLoading
-            ? Array.from({ length: 6 }).map((_, idx) => (
-                <li key={idx} className={s.page__city}>
-                  <City
-                    cityId=""
-                    image=""
-                    title=""
-                    subtitle=""
-                    captionSlot=""
-                    contentSlot=""
-                    actionSlot={<Button isSkeletonLoading>{''}</Button>}
-                    isLoading
-                  />
-                </li>
-              ))
-            : relatedCities.map(({ id, country, name, is_capital, population, image }) => (
-                <li key={id} className={s['page__gallery-item']}>
-                  <Link to={`${CITIES}/${id}`} className={s.page__link}>
-                    <City
-                      cityId={id}
-                      image={image}
-                      title={name}
-                      subtitle={`Population: ${population}`}
-                      captionSlot={`Country: ${country}`}
-                      contentSlot={is_capital && 'Capital'}
-                      actionSlot={<Button isSkeletonLoading={isLoading}>More info</Button>}
-                      isLoading={isLoading}
-                    />
-                  </Link>
-                </li>
-              ))}
-        </ul>
+        <ListContainer loadingItems={RELATED_NUMBER} isLoading={isLoading} isSecond items={relatedCities} />
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSimilarButtons}>More cities</Button>
+        </div>
       </section>
       <div className={s.page__suggest}>
         <Text tag={'p'} view={'title'} color={'primary'}>
           Not sure where to go?
         </Text>
-        <div className={s.page__suggest__container}>
-          <Button onClick={() => handleSuggest()}>Suggest me a city</Button>
+        <Text tag={'p'} view={'p-20'} color={'primary'}>
+          Let Citypedia choose for you!
+        </Text>
+        <div className={s['page__button-container']}>
+          <Button onClick={handleSuggestButton}>Choose for me</Button>
         </div>
       </div>
     </div>
   );
-};
+});

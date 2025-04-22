@@ -1,5 +1,16 @@
 .dropdown {
   position: relative;
+  cursor: text;
+
+  &__field {
+    & > input {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: inherit;
+      width: calc(100% - 30px);
+    }
+  }
 
   &__list {
     position: absolute;

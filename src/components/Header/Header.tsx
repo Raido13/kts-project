@@ -3,7 +3,7 @@ import { CustomLink } from '@shared/components/CustomLink';
 import s from './Header.module.scss';
 import cn from 'classnames';
 import { MenuButton } from '@shared/components/MenuButton';
-import BurgerIcon from '../Icon/BurgerIcon';
+import BurgerIcon from '@shared/components/Icon/BurgerIcon';
 
 export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   /** Логотип */

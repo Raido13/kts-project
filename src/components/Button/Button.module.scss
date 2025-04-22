@@ -47,4 +47,17 @@
     background-size: 200% 100%;
     animation: pulse 1.5s infinite;
   }
+
+  &_second {
+    background-color: transparent;
+    border-color: var(--city-button-border);
+
+    & > p {
+      color: var(--button-secondary-text);
+    }
+
+    &:not(:disabled):hover {
+      background-color: var(--button-primary-bg-disabled);
+    }
+  }
 }

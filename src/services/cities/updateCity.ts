@@ -1,27 +1,55 @@
 import { db } from '@shared/config/firebase';
 import { COLLECTION } from '@shared/constants/constants';
+import { CityComment } from '@shared/types/city';
 import { FirebaseError } from 'firebase/app';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 interface updateCityProps {
-  mode: 'like';
+  mode: 'like' | 'comment';
   cityId?: string;
   userId?: string;
+  message?: string;
 }
 
-export const updateCity = async ({ mode, cityId, userId }: updateCityProps): Promise<string[] | string> => {
+export const updateCity = async ({
+  mode,
+  cityId,
+  userId,
+  message,
+}: updateCityProps): Promise<string[] | CityComment[] | string> => {
   try {
-    if (mode === 'like' && cityId && userId) {
+    if (cityId && userId) {
       const cityRef = doc(db, COLLECTION, cityId);
       const docSnap = await getDoc(cityRef);
       const cityData = docSnap.data();
-      const likes: string[] = cityData?.likes || [];
 
-      const updatedLikes = likes.includes(userId) ? likes.filter((id) => id !== userId) : [...likes, userId];
+      if (mode === 'like') {
+        const likes: string[] = cityData?.likes ?? [];
 
-      await updateDoc(cityRef, { likes: updatedLikes });
+        const updatedLikes = likes.includes(userId) ? likes.filter((id) => id !== userId) : [...likes, userId];
 
-      return updatedLikes;
+        await updateDoc(cityRef, { likes: updatedLikes });
+
+        return updatedLikes;
+      }
+
+      if (mode === 'comment') {
+        if (!message) return 'Comment message is required.';
+
+        const comments: CityComment[] = cityData?.comments ?? [];
+
+        const newComment = {
+          date: new Date(),
+          message,
+          owner: userId,
+        };
+
+        const updatedComments = [...comments, newComment];
+
+        await updateDoc(cityRef, { comments: updatedComments });
+
+        return updatedComments;
+      }
     }
 
     return 'Missing parameters.';

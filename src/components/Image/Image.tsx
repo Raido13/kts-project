@@ -14,5 +14,5 @@ export const Image: React.FC<ImageProps> = ({ isLoading = false, className, vari
   isLoading ? (
     <div className={cn(s.image__preparation, variant === 'single' && s.image__preparation_single, className)} />
   ) : (
-    <img {...props} className={className} />
+    <img {...props} className={cn(s.image, variant === 'single' && s.image_single)} />
   );

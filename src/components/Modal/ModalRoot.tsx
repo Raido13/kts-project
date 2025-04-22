@@ -1,10 +1,13 @@
 import { FC } from 'react';
-import { useModalContext } from '@shared/hooks/useModalContext';
 import { ModalLayout } from './ModalLayout';
-import { CreateCityModal, LogoutModal, SignInModal, SignUpModal } from './Modals';
+import { CreateCityModal, LogoutModal, SignInModal, SignUpModal, CommentsModal } from './Modals';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '@shared/hooks';
 
-export const ModalRoot: FC = () => {
-  const { modal, closeModal } = useModalContext();
+export const ModalRoot: FC = observer(() => {
+  const rootStore = useRootStore();
+  const { closeModal } = rootStore.modalStore;
+  const modal = rootStore.modalStore.modal;
 
   if (!modal) return null;
 
@@ -14,10 +17,11 @@ export const ModalRoot: FC = () => {
         {
           'sign-up': <SignUpModal />,
           'sign-in': <SignInModal />,
+          'comments': <CommentsModal />,
           'add-city': <CreateCityModal />,
           'log-out': <LogoutModal />,
         }[modal]
       }
     </ModalLayout>
   );
-};
+});

@@ -18,6 +18,7 @@
     font-size: var(--text-p-16-size);
     line-height: var(--text-p-16-lh);
     cursor: text;
+    z-index: 1;
 
     &::placeholder {
       color: var(--input-placeholder);

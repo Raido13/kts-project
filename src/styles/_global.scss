@@ -54,15 +54,25 @@
 
   --slider-bg: rgba(243, 243, 243, 1);
   --slider-fill: var(--brand);
+  --slider-fill-disabled: #afadb5;
   --slider-mark: #afadb5;
   --slider-thumb: var(--brand-active);
 
   --modal-bg: rgba(243, 243, 243, 1);
   --modal-ol-bg: rgba(0, 0, 0, 0.5);
 
+  --chat-bg: #fff;
+
+  --feature-card-bg: #fff;
+  --feature-card-border: rgba(243, 243, 243, 1);
+
   --like-fill: var(--brand);
 
   --field-error: red;
+
+  --toast-bg: rgba(243, 243, 243, 1);
+  --toast-fill-success: var(--brand);
+  --toast-fill-error: red;
 
   --animation-skeleton-color: linear-gradient(
     90deg,

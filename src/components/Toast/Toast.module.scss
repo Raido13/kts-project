@@ -1,0 +1,68 @@
+@use '@shared/styles/animations';
+
+.toast {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  width: calc(100% - 16px);
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 16px 56px 16px 16px;
+  column-gap: 12px;
+  overflow: hidden;
+  background-color: var(--toast-bg);
+  opacity: 0;
+  transition:
+    transform 1s ease,
+    opacity 0.3s ease;
+
+  &_right {
+    transform: translateX(100vw);
+  }
+
+  &_left {
+    transform: translateX(-100vw);
+  }
+
+  &--enter {
+    &-right,
+    &-left {
+      opacity: 1;
+      transform: translateX(-50%);
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &__loader {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    animation-name: loader;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+
+    &_error {
+      background-color: var(--toast-fill-error);
+    }
+
+    &_success {
+      background-color: var(--toast-fill-success);
+    }
+  }
+}

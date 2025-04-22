@@ -1,17 +1,15 @@
 import { Range } from '@shared/types/slider';
-import { FC, HTMLAttributes } from 'react';
+import { FC, HTMLAttributes, useMemo } from 'react';
 import cn from 'classnames';
 import s from './Slider.module.scss';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '@shared/hooks';
 
 interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   /** Минимальное значение карточек, от 3 до 30 */
   min?: Range<3, 9>;
   /** Максимальное значение карточек, от 4 до 31 */
   max?: Range<4, 10>;
-  /** Текущее значение для вывода карточек */
-  value: number;
-  /** Возвращаем новое значение для вывода карточек */
-  onChange: (value: number) => void;
   /** Дополнительный класс */
   className?: string;
 }
@@ -19,7 +17,11 @@ interface SliderProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'>
 const STEP = 1;
 const FILL_OFFSET = 8;
 
-export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, className, ...props }) => {
+export const Slider: FC<SliderProps> = observer(({ min = 3, max = 10, className, ...props }) => {
+  const rootStore = useRootStore();
+  const { setViewPerPage } = rootStore.paginationStore;
+  const viewPerPage = rootStore.paginationStore.viewPerPage;
+  const paginatedCities = rootStore.citiesDataStore.paginatedCities;
   const markList = [];
 
   for (let i = min; i <= max; i += STEP) {
@@ -27,7 +29,11 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
   }
 
   const getPercentage = (n: number) => ((n - min) / (max - min)) * 100;
-  const percentage = getPercentage(value);
+  const percentage = getPercentage(viewPerPage <= max ? viewPerPage : max);
+  const isDisabled = useMemo(
+    () => paginatedCities.length < min || paginatedCities.length > max,
+    [max, min, paginatedCities]
+  );
 
   return (
     <div className={cn(s.slider, className)}>
@@ -35,8 +41,9 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
         type={'range'}
         min={min}
         max={max}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => setViewPerPage(Number(e.target.value) as Range<3, 10>)}
         className={s.slider__range}
+        disabled={isDisabled}
         {...props}
       />
       <div className={s.slider__track}>
@@ -47,9 +54,15 @@ export const Slider: FC<SliderProps> = ({ min = 3, max = 30, value, onChange, cl
             return <div key={m} className={s[`slider__marks-item`]} style={{ left: `${markPercentage}%` }} />;
           })}
         </div>
-        <div className={s.slider__fill} style={{ width: `calc(${percentage}% + ${FILL_OFFSET}px)` }} />
-        <div className={s.slider__thumb} style={{ left: `${percentage}%` }} />
+        <div
+          className={cn(s.slider__fill, isDisabled && s.slider__fill_disabled)}
+          style={{ width: `calc(${percentage}% + ${FILL_OFFSET}px)` }}
+        />
+        <div
+          className={cn(s.slider__thumb, isDisabled && s.slider__thumb_disabled)}
+          style={{ left: `${percentage}%` }}
+        />
       </div>
     </div>
   );
-};
+});

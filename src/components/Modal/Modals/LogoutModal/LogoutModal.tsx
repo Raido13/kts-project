@@ -2,31 +2,34 @@ import { HTMLAttributes, FC, MouseEvent, useCallback } from 'react';
 import Text from '@shared/components/Text';
 import Button from '@shared/components/Button';
 import s from './LogoutModal.module.scss';
-import { useModalContext, useUserContext } from '@shared/hooks';
 import { removeExtraEventActions } from '@shared/utils/utils';
-import { useRequestError } from '@shared/hooks/useRequestError';
-import { logout } from '@shared/services/auth/logout';
+import { useRequestError, useRootStore } from '@shared/hooks';
+import { observer } from 'mobx-react-lite';
 
-export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
-  const { recordUser } = useUserContext();
-  const { closeModal } = useModalContext();
+export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = observer(() => {
+  const rootStore = useRootStore();
+  const {
+    modalStore: { closeModal },
+    toastStore: { showToast },
+    userStore: { logout },
+  } = rootStore;
   const { requestError, setRequestError, clearError } = useRequestError();
 
   const handleLogout = useCallback(
     async (e: MouseEvent<HTMLButtonElement>) => {
       removeExtraEventActions(e);
-      const loggingOut = logout();
+      const loggingOut = await logout();
 
       if (typeof loggingOut === 'string') {
         setRequestError(loggingOut);
         return;
       }
 
-      recordUser(null);
       clearError();
+      showToast('Successfully Logout!', 'success');
       closeModal();
     },
-    [recordUser, closeModal, setRequestError, clearError]
+    [closeModal, setRequestError, clearError, logout, showToast]
   );
 
   return (
@@ -44,4 +47,4 @@ export const LogoutModal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       </div>
     </div>
   );
-};
+});

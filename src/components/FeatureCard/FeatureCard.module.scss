@@ -1,0 +1,12 @@
+.feature {
+  padding: 30px 20px;
+  width: 180px;
+  display: flex;
+  background-color: var(--feature-card-bg);
+  border: solid 1px var(--feature-card-border);
+
+  &__text {
+    flex: 1;
+    text-align: center;
+  }
+}

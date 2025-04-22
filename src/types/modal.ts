@@ -1,1 +1,1 @@
-export type ModalType = 'sign-up' | 'sign-in' | 'add-city' | 'log-out' | null;
+export type ModalType = 'sign-up' | 'sign-in' | 'comments' | 'add-city' | 'log-out' | null;

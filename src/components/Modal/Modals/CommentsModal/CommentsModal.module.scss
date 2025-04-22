@@ -1,0 +1,29 @@
+.modal {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+
+  &__text {
+    text-align: center;
+  }
+
+  &__chat {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    background-color: var(--chat-bg);
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+
+    &-text {
+      &_owner {
+        align-self: flex-end;
+      }
+    }
+  }
+}

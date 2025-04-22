@@ -41,6 +41,10 @@
     position: absolute;
     height: 100%;
     background-color: var(--slider-fill);
+
+    &_disabled {
+      background-color: var(--slider-fill-disabled);
+    }
   }
 
   &__thumb {
@@ -49,5 +53,9 @@
     width: 4px;
     height: 12px;
     background-color: var(--slider-thumb);
+
+    &_disabled {
+      background-color: var(--slider-fill-disabled);
+    }
   }
 }

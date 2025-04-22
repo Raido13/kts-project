@@ -1,14 +1,12 @@
-import { CitiesContextProvider, ModalContextProvider, UserContextProvider } from '@shared/contexts';
-import { AppRouter } from './appRouter';
+import { AppRouter } from '@shared/app/appRouter';
 import { ModalRoot } from '@shared/components/Modal';
+import { ToastContainer } from '@shared/components/ToastContainer';
+import { RootStoreProvider } from '@shared/stores/global/rootStore/RootStoreProvider';
 
 export const App = () => (
-  <UserContextProvider>
-    <CitiesContextProvider>
-      <ModalContextProvider>
-        <AppRouter />
-        <ModalRoot />
-      </ModalContextProvider>
-    </CitiesContextProvider>
-  </UserContextProvider>
+  <RootStoreProvider>
+    <ToastContainer />
+    <AppRouter />
+    <ModalRoot />
+  </RootStoreProvider>
 );

@@ -4,29 +4,40 @@ import LogoIcon from '@shared/components/Icon/LogoIcon';
 import UserIcon from '@shared/components/Icon/UserIcon';
 import PlusIcon from '@shared/components/Icon/PlusIcon';
 import { HOME, CITIES } from '@shared/constants/links';
-import { useCitiesContext, useUserContext } from '@shared/hooks';
-import { useLocation } from 'react-router-dom';
-import { useModalContext } from '@shared/hooks';
 import Text from '@shared/components/Text';
 import s from './Layout.module.scss';
+import Loader from '@shared/components/Loader';
+import { ModalType } from '@shared/types/modal';
+import { User } from 'firebase/auth';
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
+  isAppReady: boolean;
+  requestError: string | null;
+  mostLikedCityId?: string;
+  openModal: (modal: ModalType) => void;
+  pathname: string;
+  user: User | null;
   /** Хедер компонент */
   header?: boolean;
   /** Компонент для отрисовки */
   children: React.ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
-  const { randomCity, citiesRequestError } = useCitiesContext();
-  const { pathname } = useLocation();
-  const { openModal } = useModalContext();
-  const { user } = useUserContext();
+export const Layout: React.FC<LayoutProps> = ({
+  header = false,
+  isAppReady,
+  requestError,
+  mostLikedCityId,
+  openModal,
+  pathname,
+  user,
+  children,
+}) => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [pathname]);
 
-  if (citiesRequestError) {
+  if (requestError) {
     return (
       <div className={s.error}>
         <Text view={'title'} tag={'p'} weight={'bold'} className={s.error__title}>
@@ -41,8 +52,12 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
 
   const nextAuthModal = user === null ? 'sign-in' : 'log-out';
 
-  return (
-    <div>
+  return !isAppReady ? (
+    <div className={s.loading}>
+      <Loader size={'l'} />
+    </div>
+  ) : (
+    <>
       {header && (
         <Header
           logoIcon={<LogoIcon />}
@@ -50,7 +65,7 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
           links={[
             { label: 'Home', path: HOME },
             { label: 'Cities', path: CITIES },
-            { label: 'Good Choice', path: randomCity ? `${CITIES}/${randomCity.id}` : '' },
+            { label: 'Good Choice', path: `${CITIES}/${mostLikedCityId}` },
           ]}
           menuItems={[
             { icon: <UserIcon />, onClick: () => openModal(nextAuthModal) },
@@ -62,6 +77,6 @@ export const Layout: React.FC<LayoutProps> = ({ header = true, children }) => {
         />
       )}
       {children}
-    </div>
+    </>
   );
 };
